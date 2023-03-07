@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<head>
+    <title>SFIDA-AR4Physics</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+</head>
+<body>
+<a-scene embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+         renderer='precision: medium;'
+         id="scene">
+
+    <a-assets id="assets">
+        <a-asset-item id="asset_00" src="models/model_00.gltf"></a-asset-item>
+   <!-- 
+        <a-asset-item id="area-di-broca-asset" src="models/area-di-broca.gltf"></a-asset-item>
+        <a-asset-item id="area-di-wernicke-asset" src="models/area-di-wernicke.gltf"></a-asset-item>
+        <a-asset-item id="ippocampo-asset" src="models/ippocampo.gltf"></a-asset-item>
+        <a-asset-item id="lobo-parietale-asset" src="models/lobo-parietale.gltf"></a-asset-item>
+        <a-asset-item id="polo-frontale-asset" src="models/polo-frontale.gltf"></a-asset-item>
+        <a-asset-item id="polo-occipitale-asset" src="models/polo-occipitale.gltf"></a-asset-item>
+        <a-asset-item id="polo-temporale-asset" src="models/polo-temporale.gltf"></a-asset-item>  
+        <a-asset-item id="gangli-della-base-asset" src="models/gangli-della-base.gltf"></a-asset-item>
+        <a-asset-item id="area-di-broca_area-di-wernicke" src="models/area-di-broca_area-di-wernicke.gltf"></a-asset-item>  
+        <a-asset-item id="polo-frontale_polo-temporale" src="models/polo-frontale_polo-temporale.gltf"></a-asset-item>
+   -->
+    </a-assets>
+
+    <a-marker type="barcode" value="0">
+        <a-entity id="model_00" gltf-model="#asset_00" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+<!--
+    <a-marker type="barcode" value="1">
+        <a-entity id="area-di-broca-model" gltf-model="#area-di-broca-asset" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+
+    <a-marker type="barcode" value="2">
+        <a-entity id="area-di-wernicke-model" gltf-model="#area-di-wernicke-asset" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+
+    <a-marker type="barcode" value="3">
+        <a-entity id="ippocampo-model" gltf-model="#ippocampo-asset" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+
+    <a-marker type="barcode" value="4">
+        <a-entity id="lobo-parietale-model" gltf-model="#lobo-parietale-asset" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+
+    <a-marker type="barcode" value="5">
+        <a-entity id="polo-frontale-model" gltf-model="#polo-frontale-asset" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+
+    <a-marker type="barcode" value="6">
+        <a-entity id="polo-occipitale-model" gltf-model="#polo-occipitale-asset" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+
+    <a-marker type="barcode" value="7">
+        <a-entity id="polo-temporale-model" gltf-model="#polo-temporale-asset" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+
+    <a-marker type="barcode" value="8">
+        <a-entity id="gangli-della-base-model" gltf-model="#gangli-della-base-asset" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+    
+    <a-marker type="barcode" value="9">
+        <a-entity id="area-di-broca_area-di-wernicke" gltf-model="#area-di-broca_area-di-wernicke" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+    
+    <a-marker type="barcode" value="10">
+        <a-entity id="polo-frontale_polo-temporale" gltf-model="#polo-frontale_polo-temporale" scale="0.025 0.025 0.025"></a-entity>
+    </a-marker>
+ -->
+
+    <a-entity camera></a-entity>
+</a-scene>
+</body>
+</html>
