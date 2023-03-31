@@ -21,19 +21,7 @@
     <a-assets id="assets">
         <a-asset-item id="polo-frontale-asset" src="models/polo-frontale.gltf"></a-asset-item>
         <a-asset-item id="lobo-parietale-asset" src="models/lobo-parietale.gltf"></a-asset-item>
-        <a-asset-item id="ippocampo_polo-temporale" src="models/ippocampo_polo-temporale.gltf"></a-asset-item>
     </a-assets>
-    
-        <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="ippocampo_polo-temporale"
-        type="barcode" value="10"
-        >
-         <a-entity id="ippocampo_polo-temporale" gltf-model="#ippocampo_polo-temporale" rotation="-90 180 180" scale="0.025 0.025 0.025" class="clickable"
-      gesture-handler="minScale: 0.25; maxScale: 10"></a-entity>
-    </a-marker>
     
         <a-marker
         raycaster="objects: .clickable"
