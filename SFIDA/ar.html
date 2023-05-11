@@ -19,18 +19,18 @@
          id="scene">
 
     <a-assets id="assets">
-        <a-asset-item id="CampoB-asset" src="models/CampoB.gltf"></a-asset-item>
-        <a-asset-item id="lobo-parietale-asset" src="models/lobo-parietale.gltf"></a-asset-item>
+        <a-asset-item id="CampoB-asset" src="models/pvt.gltf"></a-asset-item>
+        <a-asset-item id="lobo-parietale-asset" src="models/pvt.gltf"></a-asset-item>
     </a-assets>
     
         <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
-        id="CampoB-model"
+        id="pvt-model"
         type="barcode" value="0"
         >
-         <a-entity id="CampoB-model" gltf-model="#CampoB-asset" rotation="-90 180 180" scale="2.00 2.00 2.00" class="clickable"
+         <a-entity id="pvt-model" gltf-model="#pvt-asset" rotation="-90 180 180" scale="2.00 2.00 2.00" class="clickable"
       gesture-handler="minScale: 0.5; maxScale: 20"></a-entity>
     </a-marker>
     
@@ -41,7 +41,7 @@
         id="lobo-parietale-model"
         type="barcode" value="1"
         >
-         <a-entity id="lobo-parietale-model" gltf-model="#lobo-parietale-asset" rotation="-90 180 180" scale="0.025 0.025 0.025" class="clickable"
+         <a-entity id="pvt-model" gltf-model="#pvt-asset" rotation="-90 180 180" scale="0.025 0.025 0.025" class="clickable"
       gesture-handler="minScale: 0.25; maxScale: 10"></a-entity>
     </a-marker>    
      
