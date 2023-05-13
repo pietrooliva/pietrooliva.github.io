@@ -15,7 +15,18 @@
     "nodes" : [
         {
             "mesh" : 0,
-            "name" : "P-v-T_Phase_Diagram_expands_on_freezing"
+            "name" : "P-v-T_Phase_Diagram_expands_on_freezing",
+            "rotation" : [
+                -0.000647293112706393,
+                -0.7202447056770325,
+                -0.003504850436002016,
+                0.6937109231948853
+            ],
+            "translation" : [
+                -131.34561157226562,
+                -72.47747039794922,
+                -123.37306213378906
+            ]
         }
     ],
     "meshes" : [
