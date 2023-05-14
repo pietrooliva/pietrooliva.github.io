@@ -20,7 +20,7 @@
 
     <a-assets id="assets">
         <a-asset-item id="pvt-asset" src="models/pvt_color.gltf"></a-asset-item>
-     <!--   <a-asset-item id="pvt-asset" src="models/pvt.gltf"></a-asset-item> -->
+       <a-asset-item id="pvt2-asset" src="models/pvt_color2.gltf"></a-asset-item> -->
     </a-assets>
     
         <a-marker
@@ -31,19 +31,19 @@
         type="barcode" value="0"
         >
          <a-entity id="pvt-model" gltf-model="#pvt-asset" rotation="-90 180 180" scale="0.8 0.8 0.8" class="clickable"
-      gesture-handler="minScale: 0.5; maxScale: 3.5"></a-entity>
+      gesture-handler="minScale: 0.5; maxScale: 5"></a-entity>
     </a-marker>
     
-<!--        <a-marker
+       <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
-        id="lobo-parietale-model"
+        id="pvt2-model"
         type="barcode" value="1"
         >
-         <a-entity id="pvt-model" gltf-model="#pvt-asset" rotation="-90 180 180" scale="0.025 0.025 0.025" class="clickable"
-      gesture-handler="minScale: 0.25; maxScale: 10"></a-entity>
-    </a-marker>    -->
+         <a-entity id="pvt2-model" gltf-model="#pvt2-asset" rotation="-90 180 180" scale="0.8 0.8 0.8" class="clickable"
+      gesture-handler="minScale: 0.5; maxScale: 5"></a-entity>
+    </a-marker>
      
     <a-entity camera></a-entity>
 
