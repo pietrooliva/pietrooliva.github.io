@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<head>
+    <title>AUGMENTED DIDACTICS</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="libs/AR.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+    <script src="libs/gesture-handler.js"></script>
+    
+</head>
+<body>
+<a-scene gesture-detector    
+         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+         renderer='precision: medium;'
+         id="scene">
+
+<!--     <a-assets id="assets">
+        <a-asset-item id="sinapsi-asset" src="models/sinapsi.gltf"></a-asset-item>
+    </a-assets>  -->
+
+    <a-assets id="assets">
+
+      <a-asset-item id="sinapsi-asset" src="/models/3dexport_obj_1521473693/model-OBJ.obj"></a-asset-item>
+      <a-asset-item id="sinapsi-mtl" src="/models/3dexport_obj_1521473693/model-OBJ.mtl"></a-asset-item>
+    
+    </a-assets> 
+
+        <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        id="sinapsi-model"
+        type="barcode" value="0"
+        >
+
+        <!-- <a-entity id="sinapsi-model" gltf-model="#sinapsi-asset" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
+      gesture-handler="minScale: 0.01; maxScale: 1"></a-entity>  -->
+            
+
+         <a-entity id="sinapsi-model" obj-model="obj: #sinapsi-asset; mtl: #sinapsi-mtl" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
+      gesture-handler="minScale: 0.01; maxScale: 1"></a-entity>
+                  
+                     
+    </a-marker>
+    
+    <a-entity camera></a-entity>
+
+    <script src="ar.js"></script>
+</a-scene>
+</body>
+</html>
