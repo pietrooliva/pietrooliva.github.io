@@ -21,6 +21,7 @@
     <a-assets id="assets">
         <a-asset-item id="sinapsi-asset" src="models/S1.gltf"></a-asset-item>
         <a-asset-item id="sinapsi-asset2" src="models/S2.gltf"></a-asset-item>
+        <a-asset-item id="sinapsi-asset3" src="models/S3.gltf"></a-asset-item>
     </a-assets> 
 
 
@@ -36,7 +37,6 @@
                                
     </a-marker>
     
-    
             <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
@@ -48,6 +48,19 @@
       gesture-handler="minScale: 0.01; maxScale: 10"></a-entity>
                                
     </a-marker>
+    
+       <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        id="sinapsi-model3"
+        type="barcode" value="2"
+        >
+        <a-entity id="sinapsi-model" gltf-model="#sinapsi-asset3" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
+      gesture-handler="minScale: 0.01; maxScale: 10"></a-entity>
+                               
+    </a-marker>
+    
     
     <a-entity camera></a-entity>
 
