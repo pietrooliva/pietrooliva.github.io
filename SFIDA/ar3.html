@@ -18,16 +18,11 @@
          renderer='precision: medium;'
          id="scene">
 
-<!--     <a-assets id="assets">
-        <a-asset-item id="sinapsi-asset" src="models/sinapsi.gltf"></a-asset-item>
-    </a-assets>  -->
-
     <a-assets id="assets">
+        <a-asset-item id="sinapsi-asset" src="models/S5L.gltf"></a-asset-item>
+    </a-assets>  
 
-      <a-asset-item id="sinapsi-asset" src="/models/3dexport_obj_1521473693/model-OBJ.obj"></a-asset-item>
-      <a-asset-item id="sinapsi-mtl" src="/models/3dexport_obj_1521473693/model-OBJ.mtl"></a-asset-item>
-    
-    </a-assets> 
+
 
         <a-marker
         raycaster="objects: .clickable"
@@ -37,14 +32,13 @@
         type="barcode" value="0"
         >
 
-        <!-- <a-entity id="sinapsi-model" gltf-model="#sinapsi-asset" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
-      gesture-handler="minScale: 0.01; maxScale: 1"></a-entity>  -->
+     <a-entity id="sinapsi-model" gltf-model="#sinapsi-asset" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
+      gesture-handler="minScale: 0.01; maxScale: 5"></a-entity> 
             
 
     <!--      <a-entity id="sinapsi-model" obj-model="obj: #sinapsi-asset; mtl: #sinapsi-mtl" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
       gesture-handler="minScale: 0.01; maxScale: 1"></a-entity> -->
                   
-            <a-entity id="sinapsi-model" obj-model="obj: #sinapsi-asset; mtl: #sinapsi-mtl"></a-entity>
                      
     </a-marker>
     
