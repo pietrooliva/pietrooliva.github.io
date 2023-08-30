@@ -28,8 +28,8 @@
                     const sensitivity = 0.01;
                     entity.object3D.position.x += x * sensitivity;
                     entity.object3D.position.y += y * sensitivity;
-                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
-                    // Perform rotation when two fingers are used
+                } else if (detail.type === 'rotate' && detail.numFingers === 3) {
+                    // Perform rotation when 3 fingers are used
                     const { deltaRotation } = detail;
                     const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
                     entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
