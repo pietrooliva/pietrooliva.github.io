@@ -10,7 +10,6 @@
     <script src="libs/AR.js"></script>
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
-    
 </head>
 <body>
 <a-scene gesture-detector    
@@ -22,23 +21,19 @@
         <a-asset-item id="solenoide-asset" src="models/scene.gltf"></a-asset-item>
     </a-assets>  
 
-
-        <a-marker
+    <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
-        id="solenoide-model"
-        type="barcode" value="0"
-        >
-
-     <a-entity id="solenoide-model" gltf-model="#solenoide-asset" rotation="-90 180 180" scale="0.7 0.7 0.7" class="clickable"
-      gesture-handler="minScale: 0.1; maxScale: 5"></a-entity> 
-            
-
-    <!--      <a-entity id="sinapsi-model" obj-model="obj: #sinapsi-asset; mtl: #sinapsi-mtl" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
-      gesture-handler="minScale: 0.01; maxScale: 1"></a-entity> -->
-                  
-                     
+        type="barcode" value="0">
+        
+        <a-entity
+            gltf-model="#solenoide-asset"
+            rotation="-90 180 180"
+            scale="0.7 0.7 0.7"
+            class="clickable"
+            gesture-handler="minScale: 0.1; maxScale: 5">
+        </a-entity>
     </a-marker>
     
     <a-entity camera></a-entity>
