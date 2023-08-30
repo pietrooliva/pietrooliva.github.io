@@ -1,70 +1,83 @@
 <!DOCTYPE html>
+<html>
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>AUGMENTED DIDACTICS</title>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="stylesheet" href="style.css" />
-
+    <link rel="stylesheet" href="style.css">
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
     <script src="libs/AR.js"></script>
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
-    
 </head>
 <body>
-<a-scene gesture-detector    
-         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-         renderer='precision: medium;'
-         id="scene">
+    <a-scene gesture-detector    
+             embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+             renderer='precision: medium;'
+             id="scene">
 
-    <a-assets id="assets">
-        <a-asset-item id="sinapsi-asset" src="models/S1.gltf"></a-asset-item>
-        <a-asset-item id="sinapsi-asset2" src="models/S2.gltf"></a-asset-item>
-        <a-asset-item id="sinapsi-asset3" src="models/S3.gltf"></a-asset-item>
-    </a-assets> 
+        <a-assets id="assets">
+            <a-asset-item id="sinapsi-asset" src="models/S1.gltf"></a-asset-item>
+            <a-asset-item id="sinapsi-asset2" src="models/S2.gltf"></a-asset-item>
+            <a-asset-item id="sinapsi-asset3" src="models/S3.gltf"></a-asset-item>
+        </a-assets> 
 
+        <!-- Create markers and entities in a loop -->
+        <a-marker
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            type="barcode"
+            value="0"
+            id="sinapsi-marker-0"
+        >
+            <a-entity
+                gltf-model="#sinapsi-asset"
+                rotation="-90 180 180"
+                scale="0.1 0.1 0.1"
+                class="clickable"
+                gesture-handler="minScale: 0.01; maxScale: 10"
+            ></a-entity>
+        </a-marker>
 
         <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="sinapsi-model"
-        type="barcode" value="0"
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            type="barcode"
+            value="1"
+            id="sinapsi-marker-1"
         >
-        <a-entity id="sinapsi-model" gltf-model="#sinapsi-asset" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
-      gesture-handler="minScale: 0.01; maxScale: 10"></a-entity>
-                               
-    </a-marker>
-    
-            <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="sinapsi-model2"
-        type="barcode" value="1"
-        >
-        <a-entity id="sinapsi-model2" gltf-model="#sinapsi-asset2" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
-      gesture-handler="minScale: 0.01; maxScale: 10"></a-entity>
-                               
-    </a-marker>
-    
-       <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        id="sinapsi-model3"
-        type="barcode" value="2"
-        >
-        <a-entity id="sinapsi-model" gltf-model="#sinapsi-asset3" rotation="-90 180 180" scale="0.1 0.1 0.1" class="clickable"
-      gesture-handler="minScale: 0.01; maxScale: 10"></a-entity>
-                               
-    </a-marker>
-    
-    
-    <a-entity camera></a-entity>
+            <a-entity
+                gltf-model="#sinapsi-asset2"
+                rotation="-90 180 180"
+                scale="0.1 0.1 0.1"
+                class="clickable"
+                gesture-handler="minScale: 0.01; maxScale: 10"
+            ></a-entity>
+        </a-marker>
 
-    <script src="ar.js"></script>
-</a-scene>
+        <a-marker
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            type="barcode"
+            value="2"
+            id="sinapsi-marker-2"
+        >
+            <a-entity
+                gltf-model="#sinapsi-asset3"
+                rotation="-90 180 180"
+                scale="0.1 0.1 0.1"
+                class="clickable"
+                gesture-handler="minScale: 0.01; maxScale: 10"
+            ></a-entity>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+
+        <script src="ar.js"></script>
+    </a-scene>
 </body>
 </html>
