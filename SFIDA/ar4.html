@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
     <title>AUGMENTED DIDACTICS LAB</title>
     <meta charset="utf-8" />
@@ -32,13 +33,35 @@
             rotation="-90 180 180"
             scale="0.7 0.7 0.7"
             class="clickable"
-            gesture-handler="minScale: 0.5; maxScale: 35">
-        </a-entity>
+            gesture-handler="minScale: 0.5; maxScale: 45; translateEnabled: true"
+            translate-handler <!-- Apply the translate-handler component here -->
+        ></a-entity>
     </a-marker>
     
     <a-entity camera></a-entity>
 
-    <script src="ar.js"></script>
+    <!-- Add the translate-handler component script here -->
+    <script>
+        AFRAME.registerComponent('translate-handler', {
+            init: function () {
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+            },
+
+            onGestureMove: function (event) {
+                const { detail } = event;
+                if (detail.type === 'translate' && detail.numFingers === 2) {
+                    // Only perform translation when two fingers are used
+                    const entity = this.el;
+                    const { x, y } = detail.deltaPosition;
+
+                    // You can adjust the sensitivity of translation by multiplying x and y with a scaling factor
+                    const sensitivity = 0.01;
+                    entity.object3D.position.x += x * sensitivity;
+                    entity.object3D.position.y += y * sensitivity;
+                }
+            },
+        });
+    </script>
 </a-scene>
 </body>
 </html>
