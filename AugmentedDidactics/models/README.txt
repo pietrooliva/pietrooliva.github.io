@@ -1,1 +1,0 @@
-Modelli 3d
