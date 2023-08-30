@@ -33,7 +33,7 @@
             rotation="-90 180 180"
             scale="1 1 1"
             class="clickable"
-            gesture-handler="minScale: 0.7; maxScale: 55; translateEnabled: true"
+            gesture-handler="minScale: 1; maxScale: 55; translateEnabled: true"
             translate-handler <!-- Apply the translate-handler component here -->
         ></a-entity>
     </a-marker>
@@ -49,8 +49,8 @@
 
             onGestureMove: function (event) {
                 const { detail } = event;
-                if (detail.type === 'translate' && detail.numFingers === 2) {
-                    // Only perform translation when two fingers are used
+                if (detail.type === 'translate' && detail.numFingers === 3) {
+                    // Perform translation when three fingers are used
                     const entity = this.el;
                     const { x, y } = detail.deltaPosition;
 
