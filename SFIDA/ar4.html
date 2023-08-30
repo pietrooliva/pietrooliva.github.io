@@ -11,37 +11,8 @@
     <script src="libs/AR.js"></script>
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
-</head>
-<body>
-<a-scene gesture-detector    
-         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-         renderer='precision: medium;'
-         id="scene">
 
-    <a-assets id="assets">
-        <a-asset-item id="solenoide-asset" src="models/sina_movimento_03.gltf"></a-asset-item>
-    </a-assets>  
-
-    <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="0">
-        
-        <a-entity
-            gltf-model="#solenoide-asset"
-            rotation="-90 180 180"
-            scale="1 1 1"
-            class="clickable"
-            gesture-handler="minScale: 1; maxScale: 55; translateEnabled: true; rotateEnabled: true" <!-- Enable translation and rotation -->
-            translate-rotate-handler <!-- Apply the translate-rotate-handler component here -->
-                    <!--    animation-mixer="clip: animation_name; loop: repeat" -->
-        ></a-entity>
-    </a-marker>
-    
-    <a-entity camera></a-entity>
-
-    <!-- Add the translate-rotate-handler component script here -->
+    <!-- Define the custom translate-rotate-handler component -->
     <script>
         AFRAME.registerComponent('translate-rotate-handler', {
             init: function () {
@@ -57,8 +28,8 @@
                     const sensitivity = 0.01;
                     entity.object3D.position.x += x * sensitivity;
                     entity.object3D.position.y += y * sensitivity;
-                } else if (detail.type === 'rotate' && detail.numFingers === 3) {
-                    // Perform rotation when 3 fingers are used
+                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    // Perform rotation when two fingers are used
                     const { deltaRotation } = detail;
                     const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
                     entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
@@ -66,5 +37,35 @@
             },
         });
     </script>
+</head>
+<body>
+<a-scene gesture-detector    
+         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+         renderer='precision: medium;'
+         id="scene">
+
+    <a-assets id="assets">
+        <a-asset-item id="solenoide-asset" src="models/solenoide.gltf"></a-asset-item>
+    </a-assets>  
+
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="0">
+        
+        <a-entity
+            gltf-model="#solenoide-asset"
+            rotation="-90 180 180"
+            scale="1 1 1"
+            class="clickable"
+            gesture-handler="minScale: 1; maxScale: 55; translateEnabled: true; rotateEnabled: true"
+            translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
+        ></a-entity>
+    </a-marker>
+    
+    <a-entity camera></a-entity>
+
 </a-scene>
-</body
+</body>
+</html>
