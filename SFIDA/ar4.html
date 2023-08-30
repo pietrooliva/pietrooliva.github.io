@@ -31,37 +31,39 @@
         <a-entity
             gltf-model="#solenoide-asset"
             rotation="-90 180 180"
-            scale="1 1 1"
+            scale="0.7 0.7 0.7"
             class="clickable"
-            gesture-handler="minScale: 1; maxScale: 55; translateEnabled: true"
-            translate-handler <!-- Apply the translate-handler component here -->
+            gesture-handler="minScale: 0.5; maxScale: 15; translateEnabled: true; rotateEnabled: true" <!-- Enable translation and rotation -->
+            translate-rotate-handler <!-- Apply the translate-rotate-handler component here -->
         ></a-entity>
     </a-marker>
     
     <a-entity camera></a-entity>
 
-    <!-- Add the translate-handler component script here -->
+    <!-- Add the translate-rotate-handler component script here -->
     <script>
-        AFRAME.registerComponent('translate-handler', {
+        AFRAME.registerComponent('translate-rotate-handler', {
             init: function () {
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
             },
 
             onGestureMove: function (event) {
                 const { detail } = event;
-                if (detail.type === 'translate' && detail.numFingers === 3) {
-                    // Perform translation when three fingers are used
-                    const entity = this.el;
+                const entity = this.el;
+                if (detail.type === 'translate' && detail.numFingers === 2) {
+                    // Perform translation when two fingers are used
                     const { x, y } = detail.deltaPosition;
-
-                    // You can adjust the sensitivity of translation by multiplying x and y with a scaling factor
                     const sensitivity = 0.01;
                     entity.object3D.position.x += x * sensitivity;
                     entity.object3D.position.y += y * sensitivity;
+                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    // Perform rotation when two fingers are used
+                    const { deltaRotation } = detail;
+                    const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
+                    entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
                 }
             },
         });
     </script>
 </a-scene>
-</body>
-</html>
+</body
