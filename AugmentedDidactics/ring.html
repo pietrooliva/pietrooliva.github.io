@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AUGMENTED DIDACTICS LAB</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="libs/AR.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+    <script src="libs/gesture-handler.js"></script>
+
+    <!-- Define the custom translate-rotate-handler component -->
+    <script>
+        AFRAME.registerComponent('translate-rotate-handler', {
+            init: function () {
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+            },
+
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const entity = this.el;
+                if (detail.type === 'translate' && detail.numFingers === 2) {
+                    // Perform translation when two fingers are used
+                    const { x, y } = detail.deltaPosition;
+                    const sensitivity = 0.01;
+                    entity.object3D.position.x += x * sensitivity;
+                    entity.object3D.position.y += y * sensitivity;
+                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    // Perform rotation when 2 fingers are used
+                    const { deltaRotation } = detail;
+                    const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
+                    entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
+                }
+            },
+        });
+    </script>
+</head>
+<body>
+<a-scene gesture-detector    
+         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+         renderer='precision: medium;'
+         id="scene">
+
+    <a-assets id="assets">
+        <a-asset-item id="model-asset" src="models/ring.gltf"></a-asset-item>
+    </a-assets>  
+
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="6">
+        
+        <a-entity
+            gltf-model="#model-asset"
+            rotation="-90 180 180"
+            scale="1 1 1"
+            class="clickable"
+            gesture-handler="minScale: 0.5; maxScale: 55; translateEnabled: true; rotateEnabled: true"
+            translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
+        ></a-entity>
+    </a-marker>
+    
+    <a-entity camera></a-entity>
+
+</a-scene>
+</body>
+</html>
