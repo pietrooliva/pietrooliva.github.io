@@ -12,7 +12,7 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
 
-    <!-- Define the custom drag-handler component -->
+    <!-- Define the custom drag-handler component for touch devices -->
     <script>
         AFRAME.registerComponent('drag-handler', {
             init: function () {
@@ -20,14 +20,14 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.dragStart = { x: 0, y: 0 };
                 this.dragThreshold = 0.02; // Adjust this threshold as needed
-                this.el.addEventListener('mousedown', this.onDragStart.bind(this));
-                this.el.addEventListener('mouseup', this.onDragEnd.bind(this));
+                this.el.addEventListener('touchstart', this.onDragStart.bind(this));
+                this.el.addEventListener('touchend', this.onDragEnd.bind(this));
             },
 
             onDragStart: function (event) {
                 this.dragging = true;
-                this.dragStart.x = event.detail.intersection.point.x;
-                this.dragStart.y = event.detail.intersection.point.y;
+                this.dragStart.x = event.touches[0].clientX;
+                this.dragStart.y = event.touches[0].clientY;
             },
 
             onDragEnd: function () {
@@ -71,7 +71,7 @@
             scale="4 4 4"
             class="clickable"
             gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
-            drag-handler <!-- Apply the custom drag-handler component here -->
+            drag-handler <!-- Apply the custom drag-handler component here for touch dragging -->
         ></a-entity>
     </a-marker>
     
