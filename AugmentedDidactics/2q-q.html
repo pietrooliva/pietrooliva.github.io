@@ -12,57 +12,40 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
 
-    <!-- Define the custom translate-rotate-drag-handler component -->
+    <!-- Define the custom drag-handler component -->
     <script>
-        AFRAME.registerComponent('translate-rotate-drag-handler', {
+        AFRAME.registerComponent('drag-handler', {
             init: function () {
-                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.dragging = false;
                 this.previousPosition = { x: 0, y: 0 };
                 this.dragStart = { x: 0, y: 0 };
                 this.dragThreshold = 0.02; // Adjust this threshold as needed
+                this.el.addEventListener('mousedown', this.onDragStart.bind(this));
+                this.el.addEventListener('mouseup', this.onDragEnd.bind(this));
             },
 
-            onGestureMove: function (event) {
-                const { detail } = event;
-                const entity = this.el;
+            onDragStart: function (event) {
+                this.dragging = true;
+                this.dragStart.x = event.detail.intersection.point.x;
+                this.dragStart.y = event.detail.intersection.point.y;
+            },
 
-                if (detail.type === 'translate' && detail.numFingers === 2) {
-                    // Perform translation when two fingers are used
-                    const { x, y } = detail.deltaPosition;
+            onDragEnd: function () {
+                this.dragging = false;
+            },
+
+            tick: function () {
+                if (this.dragging) {
+                    const currentPosition = this.el.object3D.position;
+                    const dx = currentPosition.x - this.previousPosition.x;
+                    const dy = currentPosition.y - this.previousPosition.y;
                     const sensitivity = 0.01;
-                    entity.object3D.position.x += x * sensitivity;
-                    entity.object3D.position.y += y * sensitivity;
-                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
-                    // Perform rotation when two fingers are used
-                    const { deltaRotation } = detail;
-                    const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
-                    entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
-                } else if (detail.type === 'drag' && detail.numFingers === 1) {
-                    // Perform dragging when one finger is used
-                    if (!this.dragging) {
-                        this.dragging = true;
-                        this.dragStart.x = detail.startPosition.x;
-                        this.dragStart.y = detail.startPosition.y;
-                    }
-
-                    const { x, y } = detail.position;
-                    const dx = x - this.previousPosition.x;
-                    const dy = y - this.previousPosition.y;
-
-                    if (this.dragging) {
-                        const sensitivity = 0.01;
-                        entity.object3D.position.x += dx * sensitivity;
-                        entity.object3D.position.y += dy * sensitivity;
-                    }
-
-                    this.previousPosition.x = x;
-                    this.previousPosition.y = y;
-                } else if (detail.type === 'dragend' && detail.numFingers === 1) {
-                    // End dragging when the finger is lifted
-                    this.dragging = false;
+                    this.el.object3D.position.x += dx * sensitivity;
+                    this.el.object3D.position.y += dy * sensitivity;
+                    this.previousPosition.x = currentPosition.x;
+                    this.previousPosition.y = currentPosition.y;
                 }
-            },
+            }
         });
     </script>
 </head>
@@ -88,7 +71,7 @@
             scale="4 4 4"
             class="clickable"
             gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
-            translate-rotate-drag-handler <!-- Apply the custom translate-rotate-drag-handler component here -->
+            drag-handler <!-- Apply the custom drag-handler component here -->
         ></a-entity>
     </a-marker>
     
