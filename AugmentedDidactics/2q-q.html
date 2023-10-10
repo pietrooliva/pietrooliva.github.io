@@ -3,7 +3,7 @@
 <head>
     <title>AUGMENTED DIDACTICS LAB</title>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE-edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" href="style.css" />
 
     <script src="libs/aframe-master.min.js"></script>
@@ -12,9 +12,9 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
 
-    <!-- Define the custom touch-drag-handler component -->
+    <!-- Define the custom three-finger-drag-handler component -->
     <script>
-        AFRAME.registerComponent('touch-drag-handler', {
+        AFRAME.registerComponent('three-finger-drag-handler', {
             init: function () {
                 this.dragging = false;
                 this.previousPosition = { x: 0, y: 0 };
@@ -26,7 +26,7 @@
             },
 
             onTouchStart: function (event) {
-                if (event.touches.length === 1) {
+                if (event.touches.length === 3) {
                     this.dragging = true;
                     this.dragStart.x = event.touches[0].clientX;
                     this.dragStart.y = event.touches[0].clientY;
@@ -34,7 +34,7 @@
             },
 
             onTouchMove: function (event) {
-                if (this.dragging && event.touches.length === 1) {
+                if (this.dragging && event.touches.length === 3) {
                     const dx = event.touches[0].clientX - this.dragStart.x;
                     const dy = event.touches[0].clientY - this.dragStart.y;
                     const sensitivity = 0.01;
@@ -73,7 +73,7 @@
             scale="4 4 4"
             class="clickable"
             gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
-            touch-drag-handler <!-- Apply the custom touch-drag-handler component here -->
+            three-finger-drag-handler <!-- Apply the custom three-finger-drag-handler component here for three-finger drag -->
         ></a-entity>
     </a-marker>
     
