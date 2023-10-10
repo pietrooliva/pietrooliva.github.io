@@ -3,7 +3,7 @@
 <head>
     <title>AUGMENTED DIDACTICS LAB</title>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE-edge" />
     <link rel="stylesheet" href="style.css" />
 
     <script src="libs/aframe-master.min.js"></script>
@@ -12,31 +12,29 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
 
-    <!-- Define the custom drag-handler component for touch devices -->
+    <!-- Define the custom touch-drag-handler component -->
     <script>
-        AFRAME.registerComponent('drag-handler', {
+        AFRAME.registerComponent('touch-drag-handler', {
             init: function () {
                 this.dragging = false;
                 this.previousPosition = { x: 0, y: 0 };
                 this.dragStart = { x: 0, y: 0 };
                 this.dragThreshold = 0.02; // Adjust this threshold as needed
-                this.el.addEventListener('touchstart', this.onDragStart.bind(this));
-                this.el.addEventListener('touchend', this.onDragEnd.bind(this));
-                this.el.addEventListener('touchmove', this.onDragMove.bind(this));
+                this.el.addEventListener('touchstart', this.onTouchStart.bind(this));
+                this.el.addEventListener('touchmove', this.onTouchMove.bind(this));
+                this.el.addEventListener('touchend', this.onTouchEnd.bind(this));
             },
 
-            onDragStart: function (event) {
-                this.dragging = true;
-                this.dragStart.x = event.touches[0].clientX;
-                this.dragStart.y = event.touches[0].clientY;
+            onTouchStart: function (event) {
+                if (event.touches.length === 1) {
+                    this.dragging = true;
+                    this.dragStart.x = event.touches[0].clientX;
+                    this.dragStart.y = event.touches[0].clientY;
+                }
             },
 
-            onDragEnd: function () {
-                this.dragging = false;
-            },
-
-            onDragMove: function (event) {
-                if (this.dragging) {
+            onTouchMove: function (event) {
+                if (this.dragging && event.touches.length === 1) {
                     const dx = event.touches[0].clientX - this.dragStart.x;
                     const dy = event.touches[0].clientY - this.dragStart.y;
                     const sensitivity = 0.01;
@@ -45,6 +43,10 @@
                     this.dragStart.x = event.touches[0].clientX;
                     this.dragStart.y = event.touches[0].clientY;
                 }
+            },
+
+            onTouchEnd: function () {
+                this.dragging = false;
             }
         });
     </script>
@@ -71,7 +73,7 @@
             scale="4 4 4"
             class="clickable"
             gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
-            drag-handler <!-- Apply the custom drag-handler component here for touch dragging -->
+            touch-drag-handler <!-- Apply the custom touch-drag-handler component here -->
         ></a-entity>
     </a-marker>
     
