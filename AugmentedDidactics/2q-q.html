@@ -22,6 +22,7 @@
                 this.dragThreshold = 0.02; // Adjust this threshold as needed
                 this.el.addEventListener('touchstart', this.onDragStart.bind(this));
                 this.el.addEventListener('touchend', this.onDragEnd.bind(this));
+                this.el.addEventListener('touchmove', this.onDragMove.bind(this));
             },
 
             onDragStart: function (event) {
@@ -34,16 +35,15 @@
                 this.dragging = false;
             },
 
-            tick: function () {
+            onDragMove: function (event) {
                 if (this.dragging) {
-                    const currentPosition = this.el.object3D.position;
-                    const dx = currentPosition.x - this.previousPosition.x;
-                    const dy = currentPosition.y - this.previousPosition.y;
+                    const dx = event.touches[0].clientX - this.dragStart.x;
+                    const dy = event.touches[0].clientY - this.dragStart.y;
                     const sensitivity = 0.01;
                     this.el.object3D.position.x += dx * sensitivity;
                     this.el.object3D.position.y += dy * sensitivity;
-                    this.previousPosition.x = currentPosition.x;
-                    this.previousPosition.y = currentPosition.y;
+                    this.dragStart.x = event.touches[0].clientX;
+                    this.dragStart.y = event.touches[0].clientY;
                 }
             }
         });
