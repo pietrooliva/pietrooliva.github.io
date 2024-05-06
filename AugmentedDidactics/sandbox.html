@@ -44,18 +44,26 @@
          renderer='precision: medium;'
          id="scene">
 
-    <a-assets id="assets">
-       <a-asset-item id="prova-asset" src="models/prova.gltf"></a-asset-item> 
-    </a-assets>  
+    <a-assets>
+        <!-- Load the GLTF model -->
+        <a-asset-item id="model" src="models/scene.gltf"></a-asset-item>
 
+        <!-- Load any additional textures -->
+        <img id="texture1" src="models/textures/Fabric_Normals_baseColor.jpeg">
+        <img id="texture2" src="models/textures/Eye_material_baseColor.jpeg">
+        <!-- Add more textures as needed -->
+    </a-assets>
+
+    <!-- Marker for triggering the display of the model -->
     <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
         type="barcode" value="0">
         
+        <!-- Entity representing the augmented content -->
         <a-entity
-            gltf-model="#prova-asset"
+            gltf-model="#model"
             rotation="-90 180 180"
             scale="2 2 2"
             class="clickable"
@@ -64,6 +72,7 @@
         ></a-entity>
     </a-marker>
     
+    <!-- Camera entity for the scene -->
     <a-entity camera></a-entity>
 
 </a-scene>
