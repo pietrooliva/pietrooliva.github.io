@@ -14,24 +14,31 @@
 
     <!-- Define the custom translate-only-handler component -->
     <script>
-        AFRAME.registerComponent('translate-only-handler', {
-            init: function () {
-                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
-            },
+       AFRAME.registerComponent('translate-and-rotate-handler', {
+    init: function () {
+        this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+    },
 
-            onGestureMove: function (event) {
-                const { detail } = event;
-                const entity = this.el;
+    onGestureMove: function (event) {
+        const { detail } = event;
+        const entity = this.el;
 
-                if (detail.type === 'translate' && detail.numFingers === 1) {
-                    // Perform translation when one finger is used
-                    const { x, y } = detail.deltaPosition;
-                    const sensitivity = 0.01;
-                    entity.object3D.position.x += x * sensitivity;
-                    entity.object3D.position.y += y * sensitivity;
-                }
-            },
-        });
+        if (detail.type === 'translate') {
+            // Perform translation
+            const { x, y } = detail.deltaPosition;
+            const sensitivity = 0.01;
+            entity.object3D.position.x += x * sensitivity;
+            entity.object3D.position.y += y * sensitivity;
+        }
+
+        if (detail.type === 'rotate' && detail.numFingers === 2) {
+            // Perform rotation with two fingers
+            const { angleDelta } = detail;
+            const rotationSensitivity = 0.5;
+            entity.object3D.rotation.y += angleDelta * rotationSensitivity;
+        }
+    },
+});
     </script>
 </head>
 <body>
