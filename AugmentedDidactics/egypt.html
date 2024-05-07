@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AUGMENTED DIDACTICS LAB: Lembo-Oliva</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="libs/AR.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+    <script src="libs/gesture-handler.js"></script>
+
+    <!-- Define the custom translate-rotate-handler component -->
+    <script>
+        AFRAME.registerComponent('translate-rotate-handler', {
+            init: function () {
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+            },
+
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const entity = this.el;
+                if (detail.type === 'translate' && detail.numFingers === 2) {
+                    // Perform translation when two fingers are used
+                    const { x, y } = detail.deltaPosition;
+                    const sensitivity = 0.01;
+                    entity.object3D.position.x += x * sensitivity;
+                    entity.object3D.position.y += y * sensitivity;
+                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    // Perform rotation when 2 fingers are used
+                    const { deltaRotation } = detail;
+                    const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
+                    entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
+                }
+            },
+        });
+    </script>
+</head>
+<body>
+<a-scene gesture-detector    
+         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+         renderer='precision: medium;'
+         id="scene">
+
+    <a-assets>
+        <!-- Load the GLTF model -->
+        <a-asset-item id="model" src="models/egypt/scene.gltf"></a-asset-item>
+
+        <!-- Load any additional textures -->
+        <img id="texture1" src="models/egypt/textures/Egyptian_Jackal_statue_baseColor.jpeg">
+        <img id="texture2" src="models/egypt/textures/Egyptian_Jackal_statue_metallicRoughness.png">
+        <img id="texture3" src="models/egypt/textures/Egyptian_Jackal_statue_normal.png">
+        <img id="texture4" src="models/egypt/textures/Enter_baseColor.jpeg">
+        <img id="texture5" src="models/egypt/textures/Enter_metallicRoughness.png">
+        <img id="texture6" src="models/egypt/textures/Enter_normal.png">
+        <img id="texture7" src="models/egypt/textures/light_baseColor.png">
+        <img id="texture8" src="models/egypt/textures/light_emissive.jpeg">
+        <img id="texture9" src="models/egypt/textures/material_4_baseColor">
+        <img id="texture10" src="models/egyipt/textures/material_4_emissive.jpeg"> 
+        <img id="texture11" src="models/egypt/textures/material_baseColor.png">
+        <img id="texture12" src="models/egypt/textures/Sand_metallicRoughness.png">
+        <img id="texture13" src="models/egypt/textures/Sand_normal.png">
+        <img id="texture14" src="models/egypt/textures/"> 
+       <!-- Add more textures as needed -->
+    </a-assets>
+
+    <!-- Marker for triggering the display of the model -->
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="5">
+        
+        <!-- Entity representing the augmented content -->
+        <a-entity
+            gltf-model="#model"
+            rotation="-90 180 180"
+            position="0.0 0.5 1.5"
+            scale="1 1 1"
+            class="clickable"
+            gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: true; rotateEnabled: true"
+            translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
+        ></a-entity>
+    </a-marker>
+    
+    <!-- Camera entity for the scene -->
+    <a-entity camera></a-entity>
+
+</a-scene>
+</body>
+</html>
