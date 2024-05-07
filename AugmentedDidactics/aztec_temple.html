@@ -49,12 +49,12 @@
         <a-asset-item id="model" src="models/aztec_temple/aztec_temple.gltf"></a-asset-item>
 
         <!-- Load any additional textures -->
-        <img id="texture1" src="models/textures/Atlas_Material_baseColor.png">
-        <img id="texture2" src="models/textures/Atlas_Material_metallicRoughness.png">
-        <img id="texture3" src="models/textures/Atlas_Material_normal.png">
-        <img id="texture4" src="models/textures/Aztec_God_baseColor.png"> 
-        <img id="texture5" src="models/textures/Aztec_God_metallicRoughness.png">
-        <img id="texture6" src="models/textures/Aztec_God_normal.png">
+        <img id="texture1" src="models/aztec_temple/textures/Atlas_Material_baseColor.png">
+        <img id="texture2" src="models/aztec_temple/textures/Atlas_Material_metallicRoughness.png">
+        <img id="texture3" src="models/aztec_temple/textures/Atlas_Material_normal.png">
+        <img id="texture4" src="models/aztec_temple/textures/Aztec_God_baseColor.png"> 
+        <img id="texture5" src="models/aztec_temple/textures/Aztec_God_metallicRoughness.png">
+        <img id="texture6" src="models/aztec_temple/textures/Aztec_God_normal.png">
         <!-- Add more textures as needed -->
     </a-assets>
 
@@ -69,6 +69,7 @@
         <a-entity
             gltf-model="#model"
             rotation="-90 180 180"
+            position="0.0 0.5 0.5"
             scale="1 1 1"
             class="clickable"
             gesture-handler="minScale: 0.2; maxScale: 10; translateEnabled: true; rotateEnabled: true"
