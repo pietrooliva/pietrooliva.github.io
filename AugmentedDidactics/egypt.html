@@ -12,36 +12,27 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
 
-    <!-- Define the custom translate-rotate-handler component -->
-<script>
-    AFRAME.registerComponent('translate-rotate-scale-handler', {
-        init: function () {
-            this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
-        },
+    <!-- Define the custom translate-only-handler component -->
+    <script>
+        AFRAME.registerComponent('translate-only-handler', {
+            init: function () {
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+            },
 
-        onGestureMove: function (event) {
-            const { detail } = event;
-            const entity = this.el;
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const entity = this.el;
 
-            if (detail.type === 'translate') {
-                // Perform translation
-                const { x, y } = detail.deltaPosition;
-                const sensitivity = 0.01;
-                entity.object3D.position.x += x * sensitivity;
-                entity.object3D.position.y += y * sensitivity;
-            } else if (detail.type === 'scale') {
-                // Perform scaling
-                const { scaleFactor } = detail;
-                const scaleSensitivity = 0.01;
-                entity.object3D.scale.x *= scaleFactor + scaleSensitivity;
-                entity.object3D.scale.y *= scaleFactor + scaleSensitivity;
-                entity.object3D.scale.z *= scaleFactor + scaleSensitivity;
-            }
-        },
-    });
-</script>
-
-
+                if (detail.type === 'translate' && detail.numFingers === 1) {
+                    // Perform translation when one finger is used
+                    const { x, y } = detail.deltaPosition;
+                    const sensitivity = 0.01;
+                    entity.object3D.position.x += x * sensitivity;
+                    entity.object3D.position.y += y * sensitivity;
+                }
+            },
+        });
+    </script>
 </head>
 <body>
 <a-scene gesture-detector    
@@ -55,20 +46,7 @@
 
         <!-- Load any additional textures -->
         <img id="texture1" src="models/egypt/textures/Egyptian_Jackal_statue_baseColor.jpeg">
-        <img id="texture2" src="models/egypt/textures/Egyptian_Jackal_statue_metallicRoughness.png">
-        <img id="texture3" src="models/egypt/textures/Egyptian_Jackal_statue_normal.png">
-        <img id="texture4" src="models/egypt/textures/Enter_baseColor.jpeg">
-        <img id="texture5" src="models/egypt/textures/Enter_metallicRoughness.png">
-        <img id="texture6" src="models/egypt/textures/Enter_normal.png">
-        <img id="texture7" src="models/egypt/textures/light_baseColor.png">
-        <img id="texture8" src="models/egypt/textures/light_emissive.jpeg">
-        <img id="texture9" src="models/egypt/textures/material_4_baseColor">
-        <img id="texture10" src="models/egyipt/textures/material_4_emissive.jpeg"> 
-        <img id="texture11" src="models/egypt/textures/material_baseColor.png">
-        <img id="texture12" src="models/egypt/textures/Sand_metallicRoughness.png">
-        <img id="texture13" src="models/egypt/textures/Sand_normal.png">
-        <img id="texture14" src="models/egypt/textures/"> 
-       <!-- Add more textures as needed -->
+        <!-- Add more textures as needed -->
     </a-assets>
 
     <!-- Marker for triggering the display of the model -->
@@ -85,8 +63,8 @@
             position="0.0 0.5 1.5"
             scale="1 1 1"
             class="clickable"
-            gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: true; rotateEnabled: true"
-            translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
+            gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: false; rotateEnabled: true"
+            translate-only-handler <!-- Apply the new translate-only-handler component here -->
         ></a-entity>
     </a-marker>
     
