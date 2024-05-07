@@ -12,85 +12,98 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
 
-    <!-- Define the custom translate-only-handler component -->
+    <!-- Define the custom translate-and-rotate-handler component -->
     <script>
-       AFRAME.registerComponent('translate-and-rotate-handler', {
-    init: function () {
-        this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
-    },
+        AFRAME.registerComponent('translate-and-rotate-handler', {
+            init: function () {
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+                this.el.addEventListener('click', this.onEntityClick.bind(this));
+            },
 
-    onGestureMove: function (event) {
-        const { detail } = event;
-        const entity = this.el;
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const entity = this.el;
 
-        if (detail.type === 'translate') {
-            // Perform translation
-            const { x, y } = detail.deltaPosition;
-            const sensitivity = 0.01;
-            entity.object3D.position.x += x * sensitivity;
-            entity.object3D.position.y += y * sensitivity;
-        }
+                if (detail.type === 'translate') {
+                    // Perform translation
+                    const { x, y } = detail.deltaPosition;
+                    const sensitivity = 0.01;
+                    entity.object3D.position.x += x * sensitivity;
+                    entity.object3D.position.y += y * sensitivity;
+                }
 
-        if (detail.type === 'rotate' && detail.numFingers === 2) {
-            // Perform rotation with two fingers
-            const { angleDelta } = detail;
-            const rotationSensitivity = 0.5;
-            entity.object3D.rotation.y += angleDelta * rotationSensitivity;
-        }
-    },
-});
+                if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    // Perform rotation with two fingers
+                    const { angleDelta } = detail;
+                    const rotationSensitivity = 0.5;
+                    entity.object3D.rotation.y += angleDelta * rotationSensitivity;
+                }
+            },
+
+            onEntityClick: function () {
+                // Add or remove the "selected" class for visual feedback
+                const entity = this.el;
+                entity.classList.toggle('selected');
+            },
+        });
     </script>
+
+    <!-- Style for visual feedback -->
+    <style>
+        .selected {
+            color: yellow;
+        }
+    </style>
 </head>
 <body>
-<a-scene gesture-detector    
-         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-         renderer='precision: medium;'
-         id="scene">
+    <a-scene gesture-detector    
+             embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+             renderer='precision: medium;'
+             id="scene">
 
-    <a-assets>
-        <!-- Load the GLTF model -->
-        <a-asset-item id="model" src="models/egypt/scene.gltf"></a-asset-item>
+        <a-assets>
+            <!-- Load the GLTF model -->
+            <a-asset-item id="model" src="models/egypt/scene.gltf"></a-asset-item>
 
-<!-- Load any additional textures -->
-<img id="texture1" src="models/egypt/textures/Egyptian_Jackal_statue_baseColor.jpeg">
-<img id="texture2" src="models/egypt/textures/Egyptian_Jackal_statue_metallicRoughness.png">
-<img id="texture3" src="models/egypt/textures/Egyptian_Jackal_statue_normal.png">
-<img id="texture4" src="models/egypt/textures/Enter_baseColor.jpeg">
-<img id="texture5" src="models/egypt/textures/Enter_metallicRoughness.png">
-<img id="texture6" src="models/egypt/textures/Enter_normal.png">
-<img id="texture7" src="models/egypt/textures/light_baseColor.png">
-<img id="texture8" src="models/egypt/textures/light_emissive.jpeg">
-<img id="texture9" src="models/egypt/textures/material_4_baseColor">
-<img id="texture10" src="models/egypt/textures/material_4_emissive.jpeg"> 
-<img id="texture11" src="models/egypt/textures/material_baseColor.png">
-<img id="texture12" src="models/egypt/textures/Sand_metallicRoughness.png">
-<img id="texture13" src="models/egypt/textures/Sand_normal.png">
-<!-- Add more textures as needed -->
+            <!-- Load any additional textures -->
+            <img id="texture1" src="models/egypt/textures/Egyptian_Jackal_statue_baseColor.jpeg">
+            <img id="texture2" src="models/egypt/textures/Egyptian_Jackal_statue_metallicRoughness.png">
+            <img id="texture3" src="models/egypt/textures/Egyptian_Jackal_statue_normal.png">
+            <img id="texture4" src="models/egypt/textures/Enter_baseColor.jpeg">
+            <img id="texture5" src="models/egypt/textures/Enter_metallicRoughness.png">
+            <img id="texture6" src="models/egypt/textures/Enter_normal.png">
+            <img id="texture7" src="models/egypt/textures/light_baseColor.png">
+            <img id="texture8" src="models/egypt/textures/light_emissive.jpeg">
+            <img id="texture9" src="models/egypt/textures/material_4_baseColor">
+            <img id="texture10" src="models/egypt/textures/material_4_emissive.jpeg"> 
+            <img id="texture11" src="models/egypt/textures/material_baseColor.png">
+            <img id="texture12" src="models/egypt/textures/Sand_metallicRoughness.png">
+            <img id="texture13" src="models/egypt/textures/Sand_normal.png">
+            <!-- Add more textures as needed -->
+        </a-assets>
 
-    </a-assets>
-
-    <!-- Marker for triggering the display of the model -->
-    <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="5">
+        <!-- Marker for triggering the display of the model -->
+        <a-marker
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            type="barcode" value="5">
+            
+            <!-- Entity representing the augmented content -->
+            <a-entity
+                gltf-model="#model"
+                rotation="-90 180 180"
+                position="0.0 0.5 1.5"
+                scale="1 1 1"
+                class="clickable"
+                gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: false; rotateEnabled: true"
+                translate-and-rotate-handler <!-- Apply the new translate-and-rotate-handler component here -->
+            ></a-entity>
+        </a-marker>
         
-        <!-- Entity representing the augmented content -->
-        <a-entity
-            gltf-model="#model"
-            rotation="-90 180 0"
-            position="0.0 0.5 1.5"
-            scale="1 1 1"
-            class="clickable"
-            gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: false; rotateEnabled: true"
-            translate-only-handler <!-- Apply the new translate-only-handler component here -->
-        ></a-entity>
-    </a-marker>
-    
-    <!-- Camera entity for the scene -->
-    <a-entity camera></a-entity>
+        <!-- Camera entity for the scene -->
+        <a-entity camera></a-entity>
 
-</a-scene>
+    </a-scene>
 </body>
 </html>
