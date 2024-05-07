@@ -13,30 +13,31 @@
     <script src="libs/gesture-handler.js"></script>
 
     <!-- Define the custom translate-rotate-handler component -->
-    <script>
-        AFRAME.registerComponent('translate-rotate-handler', {
-            init: function () {
-                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
-            },
+   <script>
+    AFRAME.registerComponent('translate-rotate-handler', {
+        init: function () {
+            this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+        },
 
-            onGestureMove: function (event) {
-                const { detail } = event;
-                const entity = this.el;
-                if (detail.type === 'translate' && detail.numFingers === 2) {
-                    // Perform translation when two fingers are used
-                    const { x, y } = detail.deltaPosition;
-                    const sensitivity = 0.01;
-                    entity.object3D.position.x += x * sensitivity;
-                    entity.object3D.position.y += y * sensitivity;
-                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
-                    // Perform rotation when 2 fingers are used
-                    const { deltaRotation } = detail;
-                    const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
-                    entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
-                }
-            },
-        });
-    </script>
+        onGestureMove: function (event) {
+            const { detail } = event;
+            const entity = this.el;
+            if (detail.type === 'rotate' && detail.numFingers === 2) {
+                // Perform rotation when two fingers are used
+                const { deltaRotation } = detail;
+                const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
+                entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
+            } else if (detail.type === 'translate' && detail.numFingers === 1) {
+                // Perform translation when one finger is used
+                const { x, y } = detail.deltaPosition;
+                const sensitivity = 0.01;
+                entity.object3D.position.x += x * sensitivity;
+                entity.object3D.position.y += y * sensitivity;
+            }
+        },
+    });
+</script>
+
 </head>
 <body>
 <a-scene gesture-detector    
