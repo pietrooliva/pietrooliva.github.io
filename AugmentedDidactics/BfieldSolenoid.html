@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AUGMENTED DIDACTICS LAB</title>
+    <title>AUGMENTED DIDACTICS LAB: Lembo-Oliva</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" href="style.css" />
@@ -12,60 +12,86 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
 
-    <!-- Define the custom translate-rotate-handler component -->
+    <!-- Define the custom translate-and-rotate-handler component -->
     <script>
-        AFRAME.registerComponent('translate-rotate-handler', {
+        AFRAME.registerComponent('translate-and-rotate-handler', {
             init: function () {
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+                this.el.addEventListener('click', this.onEntityClick.bind(this));
             },
 
             onGestureMove: function (event) {
                 const { detail } = event;
                 const entity = this.el;
-                if (detail.type === 'translate' && detail.numFingers === 2) {
-                    // Perform translation when two fingers are used
+
+                if (detail.type === 'translate') {
+                    // Perform translation
                     const { x, y } = detail.deltaPosition;
                     const sensitivity = 0.01;
                     entity.object3D.position.x += x * sensitivity;
                     entity.object3D.position.y += y * sensitivity;
-                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
-                    // Perform rotation when 2 fingers are used
-                    const { deltaRotation } = detail;
-                    const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
-                    entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
                 }
+
+                if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    // Perform rotation with two fingers
+                    const { angleDelta } = detail;
+                    const rotationSensitivity = 0.5;
+                    entity.object3D.rotation.y += angleDelta * rotationSensitivity;
+                }
+            },
+
+            onEntityClick: function () {
+                // Add or remove the "selected" class for visual feedback
+                const entity = this.el;
+                entity.classList.toggle('selected');
             },
         });
     </script>
+
+    <!-- Style for visual feedback -->
+    <style>
+        .selected {
+            color: yellow;
+        }
+    </style>
 </head>
 <body>
-<a-scene gesture-detector    
-         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-         renderer='precision: medium;'
-         id="scene">
+    <a-scene gesture-detector    
+             embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+             renderer='precision: medium;'
+             id="scene">
 
-    <a-assets id="assets">
-       <a-asset-item id="solenoide-asset" src="models/solenoide.gltf"></a-asset-item> 
-    </a-assets>  
+        <a-assets>
+            <!-- Load the GLTF model -->
+            <a-asset-item id="model" src="models/solenoid/scene.gltf"></a-asset-item>
 
-    <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="0">
+            <!-- Load any additional textures -->
+           <!--  <img id="texture1" src="models/egypt/textures/Egyptian_Jackal_statue_baseColor.jpeg"> -->
+            <!-- Add more textures as needed -->
+        </a-assets>
+
+        <!-- Marker for triggering the display of the model -->
+        <a-marker
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            type="barcode" value="5">
+            
+            <!-- Entity representing the augmented content -->
+            <a-entity
+                gltf-model="#model"
+                rotation="-90 180 180"
+                position="0.0 0.5 1.5"
+                scale="1 1 1"
+                class="clickable"
+                gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: false; rotateEnabled: true"
+                translate-and-rotate-handler <!-- Apply the new translate-and-rotate-handler component here -->
+            ></a-entity>
+        </a-marker>
         
-        <a-entity
-            gltf-model="#solenoide-asset"
-            rotation="-90 180 180"
-            scale="2 2 2"
-            class="clickable"
-            gesture-handler="minScale: 2; maxScale: 55; translateEnabled: true; rotateEnabled: true"
-            translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
-        ></a-entity>
-    </a-marker>
-    
-    <a-entity camera></a-entity>
+        <!-- Camera entity for the scene -->
+        <a-entity camera></a-entity>
 
-</a-scene>
+    </a-scene>
 </body>
 </html>
