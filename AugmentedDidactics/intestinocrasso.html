@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AUGMENTED DIDACTICS LAB: Lembo-Oliva</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="libs/AR.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+    <script src="libs/gesture-handler.js"></script>
+
+    <!-- Define the custom translate-and-rotate-handler component -->
+    <script>
+        AFRAME.registerComponent('translate-and-rotate-handler', {
+            init: function () {
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+                this.el.addEventListener('click', this.onEntityClick.bind(this));
+            },
+
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const entity = this.el;
+
+                if (detail.type === 'translate') {
+                    // Perform translation
+                    const { x, y } = detail.deltaPosition;
+                    const sensitivity = 0.01;
+                    entity.object3D.position.x += x * sensitivity;
+                    entity.object3D.position.y += y * sensitivity;
+                }
+
+                if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    // Perform rotation with two fingers
+                    const { angleDelta } = detail;
+                    const rotationSensitivity = 0.5;
+                    entity.object3D.rotation.y += angleDelta * rotationSensitivity;
+                }
+            },
+
+            onEntityClick: function () {
+                // Add or remove the "selected" class for visual feedback
+                const entity = this.el;
+                entity.classList.toggle('selected');
+            },
+        });
+    </script>
+
+    <!-- Style for visual feedback -->
+    <style>
+        .selected {
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <a-scene gesture-detector    
+             embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+             renderer='precision: medium;'
+             id="scene">
+
+        <a-assets>
+            <!-- Load the GLTF model -->
+            <a-asset-item id="model" src="models/crasso/scene.gltf"></a-asset-item>
+
+            <!-- Load any additional textures -->
+           <img id="texture1" src="models/crasso/textures/Digestive_System_baseColor.jpeg"> -->
+            <!-- Add more textures as needed -->
+        </a-assets>
+
+        <!-- Marker for triggering the display of the model -->
+        <a-marker
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            type="barcode" value="7">
+            
+            <!-- Entity representing the augmented content -->
+            <a-entity
+                gltf-model="#model"
+                rotation="-95 180 180"
+                position="0.2 0.0 0.5"
+                scale="0.2 0.2 0.2"
+                class="clickable"
+                gesture-handler="minScale: 0.1; maxScale: 20; translateEnabled: false; rotateEnabled: true"
+                translate-and-rotate-handler <!-- Apply the new translate-and-rotate-handler component here -->
+            ></a-entity>
+        </a-marker>
+        
+        <!-- Camera entity for the scene -->
+        <a-entity camera></a-entity>
+
+    </a-scene>
+</body>
+</html>
