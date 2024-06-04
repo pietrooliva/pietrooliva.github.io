@@ -54,7 +54,7 @@
         }
     </style>
 </head>
-<body>
+<body style="margin: 0; overflow: hidden;">
     <a-scene
         vr-mode-ui="enabled: false;"
         embedded
@@ -89,8 +89,7 @@
             scale="1 1 1"
             class="clickable"
             gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: false; rotateEnabled: true"
-            translate-and-rotate-handler
-            gps-projected-entity-place="latitude: 0; longitude: 0"> <!-- Set initial latitude and longitude -->
+            translate-and-rotate-handler>
         </a-entity>
         
         <!-- Camera entity for the scene -->
