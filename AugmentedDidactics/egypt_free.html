@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AUGMENTED DIDACTICS LAB: Lembo-Oliva</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-ar@1.0.6/dist/aframe-ar.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+    <script src="libs/gesture-handler.js"></script>
+
+    <!-- Define the custom translate-and-rotate-handler component -->
+    <script>
+        AFRAME.registerComponent('translate-and-rotate-handler', {
+            init: function () {
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+                this.el.addEventListener('click', this.onEntityClick.bind(this));
+            },
+
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const entity = this.el;
+
+                if (detail.type === 'translate') {
+                    // Perform translation
+                    const { x, y } = detail.deltaPosition;
+                    const sensitivity = 0.01;
+                    entity.object3D.position.x += x * sensitivity;
+                    entity.object3D.position.y += y * sensitivity;
+                }
+
+                if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    // Perform rotation with two fingers
+                    const { angleDelta } = detail;
+                    const rotationSensitivity = 0.5;
+                    entity.object3D.rotation.y += angleDelta * rotationSensitivity;
+                }
+            },
+
+            onEntityClick: function () {
+                // Add or remove the "selected" class for visual feedback
+                const entity = this.el;
+                entity.classList.toggle('selected');
+            },
+        });
+    </script>
+
+    <!-- Style for visual feedback -->
+    <style>
+        .selected {
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <a-scene
+        vr-mode-ui="enabled: false;"
+        embedded
+        arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
+
+        <a-assets>
+            <!-- Load the GLTF model -->
+            <a-asset-item id="model" src="models/egypt/scene.gltf"></a-asset-item>
+
+            <!-- Load any additional textures -->
+            <img id="texture1" src="models/egypt/textures/Egyptian_Jackal_statue_baseColor.jpeg">
+            <img id="texture2" src="models/egypt/textures/Egyptian_Jackal_statue_metallicRoughness.png">
+            <img id="texture3" src="models/egypt/textures/Egyptian_Jackal_statue_normal.png">
+            <img id="texture4" src="models/egypt/textures/Enter_baseColor.jpeg">
+            <img id="texture5" src="models/egypt/textures/Enter_metallicRoughness.png">
+            <img id="texture6" src="models/egypt/textures/Enter_normal.png">
+            <img id="texture7" src="models/egypt/textures/light_baseColor.png">
+            <img id="texture8" src="models/egypt/textures/light_emissive.jpeg">
+            <img id="texture9" src="models/egypt/textures/material_4_baseColor">
+            <img id="texture10" src="models/egypt/textures/material_4_emissive.jpeg"> 
+            <img id="texture11" src="models/egypt/textures/material_baseColor.png">
+            <img id="texture12" src="models/egypt/textures/Sand_metallicRoughness.png">
+            <img id="texture13" src="models/egypt/textures/Sand_normal.png">
+            <!-- Add more textures as needed -->
+        </a-assets>
+
+        <!-- Entity representing the augmented content -->
+        <a-entity
+            gltf-model="#model"
+            rotation="-90 180 0"
+            position="0 0 0"
+            scale="1 1 1"
+            class="clickable"
+            gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: false; rotateEnabled: true"
+            translate-and-rotate-handler
+            gps-projected-entity-place="latitude: 0; longitude: 0"> <!-- Set initial latitude and longitude -->
+        </a-entity>
+        
+        <!-- Camera entity for the scene -->
+        <a-entity camera></a-entity>
+
+    </a-scene>
+</body>
+</html>
