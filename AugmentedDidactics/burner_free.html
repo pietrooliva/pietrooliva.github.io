@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>AR Incense Burner</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@AR-js-org/ar.js/three.js/build/ar-threex.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@AR-js-org/ar.js@3.3.3/three.js/build/ar-threex.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
@@ -13,12 +13,14 @@
 </head>
 <body>
     <script>
+        console.log('Script start');
         let scene, camera, renderer, model, arToolkitSource, arToolkitContext, markerRoot;
         
         init();
         animate();
 
         function init() {
+            console.log('Initializing scene');
             scene = new THREE.Scene();
 
             camera = new THREE.Camera();
@@ -64,8 +66,11 @@
 
             let loader = new THREE.GLTFLoader();
             loader.load('models/burner/scene.gltf', function (gltf) {
+                console.log('Model loaded');
                 model = gltf.scene;
                 markerRoot.add(model);
+            }, undefined, function (error) {
+                console.error('An error occurred loading the model:', error);
             });
 
             renderer.domElement.addEventListener('touchstart', onTouchStart, false);
