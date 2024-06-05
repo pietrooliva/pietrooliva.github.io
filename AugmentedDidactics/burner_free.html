@@ -1,88 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>AUGMENTED DIDACTICS LAB: Lembo-Oliva</title>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="stylesheet" href="style.css" />
-
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-ar@1.0.6/dist/aframe-ar.js"></script>
-    <script src="libs/gesture-detector.js"></script>
-    <script src="libs/gesture-handler.js"></script>
-
-    <!-- Define the custom translate-and-rotate-handler component -->
-    <script>
-        AFRAME.registerComponent('translate-and-rotate-handler', {
-            init: function () {
-                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
-                this.el.addEventListener('click', this.onEntityClick.bind(this));
-            },
-
-            onGestureMove: function (event) {
-                const { detail } = event;
-                const entity = this.el;
-
-                if (detail.type === 'translate') {
-                    // Perform translation
-                    const { x, y } = detail.deltaPosition;
-                    const sensitivity = 0.01;
-                    entity.object3D.position.x += x * sensitivity;
-                    entity.object3D.position.y += y * sensitivity;
-                }
-
-                if (detail.type === 'rotate' && detail.numFingers === 2) {
-                    // Perform rotation with two fingers
-                    const { angleDelta } = detail;
-                    const rotationSensitivity = 0.5;
-                    entity.object3D.rotation.y += angleDelta * rotationSensitivity;
-                }
-            },
-
-            onEntityClick: function () {
-                // Add or remove the "selected" class for visual feedback
-                const entity = this.el;
-                entity.classList.toggle('selected');
-            },
-        });
-    </script>
-
-    <!-- Style for visual feedback -->
+    <meta charset="UTF-8">
+    <title>AR Incense Burner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@AR-js-org/ar.js/three.js/build/ar-threex.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <style>
-        .selected {
-            color: yellow;
-        }
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
     </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
-    <a-scene
-        vr-mode-ui="enabled: false;"
-        embedded
-        arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
-
-        <a-camera gps-projected-camera></a-camera>
-
-        <a-assets>
-            <!-- Load the GLTF model -->
-            <a-asset-item id="model" src="models/burner/scene.gltf"></a-asset-item>
-
-            <!-- Load any additional textures -->
-            <img id="texture1" src="models/burner/textures/T_IncenseBurner_baseColor.png"> 
-            <img id="texture2" src="models/burner/textures/T_IncenseBurner_metallicRoughness.png"> 
-            <img id="texture3" src="models/burner/textures/T_IncenseBurner_normal.png"> 
-        </a-assets>
-
-        <!-- Entity representing the augmented content -->
-        <a-entity
-            gltf-model="#model"
-            rotation="-90 180 0"
-            scale="1 1 1"
-            class="clickable"
-            gesture-handler="minScale: 0.1; maxScale: 10; translateEnabled: false; rotateEnabled: true"
-            translate-and-rotate-handler
-            gps-entity-place="latitude: 37.7749; longitude: -122.4194;">
-        </a-entity>
+<body>
+    <script>
+        let scene, camera, renderer, model, arToolkitSource, arToolkitContext, markerRoot;
         
-    </a-scene>
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+
+            camera = new THREE.Camera();
+            scene.add(camera);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(new THREE.Color('lightgrey'), 0);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            arToolkitSource = new THREEx.ArToolkitSource({
+                sourceType: 'webcam',
+            });
+
+            arToolkitSource.init(function onReady() {
+                onResize();
+            });
+
+            window.addEventListener('resize', function () {
+                onResize();
+            });
+
+            arToolkitContext = new THREEx.ArToolkitContext({
+                cameraParametersUrl: 'https://cdn.rawgit.com/artoolkitx/artoolkit5/a4f2dec8/bin/Data/camera_para.dat',
+                detectionMode: 'mono'
+            });
+
+            arToolkitContext.init(function onCompleted() {
+                camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+            });
+
+            markerRoot = new THREE.Group();
+            scene.add(markerRoot);
+
+            let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+                type: 'pattern',
+                patternUrl: 'https://cdn.rawgit.com/artoolkitx/artoolkit5/a4f2dec8/bin/Data/patt.hiro'
+            });
+
+            let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
+            scene.add(ambientLight);
+
+            let loader = new THREE.GLTFLoader();
+            loader.load('models/burner/scene.gltf', function (gltf) {
+                model = gltf.scene;
+                markerRoot.add(model);
+            });
+
+            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+        }
+
+        function onResize() {
+            arToolkitSource.onResizeElement();
+            arToolkitSource.copyElementSizeTo(renderer.domElement);
+            if (arToolkitContext.arController !== null) {
+                arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (arToolkitSource.ready === false) return;
+            arToolkitContext.update(arToolkitSource.domElement);
+            renderer.render(scene, camera);
+        }
+
+        let touchStartX, touchStartY, touchMoveX, touchMoveY, distanceStart, distanceMove;
+
+        function onTouchStart(event) {
+            if (event.touches.length === 1) {
+                touchStartX = event.touches[0].pageX;
+                touchStartY = event.touches[0].pageY;
+            } else if (event.touches.length === 2) {
+                distanceStart = Math.sqrt(
+                    (event.touches[0].pageX - event.touches[1].pageX) ** 2 +
+                    (event.touches[0].pageY - event.touches[1].pageY) ** 2
+                );
+            }
+        }
+
+        function onTouchMove(event) {
+            if (event.touches.length === 1 && touchStartX !== undefined && touchStartY !== undefined) {
+                touchMoveX = event.touches[0].pageX;
+                touchMoveY = event.touches[0].pageY;
+                let deltaX = touchMoveX - touchStartX;
+                let deltaY = touchMoveY - touchStartY;
+                if (model) {
+                    model.rotation.y += deltaX * 0.005;
+                    model.rotation.x += deltaY * 0.005;
+                }
+                touchStartX = touchMoveX;
+                touchStartY = touchMoveY;
+            } else if (event.touches.length === 2) {
+                distanceMove = Math.sqrt(
+                    (event.touches[0].pageX - event.touches[1].pageX) ** 2 +
+                    (event.touches[0].pageY - event.touches[1].pageY) ** 2
+                );
+                let deltaDistance = distanceMove - distanceStart;
+                if (model) {
+                    model.scale.set(
+                        model.scale.x + deltaDistance * 0.01,
+                        model.scale.y + deltaDistance * 0.01,
+                        model.scale.z + deltaDistance * 0.01
+                    );
+                }
+                distanceStart = distanceMove;
+            } else if (event.touches.length === 3) {
+                let deltaX = (event.touches[0].pageX + event.touches[1].pageX + event.touches[2].pageX) / 3 - touchStartX;
+                let deltaY = (event.touches[0].pageY + event.touches[1].pageY + event.touches[2].pageY) / 3 - touchStartY;
+                if (model) {
+                    model.position.x += deltaX * 0.01;
+                    model.position.y -= deltaY * 0.01;
+                }
+                touchStartX = (event.touches[0].pageX + event.touches[1].pageX + event.touches[2].pageX) / 3;
+                touchStartY = (event.touches[0].pageY + event.touches[1].pageY + event.touches[2].pageY) / 3;
+            }
+        }
+    </script>
 </body>
 </html>
