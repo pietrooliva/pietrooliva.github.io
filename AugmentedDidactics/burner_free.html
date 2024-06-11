@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Augmented Reality LAB: Lembo-Oliva</title>
+    <title>Augmented Reality with GLTF Model</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.1.0/aframe/build/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.123.0/build/three.min.js"></script>
@@ -16,9 +16,7 @@
     </a-assets>
 
     <a-marker preset="hiro">
-        <a-entity id="burner" gltf-model="#burnerModel" scale="0.1 0.1 0.1" position="0 0 0" rotation="0 0 0">
-            <!-- Attaching the model to the marker -->
-        </a-entity>
+        <a-entity id="burner" gltf-model="#burnerModel" scale="0.1 0.1 0.1" position="0 0 0" rotation="0 0 0"></a-entity>
     </a-marker>
 
     <a-entity camera></a-entity>
@@ -101,6 +99,20 @@
             isPanning = false;
         }
     });
+
+    // Debugging logs
+    document.querySelector('#burnerModel').addEventListener('load', function () {
+        console.log('GLTF Model loaded successfully');
+    });
+
+    document.querySelector('#burnerModel').addEventListener('error', function () {
+        console.error('Failed to load GLTF Model');
+    });
+
+    document.querySelector('a-scene').addEventListener('loaded', function () {
+        console.log('A-Frame scene loaded');
+    });
+
 </script>
 
 </body>
