@@ -2,147 +2,106 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>AR Incense Burner</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@AR-js-org/ar.js@3.3.3/three.js/build/ar-threex.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
-    </style>
+    <title>Augmented Reality LAB: Lembo-Oliva</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.1.0/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.123.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.123.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
-<body>
-    <script>
-        console.log('Script start');
-        let scene, camera, renderer, model, arToolkitSource, arToolkitContext, markerRoot;
-        
-        init();
-        animate();
+<body style="margin: 0; overflow: hidden;">
 
-        function init() {
-            console.log('Initializing scene');
-            scene = new THREE.Scene();
+<a-scene embedded arjs>
+    <a-assets>
+        <a-asset-item id="burnerModel" src="models/burner/scene.gltf"></a-asset-item>
+    </a-assets>
 
-            camera = new THREE.Camera();
-            scene.add(camera);
+    <a-marker preset="hiro">
+        <a-entity id="burner" gltf-model="#burnerModel" scale="0.1 0.1 0.1" position="0 0 0" rotation="0 0 0">
+            <!-- Attaching the model to the marker -->
+        </a-entity>
+    </a-marker>
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(new THREE.Color('lightgrey'), 0);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.body.appendChild(renderer.domElement);
+    <a-entity camera></a-entity>
+</a-scene>
 
-            arToolkitSource = new THREEx.ArToolkitSource({
-                sourceType: 'webcam',
-            });
+<script>
+    document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+    });
 
-            arToolkitSource.init(function onReady() {
-                onResize();
-            });
+    document.addEventListener('gesturechange', function (e) {
+        e.preventDefault();
+        var scale = 0.1 * e.scale;
+        var burner = document.querySelector('#burner');
+        burner.setAttribute('scale', `${scale} ${scale} ${scale}`);
+    });
 
-            window.addEventListener('resize', function () {
-                onResize();
-            });
+    let startRotation = { x: 0, y: 0 };
+    let currentRotation = { x: 0, y: 0 };
+    let rotating = false;
 
-            arToolkitContext = new THREEx.ArToolkitContext({
-                cameraParametersUrl: 'https://cdn.rawgit.com/artoolkitx/artoolkit5/a4f2dec8/bin/Data/camera_para.dat',
-                detectionMode: 'mono'
-            });
-
-            arToolkitContext.init(function onCompleted() {
-                camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
-            });
-
-            markerRoot = new THREE.Group();
-            scene.add(markerRoot);
-
-            let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
-                type: 'pattern',
-                patternUrl: 'https://cdn.rawgit.com/artoolkitx/artoolkit5/a4f2dec8/bin/Data/patt.hiro'
-            });
-
-            let ambientLight = new THREE.AmbientLight(0xcccccc, 1.0);
-            scene.add(ambientLight);
-
-            let loader = new THREE.GLTFLoader();
-            loader.load('models/burner/scene.gltf', function (gltf) {
-                console.log('Model loaded');
-                model = gltf.scene;
-                markerRoot.add(model);
-            }, undefined, function (error) {
-                console.error('An error occurred loading the model:', error);
-            });
-
-            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
-            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+    document.addEventListener('touchstart', function (event) {
+        if (event.touches.length === 1) {
+            rotating = true;
+            startRotation.x = event.touches[0].pageX;
+            startRotation.y = event.touches[0].pageY;
         }
+    });
 
-        function onResize() {
-            arToolkitSource.onResizeElement();
-            arToolkitSource.copyElementSizeTo(renderer.domElement);
-            if (arToolkitContext.arController !== null) {
-                arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
-            }
+    document.addEventListener('touchmove', function (event) {
+        if (rotating && event.touches.length === 1) {
+            let deltaX = event.touches[0].pageX - startRotation.x;
+            let deltaY = event.touches[0].pageY - startRotation.y;
+
+            currentRotation.x += deltaY * 0.1;
+            currentRotation.y += deltaX * 0.1;
+
+            let burner = document.querySelector('#burner');
+            burner.setAttribute('rotation', `${currentRotation.x} ${currentRotation.y} 0`);
         }
+    });
 
-        function animate() {
-            requestAnimationFrame(animate);
-            if (arToolkitSource.ready === false) return;
-            arToolkitContext.update(arToolkitSource.domElement);
-            renderer.render(scene, camera);
+    document.addEventListener('touchend', function (event) {
+        if (event.touches.length === 0) {
+            rotating = false;
         }
+    });
 
-        let touchStartX, touchStartY, touchMoveX, touchMoveY, distanceStart, distanceMove;
+    let isPanning = false;
+    let panStart = { x: 0, y: 0 };
+    let panCurrent = { x: 0, y: 0 };
 
-        function onTouchStart(event) {
-            if (event.touches.length === 1) {
-                touchStartX = event.touches[0].pageX;
-                touchStartY = event.touches[0].pageY;
-            } else if (event.touches.length === 2) {
-                distanceStart = Math.sqrt(
-                    (event.touches[0].pageX - event.touches[1].pageX) ** 2 +
-                    (event.touches[0].pageY - event.touches[1].pageY) ** 2
-                );
-            }
+    document.addEventListener('touchstart', function (event) {
+        if (event.touches.length === 3) {
+            isPanning = true;
+            panStart.x = event.touches[0].pageX;
+            panStart.y = event.touches[0].pageY;
         }
+    });
 
-        function onTouchMove(event) {
-            if (event.touches.length === 1 && touchStartX !== undefined && touchStartY !== undefined) {
-                touchMoveX = event.touches[0].pageX;
-                touchMoveY = event.touches[0].pageY;
-                let deltaX = touchMoveX - touchStartX;
-                let deltaY = touchMoveY - touchStartY;
-                if (model) {
-                    model.rotation.y += deltaX * 0.005;
-                    model.rotation.x += deltaY * 0.005;
-                }
-                touchStartX = touchMoveX;
-                touchStartY = touchMoveY;
-            } else if (event.touches.length === 2) {
-                distanceMove = Math.sqrt(
-                    (event.touches[0].pageX - event.touches[1].pageX) ** 2 +
-                    (event.touches[0].pageY - event.touches[1].pageY) ** 2
-                );
-                let deltaDistance = distanceMove - distanceStart;
-                if (model) {
-                    model.scale.set(
-                        model.scale.x + deltaDistance * 0.01,
-                        model.scale.y + deltaDistance * 0.01,
-                        model.scale.z + deltaDistance * 0.01
-                    );
-                }
-                distanceStart = distanceMove;
-            } else if (event.touches.length === 3) {
-                let deltaX = (event.touches[0].pageX + event.touches[1].pageX + event.touches[2].pageX) / 3 - touchStartX;
-                let deltaY = (event.touches[0].pageY + event.touches[1].pageY + event.touches[2].pageY) / 3 - touchStartY;
-                if (model) {
-                    model.position.x += deltaX * 0.01;
-                    model.position.y -= deltaY * 0.01;
-                }
-                touchStartX = (event.touches[0].pageX + event.touches[1].pageX + event.touches[2].pageX) / 3;
-                touchStartY = (event.touches[0].pageY + event.touches[1].pageY + event.touches[2].pageY) / 3;
-            }
+    document.addEventListener('touchmove', function (event) {
+        if (isPanning && event.touches.length === 3) {
+            let deltaX = event.touches[0].pageX - panStart.x;
+            let deltaY = event.touches[0].pageY - panStart.y;
+
+            panCurrent.x += deltaX * 0.1;
+            panCurrent.y += deltaY * 0.1;
+
+            let burner = document.querySelector('#burner');
+            burner.object3D.position.x += panCurrent.x;
+            burner.object3D.position.y += panCurrent.y;
+
+            panStart.x = event.touches[0].pageX;
+            panStart.y = event.touches[0].pageY;
         }
-    </script>
+    });
+
+    document.addEventListener('touchend', function (event) {
+        if (event.touches.length < 3) {
+            isPanning = false;
+        }
+    });
+</script>
+
 </body>
 </html>
