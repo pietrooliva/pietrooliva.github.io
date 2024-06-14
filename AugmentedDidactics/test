@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test GLTF Model</title>
+    <meta charset="utf-8">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+</head>
+<body>
+    <a-scene>
+        <!-- Define assets to be used in the scene -->
+        <a-assets>
+            <a-asset-item id="model" src="models/grabfigur/scene.gltf"></a-asset-item>
+        </a-assets>
+
+        <!-- Add a light source -->
+        <a-entity light="type: directional; color: #FFF; intensity: 1" position="1 1 1"></a-entity>
+        <a-entity light="type: ambient; color: #BBB"></a-entity>
+
+        <!-- Add the GLTF model to the scene -->
+        <a-entity gltf-model="#model" position="0 0 -5" scale="0.1 0.1 0.1"></a-entity>
+
+        <!-- Add a camera to the scene -->
+        <a-entity camera position="0 1.6 0"></a-entity>
+    </a-scene>
+</body>
+</html>
