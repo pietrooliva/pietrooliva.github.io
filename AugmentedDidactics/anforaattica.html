@@ -18,8 +18,8 @@
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotation = 0;
-                this.smoothingFactor = 0.1; // Adjust this value for more or less smoothing
-                this.sensitivityThreshold = 0.5; // Adjust this value to ignore small movements
+                this.smoothingFactor = 0.2; // Adjust this value for more or less smoothing
+                this.sensitivityThreshold = 0.8; // Adjust this value to ignore small movements
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
             },
 
