@@ -46,10 +46,11 @@
 
     <a-assets>
         <!-- Load the GLTF model -->
-        <a-asset-item id="model" src="models/grabfigur/scene.gltf"></a-asset-item>
+        <a-asset-item id="model" src="models/attic_amphora/scene.gltf"></a-asset-item>
 
         <!-- Load any additional textures -->
-        <img id="texture1" src="models/grabfigur/textures/Grabfigur_baseColor.png"> 
+        <img id="texture1" src="models/attic_amphora/textures/Material.002_baseColor.png"> 
+        <img id="texture2" src="models/attic_amphora/textures/Material.002_metallicRoughness.png"> 
         <!-- Add more textures as needed -->
     </a-assets>
 
@@ -58,7 +59,7 @@
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="3">
+        type="barcode" value="10">
         
         <!-- Entity representing the augmented content -->
         <a-entity
