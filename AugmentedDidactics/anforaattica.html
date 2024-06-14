@@ -12,10 +12,14 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
 
-    <!-- Define the custom translate-rotate-handler component -->
+    <!-- Define the custom translate-rotate-handler component with smoothing -->
     <script>
         AFRAME.registerComponent('translate-rotate-handler', {
             init: function () {
+                this.previousPosition = { x: 0, y: 0 };
+                this.previousRotation = 0;
+                this.smoothingFactor = 0.1; // Adjust this value for more or less smoothing
+                this.sensitivityThreshold = 0.5; // Adjust this value to ignore small movements
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
             },
 
@@ -23,16 +27,39 @@
                 const { detail } = event;
                 const entity = this.el;
                 if (detail.type === 'translate' && detail.numFingers === 2) {
-                    // Perform translation when two fingers are used
                     const { x, y } = detail.deltaPosition;
                     const sensitivity = 0.01;
-                    entity.object3D.position.x += x * sensitivity;
-                    entity.object3D.position.y += y * sensitivity;
+                    const deltaX = x * sensitivity;
+                    const deltaY = y * sensitivity;
+
+                    // Apply smoothing
+                    const smoothX = this.previousPosition.x + (deltaX - this.previousPosition.x) * this.smoothingFactor;
+                    const smoothY = this.previousPosition.y + (deltaY - this.previousPosition.y) * this.smoothingFactor;
+
+                    // Apply threshold
+                    if (Math.abs(smoothX) > this.sensitivityThreshold) {
+                        entity.object3D.position.x += smoothX;
+                    }
+                    if (Math.abs(smoothY) > this.sensitivityThreshold) {
+                        entity.object3D.position.y += smoothY;
+                    }
+
+                    this.previousPosition.x = smoothX;
+                    this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 2) {
-                    // Perform rotation when 2 fingers are used
                     const { deltaRotation } = detail;
-                    const rotationSensitivity = 0.5; // Adjust the sensitivity for rotation
-                    entity.object3D.rotation.y += deltaRotation * rotationSensitivity;
+                    const rotationSensitivity = 0.5;
+                    const deltaRot = deltaRotation * rotationSensitivity;
+
+                    // Apply smoothing
+                    const smoothRot = this.previousRotation + (deltaRot - this.previousRotation) * this.smoothingFactor;
+
+                    // Apply threshold
+                    if (Math.abs(smoothRot) > this.sensitivityThreshold) {
+                        entity.object3D.rotation.y += smoothRot;
+                    }
+
+                    this.previousRotation = smoothRot;
                 }
             },
         });
