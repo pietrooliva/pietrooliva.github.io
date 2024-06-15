@@ -1,0 +1,11 @@
+Model Information:
+* title:	MultiMeter - FREE
+* source:	https://sketchfab.com/3d-models/multimeter-free-79ac684e66b34554ba869bd2fc3c2653
+* author:	Mathieu Godard (https://sketchfab.com/Mathieu.Godard)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "MultiMeter - FREE" (https://sketchfab.com/3d-models/multimeter-free-79ac684e66b34554ba869bd2fc3c2653) by Mathieu Godard (https://sketchfab.com/Mathieu.Godard) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
