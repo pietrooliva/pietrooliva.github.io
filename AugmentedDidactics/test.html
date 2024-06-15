@@ -72,19 +72,20 @@
          id="scene">
 
     <a-assets>
-        <!-- Load the GLTF model -->
-        <a-asset-item id="model" src="models/hunting_bowl/scene.gltf"></a-asset-item>
+        <!-- Assets for the first model -->
+        <a-asset-item id="model1" src="models/hunting_bowl/scene.gltf"></a-asset-item>
+        <img id="texture1-1" src="models/hunting_bowl/textures/Schale_Inv_1434_1257_u1_v1_baseColor.jpeg"> 
+        <img id="texture1-2" src="models/hunting_bowl/textures/Schale_Inv_1434_1257_u1_v1_metallicRoughness.png"> 
+        <!-- audio id="audio1" src="models/hunting_bowl/audio.mp3"></audio -->
 
-        <!-- Load any additional textures -->
-        <img id="texture1" src="models/hunting_bowl/textures/Schale_Inv_1434_1257_u1_v1_baseColor.jpeg"> 
-        <img id="texture2" src="models/hunting_bowl/textures/Schale_Inv_1434_1257_u1_v1_metallicRoughness.png"> 
-        <img id="texture3" src="models/hunting_bowl/textures/Schale_Inv_1434_1257_u1_v1_normal.png"> 
-
-        <!-- Load the audio file -->
-        <audio id="background-audio" src="models/hunting_bowl/audio.mp3"></audio>
+        <!-- Assets for the second model -->
+        <a-asset-item id="model2" src="models/attic_black_figure_eye_cup/scene.gltf"></a-asset-item>
+        <img id="texture2-1" src="models/attic_black_figure_eye_cup/textures/Material.001_baseColor.jpeg"> 
+        <img id="texture2-2" src="models/attic_black_figure_eye_cup/textures/Material.001_metallicRoughness.png"> 
+        <!-- audio id="audio2" src="models/attic_black_figure_eye_cup/audio.mp3"></audio -->
     </a-assets>
 
-    <!-- Marker for triggering the display of the model -->
+    <!-- Marker for triggering the display of the first model -->
     <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
@@ -93,7 +94,7 @@
         
         <!-- Entity representing the augmented content -->
         <a-entity
-            gltf-model="#model"
+            gltf-model="#model1"
             rotation="-90 180 180"
             scale="4.5 4.5 4.5"
             position="0.0 0.0 0.2"
@@ -103,18 +104,7 @@
         ></a-entity>
     </a-marker>
 
-        <a-assets>
-        <!-- Load the GLTF model -->
-        <a-asset-item id="model" src="models/attic_black_figure_eye_cup/scene.gltf"></a-asset-item>
-
-        <!-- Load any additional textures -->
-        <img id="texture1" src="models/attic_black_figure_eye_cup/textures/Material.001_baseColor.jpeg"> 
-        <img id="texture2" src="models/attic_black_figure_eye_cup/textures/Material.001_metallicRoughness.png"> 
-        <!-- Load the audio file -->
-        <audio id="background-audio" src="models/hunting_bowl/audio.mp3"></audio>
-    </a-assets>
-
-    <!-- Marker for triggering the display of the model -->
+    <!-- Marker for triggering the display of the second model -->
     <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
@@ -123,7 +113,7 @@
         
         <!-- Entity representing the augmented content -->
         <a-entity
-            gltf-model="#model"
+            gltf-model="#model2"
             rotation="-90 180 180"
             scale="4.5 4.5 4.5"
             position="0.0 0.0 0.2"
@@ -133,19 +123,15 @@
         ></a-entity>
     </a-marker>
     
-    
     <!-- Camera entity for the scene -->
     <a-entity camera></a-entity>
 
 </a-scene>
 
-    
-
-<!-- 
-    Button to start audio 
+<!-- Button to start audio (you can include this if needed) -->
+<!--
 <button id="play-button" style="position: absolute; top: 10px; left: 10px; z-index: 1000;">Play Audio</button>
 
-<!-- Script to play audio 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var audio = document.getElementById('background-audio');
@@ -167,8 +153,8 @@
         audio.addEventListener('pause', function () {
             button.disabled = false; // Enable the button when audio is paused
         });
-    }); 
-    --!>
+    });
 </script>
+-->
 </body>
 </html>
