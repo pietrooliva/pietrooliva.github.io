@@ -82,7 +82,7 @@
         <!-- Add more textures as needed -->
 
         <!-- Load the audio file -->
-        <audio id="background-audio" src="path/to/your/audiofile.mp3" loop></audio>
+        <audio id="background-audio" src="models/hunting_bowl/audio.mp3"></audio>
     </a-assets>
 
     <!-- Marker for triggering the display of the model -->
@@ -90,7 +90,7 @@
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="20">
+        type="barcode" value="10">
         
         <!-- Entity representing the augmented content -->
         <a-entity
@@ -117,9 +117,22 @@
     document.addEventListener('DOMContentLoaded', function () {
         var audio = document.getElementById('background-audio');
         var button = document.getElementById('play-button');
+
         button.addEventListener('click', function () {
+            if (!audio.paused) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
             audio.play();
-            button.style.display = 'none'; // Hide the button after clicking
+            button.disabled = true; // Disable the button while audio is playing
+        });
+
+        audio.addEventListener('ended', function () {
+            button.disabled = false; // Enable the button when audio ends
+        });
+
+        audio.addEventListener('pause', function () {
+            button.disabled = false; // Enable the button when audio is paused
         });
     });
 </script>
