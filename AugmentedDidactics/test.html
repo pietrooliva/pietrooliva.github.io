@@ -102,16 +102,50 @@
             translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
         ></a-entity>
     </a-marker>
+
+        <a-assets>
+        <!-- Load the GLTF model -->
+        <a-asset-item id="model" src="models/attic_black_figure_eye_cup/scene.gltf"></a-asset-item>
+
+        <!-- Load any additional textures -->
+        <img id="texture1" src="models/attic_black_figure_eye_cup/textures/Material.001_baseColor.jpeg"> 
+        <img id="texture2" src="models/attic_black_figure_eye_cup/textures/Material.001_metallicRoughness.png"> 
+        <!-- Load the audio file -->
+        <audio id="background-audio" src="models/hunting_bowl/audio.mp3"></audio>
+    </a-assets>
+
+    <!-- Marker for triggering the display of the model -->
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="19">
+        
+        <!-- Entity representing the augmented content -->
+        <a-entity
+            gltf-model="#model"
+            rotation="-90 180 180"
+            scale="4.5 4.5 4.5"
+            position="0.0 0.0 0.2"
+            class="clickable"
+            gesture-handler="minScale: 0.1; maxScale: 30; translateEnabled: true; rotateEnabled: true"
+            translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
+        ></a-entity>
+    </a-marker>
+    
     
     <!-- Camera entity for the scene -->
     <a-entity camera></a-entity>
 
 </a-scene>
 
-<!-- Button to start audio -->
+    
+
+<!-- 
+    Button to start audio 
 <button id="play-button" style="position: absolute; top: 10px; left: 10px; z-index: 1000;">Play Audio</button>
 
-<!-- Script to play audio -->
+<!-- Script to play audio 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var audio = document.getElementById('background-audio');
@@ -133,7 +167,8 @@
         audio.addEventListener('pause', function () {
             button.disabled = false; // Enable the button when audio is paused
         });
-    });
+    }); 
+    --!>
 </script>
 </body>
 </html>
