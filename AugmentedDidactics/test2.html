@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Augmented Didactics Lab - Lembo-Oliva</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="libs/AR.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+    <script src="libs/gesture-handler.js"></script>
+</head>
+<body>
+<a-scene gesture-detector embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;' renderer='precision: medium;' id="scene">
+    <a-assets>
+        <!-- Load the GLTF model -->
+        <a-asset-item id="model" src="/models/olaf/scene.gltf"></a-asset-item>
+    </a-assets>
+
+    <!-- Marker for triggering the display of the model -->
+    <a-marker raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;" type="barcode" value="4">
+        <!-- Entity representing the augmented content -->
+        <a-entity gltf-model="#model" animation-mixer class="clickable" gesture-handler="minScale: 0.1; maxScale: 30; translateEnabled: true; rotateEnabled: true"></a-entity>
+    </a-marker>
+
+    <!-- Camera entity for the scene -->
+    <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+    AFRAME.registerComponent('info-spot', {
+        schema: {
+            text: { type: 'string' },
+            position: { type: 'vec3' }
+        },
+        init: function () {
+            var data = this.data;
+            var el = this.el;
+
+            // Create an info spot
+            var infoSpot = document.createElement('a-text');
+            infoSpot.setAttribute('value', data.text);
+            infoSpot.setAttribute('position', data.position);
+            infoSpot.setAttribute('color', '#FFF');
+            infoSpot.setAttribute('side', 'double');
+            infoSpot.setAttribute('align', 'center');
+            infoSpot.setAttribute('width', 4);
+            
+            el.appendChild(infoSpot);
+        }
+    });
+
+    AFRAME.registerComponent('annotation', {
+        schema: {
+            text: { type: 'string' }
+        },
+        init: function () {
+            var data = this.data;
+            var el = this.el;
+
+            el.addEventListener('click', function () {
+                var info = document.createElement('a-entity');
+                info.setAttribute('geometry', {
+                    primitive: 'plane',
+                    width: 1,
+                    height: 1
+                });
+                info.setAttribute('material', { color: '#000' });
+                info.setAttribute('text', {
+                    value: data.text,
+                    align: 'center',
+                    color: '#FFF',
+                    width: 2
+                });
+                info.setAttribute('position', '0 1 -3');
+                el.sceneEl.appendChild(info);
+
+                // Remove info after 3 seconds
+                setTimeout(function () {
+                    el.sceneEl.removeChild(info);
+                }, 3000);
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
