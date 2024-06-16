@@ -1,0 +1,11 @@
+Model Information:
+* title:	Nefertiti's bust (like in the museum)
+* source:	https://sketchfab.com/3d-models/nefertitis-bust-like-in-the-museum-ce5b14926e494558ab584375a8d63ca7
+* author:	C. Yamahata (https://sketchfab.com/cyamahat)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Nefertiti's bust (like in the museum)" (https://sketchfab.com/3d-models/nefertitis-bust-like-in-the-museum-ce5b14926e494558ab584375a8d63ca7) by C. Yamahata (https://sketchfab.com/cyamahat) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
