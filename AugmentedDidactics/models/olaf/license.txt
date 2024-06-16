@@ -1,0 +1,11 @@
+Model Information:
+* title:	St Olaf, the Patron Saint of Norway
+* source:	https://sketchfab.com/3d-models/st-olaf-the-patron-saint-of-norway-342b6866ba7c46449392acbe27217aa2
+* author:	Historiska (https://sketchfab.com/historiska)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "St Olaf, the Patron Saint of Norway" (https://sketchfab.com/3d-models/st-olaf-the-patron-saint-of-norway-342b6866ba7c46449392acbe27217aa2) by Historiska (https://sketchfab.com/historiska) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
