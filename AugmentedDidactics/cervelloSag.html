@@ -16,11 +16,11 @@
 <a-scene gesture-detector embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;' renderer='precision: medium;' id="scene">
     <a-assets>
         <!-- Load the GLTF model -->
-        <a-asset-item id="model" src="/models/olaf/scene.gltf"></a-asset-item>
+        <a-asset-item id="model" src="/models/cervelloSag/scene.gltf"></a-asset-item>
     </a-assets>
 
     <!-- Marker for triggering the display of the model -->
-    <a-marker raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;" type="barcode" value="4">
+    <a-marker raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;" type="barcode" value="5">
         <!-- Entity representing the augmented content -->
         <a-entity gltf-model="#model" animation-mixer class="clickable" gesture-handler="minScale: 0.1; maxScale: 30; translateEnabled: true; rotateEnabled: true"></a-entity>
     </a-marker>
