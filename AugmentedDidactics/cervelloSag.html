@@ -11,7 +11,6 @@
     <script src="libs/AR.js"></script>
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-extras@6.1.2/dist/aframe-extras.loaders.min.js"></script>
 
     <!-- Define the custom translate-rotate-handler component -->
     <script>
@@ -46,11 +45,11 @@
          id="scene">
 
     <a-assets>
-        <!-- Load the FBX model -->
-        <a-asset-item id="model" src="models/temporale/braccio.fbx"></a-asset-item>
+        <!-- Load the GLTF model -->
+        <a-asset-item id="model" src="models/temporale/model.gltf"></a-asset-item>
 
         <!-- Load any additional textures -->
-      <!--  <img id="texture1" src="models/solomon/textures/Fabric_Normals_baseColor.jpeg"> -->
+       <img id="texture1" src="models/temporale/base_color_texture.png"> -->
         <!-- Add more textures as needed -->
     </a-assets>
 
@@ -63,7 +62,7 @@
         
         <!-- Entity representing the augmented content -->
         <a-entity
-            fbx-model="#model"
+            gltf-model="#model"
             rotation="-90 180 180"
             scale="0.1 0.1 0.1"
             position="0.0 0.0 2.0"
