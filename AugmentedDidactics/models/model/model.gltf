@@ -1,0 +1,159 @@
+{
+    "asset": {
+        "generator": "https://3dviewer.net",
+        "version": "2.0"
+    },
+    "scene": 0,
+    "scenes": [
+        {
+            "nodes": [
+                0
+            ]
+        }
+    ],
+    "nodes": [
+        {
+            "mesh": 0,
+            "matrix": [
+                0.10000000149011612,
+                0,
+                0,
+                0,
+                0,
+                0.10000000149011477,
+                1.629206873706532e-8,
+                0,
+                0,
+                -1.629206873706532e-8,
+                0.10000000149011477,
+                0,
+                0,
+                0,
+                0,
+                1
+            ]
+        }
+    ],
+    "materials": [
+        {
+            "name": "material0",
+            "pbrMetallicRoughness": {
+                "baseColorFactor": [
+                    1,
+                    1,
+                    1,
+                    1
+                ],
+                "baseColorTexture": {
+                    "index": 0
+                }
+            },
+            "emissiveFactor": [
+                0,
+                0,
+                0
+            ],
+            "doubleSided": true,
+            "alphaMode": "OPAQUE"
+        }
+    ],
+    "meshes": [
+        {
+            "name": "model_New_Qlone",
+            "primitives": [
+                {
+                    "attributes": {
+                        "POSITION": 1,
+                        "NORMAL": 2,
+                        "TEXCOORD_0": 3
+                    },
+                    "mode": 4,
+                    "material": 0,
+                    "indices": 0
+                }
+            ]
+        }
+    ],
+    "buffers": [
+        {
+            "uri": "model.bin",
+            "byteLength": 15745968
+        }
+    ],
+    "bufferViews": [
+        {
+            "buffer": 0,
+            "byteOffset": 0,
+            "byteLength": 1749552,
+            "target": 34963
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 1749552,
+            "byteLength": 5248656,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 6998208,
+            "byteLength": 5248656,
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteOffset": 12246864,
+            "byteLength": 3499104,
+            "target": 34962
+        }
+    ],
+    "accessors": [
+        {
+            "bufferView": 0,
+            "byteOffset": 0,
+            "componentType": 5125,
+            "count": 437388,
+            "type": "SCALAR"
+        },
+        {
+            "bufferView": 1,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 437388,
+            "min": [
+                -53.124210357666016,
+                -73.55970001220703,
+                -18.287939071655273
+            ],
+            "max": [
+                53.124210357666016,
+                -5.5626301765441895,
+                18.287939071655273
+            ],
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 2,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 437388,
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 3,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 437388,
+            "type": "VEC2"
+        }
+    ],
+    "images": [
+        {
+            "uri": "base_color_texture.png"
+        }
+    ],
+    "textures": [
+        {
+            "source": 0
+        }
+    ]
+}
