@@ -64,13 +64,18 @@
         <a-entity
             gltf-model="#model"
             rotation="-90 180 180"
-            scale="0.1 0.1 0.1"
-            position="0.0 0.0 2.0"
+            scale="0.2 0.2 0.2"
+            position="0.0 0.0 0.0"
             class="clickable"
             gesture-handler="minScale: 0.01; maxScale: 10; translateEnabled: true; rotateEnabled: true"
             translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
         ></a-entity>
     </a-marker>
+
+      <!-- Add ambient and directional light -->
+    <a-light type="ambient" color="#ffffff"></a-light>
+    <a-light type="directional" position="-1 1 0" intensity="0.5"></a-light>
+    
     
     <!-- Camera entity for the scene -->
     <a-entity camera></a-entity>
