@@ -19,7 +19,7 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotation = 0;
                 this.smoothingFactor = 0.3; // Adjust this value for more or less smoothing
-                this.sensitivityThreshold = 0.9; // Adjust this value to ignore small movements
+                this.sensitivityThreshold = 1.5; // Adjust this value to ignore small movements
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
             },
 
@@ -101,7 +101,7 @@
             gltf-model="#model"
             rotation="-90 180 180"
             scale="3.5 3.5 3.5"
-            position="0.0 0.0 1.5"
+            position="0.0 0.0 1.7"
             class="clickable"
             gesture-handler="minScale: 0.3; maxScale: 30; translateEnabled: true; rotateEnabled: true"
             translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
