@@ -1,0 +1,11 @@
+Model Information:
+* title:	Attic Black-Figure Amphora
+* source:	https://sketchfab.com/3d-models/attic-black-figure-amphora-fe1464d043224b509e49835363251082
+* author:	Bonn Center for Digital Humanities (https://sketchfab.com/bcdh)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Attic Black-Figure Amphora" (https://sketchfab.com/3d-models/attic-black-figure-amphora-fe1464d043224b509e49835363251082) by Bonn Center for Digital Humanities (https://sketchfab.com/bcdh) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
