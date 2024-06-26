@@ -1,0 +1,11 @@
+Model Information:
+* title:	Terracotta figurine of a seated goddess
+* source:	https://sketchfab.com/3d-models/terracotta-figurine-of-a-seated-goddess-7bf2bf2ea7464bcb83c17d87ff5b6970
+* author:	Bonn Center for Digital Humanities (https://sketchfab.com/bcdh)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Terracotta figurine of a seated goddess" (https://sketchfab.com/3d-models/terracotta-figurine-of-a-seated-goddess-7bf2bf2ea7464bcb83c17d87ff5b6970) by Bonn Center for Digital Humanities (https://sketchfab.com/bcdh) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
