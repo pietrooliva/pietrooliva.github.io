@@ -19,7 +19,7 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotation = 0;
                 this.smoothingFactor = 0.3; // Adjust this value for more or less smoothing
-                this.sensitivityThreshold = 2.5; // Adjust this value to ignore small movements
+                this.sensitivityThreshold = 3.0; // Adjust this value to ignore small movements
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
             },
 
@@ -83,13 +83,6 @@
         <!-- Load the GLTF model -->
         <a-asset-item id="model" src="models/motorcycle_4_stroke_engine/scene.gltf"></a-asset-item>
         <a-asset-item id="model2" src="models/v8_engine/scene.gltf"></a-asset-item>
-
-        <!--
-         Load any additional textures 
-        <img id="texture1" src="models/beotian/textures/Terrakottafigur_5482_baseColor.png"> 
-        <img id="texture2" src="models/beotian/textures/Terrakottafigur_5482_metallicRoughness.png"> 
-        <img id="texture3" src="models/beotian/textures/Terrakottafigur_5482_normal.png"> 
-         -->
     </a-assets>
 
     <!-- Marker for triggering the display of the model -->
@@ -103,10 +96,10 @@
         <a-entity
             gltf-model="#model"
             rotation="90 180 180"
-            scale="3.5 3.5 3.5"
+            scale="1.5 1.5 1.5"
             position="0.0 0.0 0.7"
             class="clickable"
-            gesture-handler="minScale: 0.05; maxScale: 30; translateEnabled: true; rotateEnabled: true"
+            gesture-handler="minScale: 0.1; maxScale: 30; translateEnabled: true; rotateEnabled: true"
             translate-rotate-handler>
         </a-entity>
     </a-marker>
@@ -122,10 +115,10 @@
         <a-entity
             gltf-model="#model2"
             rotation="0 0 0"
-            scale="1.5 1.5 1.5"
+            scale="2.0 2.0 2.0"
             position="0.0 0.0 1.0"
             class="clickable"
-            gesture-handler="minScale: 1.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
+            gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
             translate-rotate-handler>
         </a-entity>
     </a-marker>
