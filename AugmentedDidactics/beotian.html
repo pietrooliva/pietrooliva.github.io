@@ -82,6 +82,7 @@
      <a-assets>
         <!-- Load the GLTF model -->
         <a-asset-item id="model" src="models/beotian/scene.gltf"></a-asset-item>
+        <a-asset-item id="model2" src="models/seated_goddess/scene.gltf"></a-asset-item>
 
         <!--
          Load any additional textures 
@@ -104,6 +105,25 @@
             rotation="-90 180 180"
             scale="3.5 3.5 3.5"
             position="0.0 0.0 0.7"
+            class="clickable"
+            gesture-handler="minScale: 0.3; maxScale: 30; translateEnabled: true; rotateEnabled: true"
+            translate-rotate-handler>
+        </a-entity>
+    </a-marker>
+
+    <!-- Marker for triggering the display of the second model -->
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="8">
+        
+        <!-- Entity representing the second augmented content -->
+        <a-entity
+            gltf-model="#model2"
+            rotation="0 180 0"
+            scale="1.5 1.5 1.5"
+            position="0.0 0.0 1.0"
             class="clickable"
             gesture-handler="minScale: 0.3; maxScale: 30; translateEnabled: true; rotateEnabled: true"
             translate-rotate-handler>
