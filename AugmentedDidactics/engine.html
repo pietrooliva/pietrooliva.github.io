@@ -95,8 +95,9 @@
         <!-- Entity representing the augmented content -->
         <a-entity
             gltf-model="#model"
+            animation-mixer
             rotation="90 180 180"
-            scale="1.5 1.5 1.5"
+            scale="1.0 1.0 1.0"
             position="0.0 0.0 0.7"
             class="clickable"
             gesture-handler="minScale: 0.1; maxScale: 30; translateEnabled: true; rotateEnabled: true"
@@ -114,6 +115,7 @@
         <!-- Entity representing the second augmented content -->
         <a-entity
             gltf-model="#model2"
+            animation-mixer
             rotation="0 0 0"
             scale="2.0 2.0 2.0"
             position="0.0 0.0 1.0"
