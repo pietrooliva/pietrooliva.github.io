@@ -1,0 +1,11 @@
+Model Information:
+* title:	Boeotian terracotta figurine of goddess
+* source:	https://sketchfab.com/3d-models/boeotian-terracotta-figurine-of-goddess-7c7dc7c0b4c943a7a2e9a27f33f1c14d
+* author:	Bonn Center for Digital Humanities (https://sketchfab.com/bcdh)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Boeotian terracotta figurine of goddess" (https://sketchfab.com/3d-models/boeotian-terracotta-figurine-of-goddess-7c7dc7c0b4c943a7a2e9a27f33f1c14d) by Bonn Center for Digital Humanities (https://sketchfab.com/bcdh) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
