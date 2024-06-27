@@ -25,6 +25,21 @@
         <a-asset-item id="model2" src="models/v8_engine/scene.gltf"></a-asset-item>
     </a-assets>
 
+    <!-- Ambient Light to illuminate the whole scene -->
+    <a-light type="ambient" color="#ffffff" intensity="0.7"></a-light>
+
+    <!-- Directional Light to simulate sunlight 
+    <a-light type="directional" color="#ffffff" intensity="0.7" position="0 10 0"></a-light>
+    -->
+
+    <!-- Point Light to simulate a light bulb 
+    <a-light type="point" color="#ffffff" intensity="1" distance="10" position="2 4 4"></a-light>
+    -->
+
+    <!-- Spot Light to simulate a flashlight 
+    <a-light type="spot" color="#ffffff" intensity="1" distance="15" position="-2 4 4" angle="30"></a-light>
+    -->
+
     <!-- Marker for triggering the display of the model -->
     <a-marker
         raycaster="objects: .clickable"
