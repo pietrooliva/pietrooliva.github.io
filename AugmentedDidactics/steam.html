@@ -19,19 +19,36 @@
          renderer='precision: medium;'
          id="scene">
 
-     <a-assets>
+    <a-assets>
         <!-- Load the GLTF model -->
         <a-asset-item id="model" src="models/steam_engine/scene.gltf"></a-asset-item>
     </a-assets>
 
-
-
-    <!-- Marker for triggering the display of the same model with additional lighting -->
+    <!-- Marker for displaying the model without additional lighting -->
     <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
         type="barcode" value="6">
+        
+        <!-- Entity representing the first augmented content -->
+        <a-entity
+            gltf-model="#model"
+            rotation="-30 90 180"
+            scale="3.0 3.0 3.0"
+            position="0.0 0.0 1.0"
+            class="clickable"
+            gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
+            translate-rotate-handler>
+        </a-entity>
+    </a-marker>
+
+    <!-- Marker for displaying the model with additional lighting -->
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="7">
         
         <!-- Entity representing the second augmented content with animations and specific lighting -->
         <a-entity
@@ -43,11 +60,6 @@
             class="clickable"
             gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
             translate-rotate-handler>
-
-            <!-- Local lights for model 
-            <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
-            <a-light type="point" color="#ffffff" intensity="1.5" distance="10" position="2 4 4"></a-light>
-            <a-light type="spot" color="#ffffff" intensity="1.5" distance="15" position="-2 4 4" angle="30"></a-light> -->
         </a-entity>
     </a-marker>
     
