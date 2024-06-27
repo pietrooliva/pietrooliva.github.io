@@ -51,9 +51,8 @@
         cursor="fuse: false; rayOrigin: mouse;"
         type="barcode" value="7">
         
-        <!-- Entity representing the second augmented content with animations and specific lighting -->
+        <!-- Entity representing the second augmented content with animations -->
         <a-entity
-            id="model2" <!-- Added ID for the target -->
             gltf-model="#model2"
             animation-mixer="clip: *;"
             rotation="30 0 180"
@@ -62,11 +61,10 @@
             class="clickable"
             gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
             translate-rotate-handler>
-
-            <!-- Local lights for model2 -->
+           <!-- Local lights for model2 -->
             <a-light type="ambient" color="#ffffff" intensity="0.3"></a-light>
-            <a-light type="point" color="#ffffff" intensity="1.5" distance="10" position="2 4 4"></a-light>
-            <a-light type="spot" color="#ffffff" intensity="1.5" distance="15" position="-2 4 4" angle="30"></a-light>
+             <!--   <a-light type="point" color="#ffffff" intensity="1.5" distance="10" position="2 4 4"></a-light> -->
+             <!--   <a-light type="spot" color="#ffffff" intensity="1.5" distance="15" position="-2 4 4" angle="30"></a-light>   -->          
         </a-entity>
     </a-marker>
     
