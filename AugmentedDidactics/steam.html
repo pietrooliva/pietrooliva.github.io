@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AUGMENTED DIDACTICS LAB - Lembo-Oliva</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="libs/AR.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+    <script src="libs/gesture-handler.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+</head>
+<body>
+<a-scene gesture-detector    
+         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+         renderer='precision: medium;'
+         id="scene">
+
+     <a-assets>
+        <!-- Load the GLTF model -->
+        <a-asset-item id="model" src="models/steam_engine/scene.gltf"></a-asset-item>
+     <!--    <a-asset-item id="model2" src="models/v8_engine/scene.gltf"></a-asset-item> -->
+    </a-assets>
+
+    <!-- Marker for triggering the display of the model -->
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="6">
+        
+
+    <!-- Marker for triggering the display of model -->
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="7">
+        
+        <!-- Entity representing the second augmented content with animations -->
+        <a-entity
+            gltf-model="#model"
+            animation-mixer="clip: *;"
+            rotation="-30 90 180"
+            scale="3.0 3.0 3.0"
+            position="0.0 0.0 1.0"
+            class="clickable"
+            gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
+            translate-rotate-handler>
+        </a-entity>
+    </a-marker>
+    
+    <!-- Camera entity for the scene -->
+    <a-entity camera></a-entity>
+
+</a-scene>
+</body>
+</html>
