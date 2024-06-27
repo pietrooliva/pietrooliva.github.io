@@ -26,19 +26,16 @@
     </a-assets>
 
     <!-- Ambient Light to illuminate the whole scene -->
-    <a-light type="ambient" color="#ffffff" intensity="0.7"></a-light>
+    <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
 
-    <!-- Directional Light to simulate sunlight 
-    <a-light type="directional" color="#ffffff" intensity="0.7" position="0 10 0"></a-light>
-    -->
+    <!-- Directional Light to simulate sunlight, illuminating the whole scene -->
+    <a-light type="directional" color="#ffffff" intensity="0.5" position="0 10 0"></a-light>
 
-    <!-- Point Light to simulate a light bulb 
-    <a-light type="point" color="#ffffff" intensity="1" distance="10" position="2 4 4"></a-light>
-    -->
+    <!-- Point Light near model2 to simulate a light bulb -->
+    <a-light type="point" color="#ffffff" intensity="1.5" distance="10" position="2 4 4"></a-light>
 
-    <!-- Spot Light to simulate a flashlight 
-    <a-light type="spot" color="#ffffff" intensity="1" distance="15" position="-2 4 4" angle="30"></a-light>
-    -->
+    <!-- Spot Light focused on model2 to simulate a flashlight -->
+    <a-light type="spot" color="#ffffff" intensity="1.5" distance="15" position="-2 4 4" angle="30" target="#model2"></a-light>
 
     <!-- Marker for triggering the display of the model -->
     <a-marker
@@ -68,9 +65,10 @@
         
         <!-- Entity representing the second augmented content with animations -->
         <a-entity
+            id="model2" <!-- Added ID for the target -->
             gltf-model="#model2"
             animation-mixer="clip: *;"
-            rotation="0 180 180"
+            rotation="0 0 0"
             scale="3.0 3.0 3.0"
             position="0.0 0.0 1.0"
             class="clickable"
