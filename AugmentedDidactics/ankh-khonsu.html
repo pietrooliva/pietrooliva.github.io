@@ -20,9 +20,17 @@
                 this.previousRotation = 0;
                 this.smoothingFactor = 0.3; // Adjust this value for more or less smoothing
                 this.sensitivityThreshold = 3.5; // Adjust this value to ignore small movements
-                this.center = new THREE.Vector3();
-                this.el.object3D.geometry.computeBoundingBox();
-                this.el.object3D.geometry.boundingBox.getCenter(this.center);
+
+                // Calcola il centro quando il modello è caricato
+                this.el.addEventListener('model-loaded', () => {
+                    this.center = new THREE.Vector3();
+                    this.el.object3D.traverse(node => {
+                        if (node.isMesh) {
+                            node.geometry.computeBoundingBox();
+                            node.geometry.boundingBox.getCenter(this.center);
+                        }
+                    });
+                });
 
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
             },
@@ -84,7 +92,13 @@
         <a-asset-item id="model" src="models/ankh-khonsu/scene.gltf"></a-asset-item>
     </a-assets>
 
-
+    <!-- Environment setup -->
+    <a-sky color="#ECECEC"></a-sky>
+    
+    <!-- Adding lights to the scene -->
+    <a-light type="ambient" color="#ffffff"></a-light>
+    <a-light type="directional" position="1 1 1" intensity="2"></a-light>
+    <a-light type="directional" position="-1 -1 -1" intensity="1.5"></a-light>
 
     <!-- Marker for triggering the display of the model -->
     <a-marker
