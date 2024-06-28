@@ -6,12 +6,72 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" href="style.css" />
 
-    <script src="libs/aframe-master.min.js"></script>
-    <script src="libs/aframe-ar.js"></script>
-    <script src="libs/AR.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+
+    <!-- Define the custom translate-rotate-handler component with smoothing -->
+    <script>
+        AFRAME.registerComponent('translate-rotate-handler', {
+            init: function () {
+                this.previousPosition = { x: 0, y: 0 };
+                this.previousRotation = 0;
+                this.smoothingFactor = 0.3; // Adjust this value for more or less smoothing
+                this.sensitivityThreshold = 3.5; // Adjust this value to ignore small movements
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+            },
+
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const entity = this.el;
+
+                if (detail.type === 'translate' && detail.numFingers === 2) {
+                    const { x, y } = detail.deltaPosition;
+                    const sensitivity = 0.01;
+                    const deltaX = x * sensitivity;
+                    const deltaY = y * sensitivity;
+
+                    // Apply smoothing
+                    const smoothX = this.previousPosition.x + (deltaX - this.previousPosition.x) * this.smoothingFactor;
+                    const smoothY = this.previousPosition.y + (deltaY - this.previousPosition.y) * this.smoothingFactor;
+
+                    // Apply threshold
+                    if (Math.abs(smoothX) > this.sensitivityThreshold) {
+                        entity.object3D.position.x += smoothX;
+                    }
+                    if (Math.abs(smoothY) > this.sensitivityThreshold) {
+                        entity.object3D.position.y += smoothY;
+                    }
+
+                    this.previousPosition.x = smoothX;
+                    this.previousPosition.y = smoothY;
+                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    const { deltaRotation } = detail;
+                    const rotationSensitivity = 0.5;
+                    const deltaRot = deltaRotation * rotationSensitivity;
+
+                    // Apply smoothing
+                    const smoothRot = this.previousRotation + (deltaRot - this.previousRotation) * this.smoothingFactor;
+
+                    // Apply threshold
+                    if (Math.abs(smoothRot) > this.sensitivityThreshold) {
+                        // Adjust rotation around the center of the object
+                        const center = new THREE.Vector3();
+                        entity.object3D.geometry.computeBoundingBox();
+                        entity.object3D.geometry.boundingBox.getCenter(center);
+
+                        entity.object3D.position.sub(center); // Move to origin
+                        entity.object3D.rotation.y += smoothRot;
+                        entity.object3D.position.add(center); // Move back to center
+                    }
+
+                    this.previousRotation = smoothRot;
+                }
+            },
+        });
+    </script>
 </head>
 <body>
 <a-scene gesture-detector    
@@ -19,23 +79,31 @@
          renderer='precision: medium;'
          id="scene">
 
-    <a-assets>
+     <a-assets>
         <!-- Load the GLTF model -->
-        <a-asset-item id="model" src="models/steam_engine/scene.gltf"></a-asset-item>
+        <a-asset-item id="model2" src="models/steam_engine/scene.gltf"></a-asset-item>
     </a-assets>
 
-    <!-- Marker for displaying the model -->
+    <!-- Environment setup -->
+    <a-sky color="#ECECEC"></a-sky>
+    
+    <!-- Adding lights to the scene -->
+    <a-light type="ambient" color="#ffffff"></a-light>
+    <a-light type="directional" position="1 1 1" intensity="2"></a-light>
+    <a-light type="directional" position="-1 -1 -1" intensity="1.5"></a-light>
+
+    <!-- Marker for triggering the display of the model -->
     <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="6">
+        type="barcode" value="4">
         
-        <!-- Entity representing the second augmented content with animations and specific lighting -->
+        <!-- Entity representing the augmented content with animations -->
         <a-entity
-            gltf-model="#model"
-            animation-mixer="clip: *;"
-            rotation="-30 180 180"
+            gltf-model="#model2"
+            animation-mixer="clip: *; loop: repeat;"
+            rotation="-40 180 180"
             scale="3.0 3.0 3.0"
             position="0.0 0.0 1.0"
             class="clickable"
