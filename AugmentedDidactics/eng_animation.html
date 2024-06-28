@@ -18,8 +18,8 @@
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotation = 0;
-                this.smoothingFactor = 0.3; // Adjust this value for more or less smoothing
-                this.sensitivityThreshold = 1.5; // Adjust this value to ignore small movements
+                this.smoothingFactor = 2.3; // Adjust this value for more or less smoothing
+                this.sensitivityThreshold = 3.5; // Adjust this value to ignore small movements
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
             },
 
@@ -89,22 +89,22 @@
     
     <!-- Adding lights to the scene -->
     <a-light type="ambient" color="#ffffff"></a-light>
-    <a-light type="directional" position="1 1 1" intensity="1"></a-light>
-    <a-light type="directional" position="-1 -1 -1" intensity="0.5"></a-light>
+    <a-light type="directional" position="1 1 1" intensity="2"></a-light>
+    <a-light type="directional" position="-1 -1 -1" intensity="1.5"></a-light>
 
     <!-- Marker for triggering the display of the model -->
     <a-marker
         raycaster="objects: .clickable"
         emitevents="true"
         cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="5">
+        type="barcode" value="7">
         
         <!-- Entity representing the augmented content with animations -->
         <a-entity
             gltf-model="#model2"
-            animation-mixer="clip: *;"
-            rotation="-30 180 180"
-            scale="3.0 3.0 3.0"
+            animation-mixer="loop: repeat;"
+            rotation="30 180 180"
+            scale="3.5 3.5 3.5"
             position="0.0 0.0 1.0"
             class="clickable"
             gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
