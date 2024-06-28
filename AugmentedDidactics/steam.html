@@ -81,7 +81,7 @@
 
      <a-assets>
         <!-- Load the GLTF model -->
-        <a-asset-item id="model2" src="models/steam_engine/scene.gltf"></a-asset-item>
+        <a-asset-item id="model" src="models/steam_engine/scene.gltf"></a-asset-item>
     </a-assets>
 
     <!-- Environment setup -->
@@ -89,8 +89,8 @@
     
     <!-- Adding lights to the scene -->
     <a-light type="ambient" color="#ffffff"></a-light>
-    <a-light type="directional" position="1 1 1" intensity="1"></a-light>
-    <a-light type="directional" position="-1 -1 -1" intensity="0.5"></a-light>
+    <a-light type="directional" position="1 1 1" intensity="2"></a-light>
+    <a-light type="directional" position="-1 -1 -1" intensity="1.5"></a-light>
 
     <!-- Marker for triggering the display of the model -->
     <a-marker
@@ -101,7 +101,7 @@
         
         <!-- Entity representing the augmented content with animations -->
         <a-entity
-            gltf-model="#model2"
+            gltf-model="#model"
             animation-mixer="clip: *; loop: repeat;"
             rotation="-40 180 180"
             scale="3.0 3.0 3.0"
