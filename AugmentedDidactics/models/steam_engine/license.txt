@@ -1,0 +1,11 @@
+Model Information:
+* title:	Steam Engine
+* source:	https://sketchfab.com/3d-models/steam-engine-dc1797a6d49e4629bf8ca668bd76e0d0
+* author:	Robert Crosby (https://sketchfab.com/robmcrosby)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Steam Engine" (https://sketchfab.com/3d-models/steam-engine-dc1797a6d49e4629bf8ca668bd76e0d0) by Robert Crosby (https://sketchfab.com/robmcrosby) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
