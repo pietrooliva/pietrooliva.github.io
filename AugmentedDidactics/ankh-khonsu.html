@@ -1,38 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AUGMENTED DIDACTICS LAB - Lembo-Oliva</title>
+    <title>AUGMENTED DIDACTICS LAB: Lembo-Oliva</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" href="style.css" />
 
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="libs/AR.js"></script>
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 
-    <!-- Define the custom translate-rotate-handler component with smoothing -->
+    <!-- Define the custom translate-and-rotate-handler component with smoothing -->
     <script>
-        AFRAME.registerComponent('translate-rotate-handler', {
+        AFRAME.registerComponent('translate-and-rotate-handler', {
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotation = 0;
                 this.smoothingFactor = 0.3; // Adjust this value for more or less smoothing
-                this.sensitivityThreshold = 3.5; // Adjust this value to ignore small movements
-
-                // Calcola il centro quando il modello è caricato
-                this.el.addEventListener('model-loaded', () => {
-                    this.center = new THREE.Vector3();
-                    this.el.object3D.traverse(node => {
-                        if (node.isMesh) {
-                            node.geometry.computeBoundingBox();
-                            node.geometry.boundingBox.getCenter(this.center);
-                        }
-                    });
-                });
-
+                this.sensitivityThreshold = 3.0; // Adjust this value to ignore small movements
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+                this.el.addEventListener('click', this.onEntityClick.bind(this));
             },
 
             onGestureMove: function (event) {
@@ -69,60 +59,62 @@
 
                     // Apply threshold
                     if (Math.abs(smoothRot) > this.sensitivityThreshold) {
-                        // Adjust rotation around the center of the object
-                        entity.object3D.position.sub(this.center); // Move to origin
                         entity.object3D.rotation.y += smoothRot;
-                        entity.object3D.position.add(this.center); // Move back to center
                     }
 
                     this.previousRotation = smoothRot;
                 }
             },
+
+            onEntityClick: function () {
+                // Add or remove the "selected" class for visual feedback
+                const entity = this.el;
+                entity.classList.toggle('selected');
+            },
         });
     </script>
+
+    <!-- Style for visual feedback -->
+    <style>
+        .selected {
+            color: yellow;
+        }
+    </style>
 </head>
 <body>
-<a-scene gesture-detector    
-         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-         renderer='precision: medium;'
-         id="scene">
+    <a-scene gesture-detector    
+             embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+             renderer='precision: medium;'
+             id="scene">
 
-     <a-assets>
-        <!-- Load the GLTF model -->
-        <a-asset-item id="model" src="models/ankh-khonsu/scene.gltf"></a-asset-item>
-    </a-assets>
+        <a-assets>
+            <!-- Load the GLTF model -->
+            <a-asset-item id="model" src="models/ankh-khonsu/scene.gltf"></a-asset-item>
+        </a-assets>
 
-    <!-- Environment setup -->
-    <a-sky color="#ECECEC"></a-sky>
-    
-    <!-- Adding lights to the scene -->
-    <a-light type="ambient" color="#ffffff"></a-light>
-    <a-light type="directional" position="1 1 1" intensity="2"></a-light>
-    <a-light type="directional" position="-1 -1 -1" intensity="1.5"></a-light>
-
-    <!-- Marker for triggering the display of the model -->
-    <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="4">
+        <!-- Marker for triggering the display of the model -->
+        <a-marker
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            type="barcode" value="5">
+            
+            <!-- Entity representing the augmented content -->
+            <a-entity
+                gltf-model="#model"
+                animation-mixer="clip: *;"
+                rotation="-90 180 180"
+                position="0.0 0.0 0.8"
+                scale="5 5 5"
+                class="clickable"
+                gesture-handler="minScale: 1; maxScale: 50; translateEnabled: false; rotateEnabled: true"
+                translate-and-rotate-handler <!-- Apply the new translate-and-rotate-handler component here -->
+            ></a-entity>
+        </a-marker>
         
-        <!-- Entity representing the augmented content with animations -->
-        <a-entity
-            gltf-model="#model"
-            animation-mixer="clip: *; loop: repeat;"
-            rotation="-40 180 180"
-            scale="3.0 3.0 3.0"
-            position="0.0 0.0 1.0"
-            class="clickable"
-            gesture-handler="minScale: 0.5; maxScale: 30; translateEnabled: true; rotateEnabled: true"
-            translate-rotate-handler>
-        </a-entity>
-    </a-marker>
-    
-    <!-- Camera entity for the scene -->
-    <a-entity camera></a-entity>
+        <!-- Camera entity for the scene -->
+        <a-entity camera></a-entity>
 
-</a-scene>
+    </a-scene>
 </body>
 </html>
