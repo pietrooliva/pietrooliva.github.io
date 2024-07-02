@@ -67,9 +67,9 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.01; // Adjust this value to control rotation speed
+                const rotationSpeed = 0.005; // Adjust this value to control rotation speed
                 
-                // Apply rotation based on tilt
+                // Apply rotation based on tilt along the y-axis
                 entity.object3D.rotation.y += gamma * rotationSpeed;
             },
 
@@ -115,6 +115,7 @@
         </a-marker>
         
         <a-entity camera></a-entity>
+        <a-entity axis-helper></a-entity>
 
     </a-scene>
 </body>
