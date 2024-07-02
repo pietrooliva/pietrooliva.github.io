@@ -67,10 +67,14 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.005; // Adjust this value to control rotation speed
-                
-                // Apply rotation based on tilt along the y-axis
-                entity.object3D.rotation.y += gamma * rotationSpeed;
+                const rotationSpeed = 0.001; // Adjust this value to control rotation speed
+                const threshold = 30; // Threshold for rotation in degrees
+
+                // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
+                if (Math.abs(gamma) > threshold) {
+                    const gammaAdjusted = gamma - Math.sign(gamma) * threshold; // Adjust gamma to start from 0 after threshold
+                    entity.object3D.rotation.y += gammaAdjusted * rotationSpeed;
+                }
             },
 
             onEntityClick: function () {
