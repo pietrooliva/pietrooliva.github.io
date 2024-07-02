@@ -1,0 +1,11 @@
+Model Information:
+* title:	Illustration of viscosity
+* source:	https://sketchfab.com/3d-models/illustration-of-viscosity-af8668d8697e4e8cb90e5d4e2cb079d2
+* author:	Robert Kotsch (https://sketchfab.com/robertkotsch)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Illustration of viscosity" (https://sketchfab.com/3d-models/illustration-of-viscosity-af8668d8697e4e8cb90e5d4e2cb079d2) by Robert Kotsch (https://sketchfab.com/robertkotsch) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
