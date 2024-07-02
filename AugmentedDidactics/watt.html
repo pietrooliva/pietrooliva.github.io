@@ -19,6 +19,7 @@
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotation = 0;
+                this.previousScale = 1;
                 this.smoothingFactor = 0.3; // Adjust this value for more or less smoothing
                 this.sensitivityThreshold = 3.0; // Adjust this value to ignore small movements
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
@@ -29,35 +30,46 @@
                 const { detail } = event;
                 const entity = this.el;
 
-                if (detail.type === 'translate' && detail.numFingers === 2) {
-                    const { x, y } = detail.deltaPosition;
+                if (detail.numFingers === 2) {
+                    const { x, y, scale } = detail.deltaPosition;
                     const sensitivity = 0.01;
-                    const deltaX = x * sensitivity;
-                    const deltaY = y * sensitivity;
 
-                    // Apply smoothing
-                    const smoothX = this.previousPosition.x + (deltaX - this.previousPosition.x) * this.smoothingFactor;
-                    const smoothY = this.previousPosition.y + (deltaY - this.previousPosition.y) * this.smoothingFactor;
+                    if (detail.type === 'translate') {
+                        const deltaX = x * sensitivity;
+                        const deltaY = y * sensitivity;
 
-                    // Apply threshold
-                    if (Math.abs(smoothX) > this.sensitivityThreshold) {
-                        entity.object3D.position.x += smoothX;
+                        // Apply smoothing for translation
+                        const smoothX = this.previousPosition.x + (deltaX - this.previousPosition.x) * this.smoothingFactor;
+                        const smoothY = this.previousPosition.y + (deltaY - this.previousPosition.y) * this.smoothingFactor;
+
+                        // Apply threshold for translation
+                        if (Math.abs(smoothX) > this.sensitivityThreshold) {
+                            entity.object3D.position.x += smoothX;
+                        }
+                        if (Math.abs(smoothY) > this.sensitivityThreshold) {
+                            entity.object3D.position.y += smoothY;
+                        }
+
+                        this.previousPosition.x = smoothX;
+                        this.previousPosition.y = smoothY;
                     }
-                    if (Math.abs(smoothY) > this.sensitivityThreshold) {
-                        entity.object3D.position.y += smoothY;
-                    }
 
-                    this.previousPosition.x = smoothX;
-                    this.previousPosition.y = smoothY;
+                    if (detail.type === 'scale') {
+                        // Apply scaling
+                        const scaleFactor = scale * this.smoothingFactor;
+                        entity.object3D.scale.multiplyScalar(scaleFactor);
+
+                        this.previousScale = scaleFactor;
+                    }
                 } else if (detail.type === 'rotate' && detail.numFingers === 2) {
                     const { deltaRotation } = detail;
                     const rotationSensitivity = 0.5;
                     const deltaRot = deltaRotation * rotationSensitivity;
 
-                    // Apply smoothing
+                    // Apply smoothing for rotation
                     const smoothRot = this.previousRotation + (deltaRot - this.previousRotation) * this.smoothingFactor;
 
-                    // Apply threshold
+                    // Apply threshold for rotation
                     if (Math.abs(smoothRot) > this.sensitivityThreshold) {
                         entity.object3D.rotation.y += smoothRot;
                     }
@@ -89,17 +101,8 @@
 
         <a-assets>
             <!-- Load the GLTF model -->
-            <a-asset-item id="model" src="models/watt/scene.gltf"></a-asset-item>
+            <a-asset-item id="model" src="models/steam_engine/scene.gltf"></a-asset-item>
         </a-assets>
-
-               <!-- Environment setup 
-        <a-sky color="#ECECEC"></a-sky>
-        
-         Adding lights to the scene 
-        <a-light type="ambient" color="#ffffff" intensity="1.5"></a-light>
-       <a-light type="directional" color="#ffffff" intensity="2" position="1 1 1"></a-light> 
-        <a-light type="directional" color="#ffffff" intensity="1.5" position="-1 -1 -1"></a-light> 
-      <a-light type="point" color="#ffffff" intensity="1" position="0 2 2"></a-light> -->
 
         <!-- Marker for triggering the display of the model -->
         <a-marker
@@ -116,7 +119,7 @@
                 position="0.0 0.0 2.5"
                 scale="2 2 2"
                 class="clickable"
-                gesture-handler="minScale: 0.5; maxScale: 20; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.3; maxScale: 20; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler <!-- Apply the new translate-and-rotate-handler component here -->
             ></a-entity>
         </a-marker>
