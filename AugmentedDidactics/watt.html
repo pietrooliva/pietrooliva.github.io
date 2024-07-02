@@ -92,6 +92,15 @@
             <a-asset-item id="model" src="models/watt/scene.gltf"></a-asset-item>
         </a-assets>
 
+               <!-- Environment setup -->
+        <a-sky color="#ECECEC"></a-sky>
+        
+        <!-- Adding lights to the scene -->
+        <a-light type="ambient" color="#ffffff" intensity="1.5"></a-light>
+   <!--     <a-light type="directional" color="#ffffff" intensity="2" position="1 1 1"></a-light> -->
+   <!--     <a-light type="directional" color="#ffffff" intensity="1.5" position="-1 -1 -1"></a-light> -->
+    <!--    <a-light type="point" color="#ffffff" intensity="1" position="0 2 2"></a-light> -->
+
         <!-- Marker for triggering the display of the model -->
         <a-marker
             raycaster="objects: .clickable"
@@ -104,7 +113,7 @@
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
-                position="0.0 0.0 2.0"
+                position="0.0 0.0 2.5"
                 scale="2 2 2"
                 class="clickable"
                 gesture-handler="minScale: 0.5; maxScale: 20; translateEnabled: false; rotateEnabled: true"
