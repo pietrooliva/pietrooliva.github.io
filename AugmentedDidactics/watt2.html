@@ -33,7 +33,7 @@
 
                 if (detail.type === 'translate' && detail.numFingers === 2) {
                     const { x, y } = detail.deltaPosition;
-                    const sensitivity = 0.01;
+                    const sensitivity = 0.02;
                     const deltaX = x * sensitivity;
                     const deltaY = y * sensitivity;
 
@@ -57,7 +57,7 @@
                     const smoothRot = this.previousRotation + (deltaRot - this.previousRotation) * this.smoothingFactor;
 
                     if (Math.abs(smoothRot) > this.sensitivityThreshold) {
-                        entity.object3D.rotation.z += smoothRot; // Changed from rotation.y to rotation.z
+                        entity.object3D.rotation.x += smoothRot; // Changed from rotation.y to rotation.z
                     }
 
                     this.previousRotation = smoothRot;
@@ -67,7 +67,7 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.001; // Adjust this value to control rotation speed
+                const rotationSpeed = 0.002; // Adjust this value to control rotation speed
                 const threshold = 35; // Threshold for rotation in degrees
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
