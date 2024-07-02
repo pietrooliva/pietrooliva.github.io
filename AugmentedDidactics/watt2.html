@@ -17,7 +17,8 @@
         AFRAME.registerComponent('translate-and-rotate-handler', {
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
-                this.previousRotation = 0;
+                this.previousRotationX = 0;
+                this.previousRotationY = 0;
                 this.smoothingFactor = 0.3;
                 this.sensitivityThreshold = 3.0;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
@@ -33,7 +34,7 @@
 
                 if (detail.type === 'translate' && detail.numFingers === 2) {
                     const { x, y } = detail.deltaPosition;
-                    const sensitivity = 0.02;
+                    const sensitivity = 0.01;
                     const deltaX = x * sensitivity;
                     const deltaY = y * sensitivity;
 
@@ -49,18 +50,25 @@
 
                     this.previousPosition.x = smoothX;
                     this.previousPosition.y = smoothY;
-                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
-                    const { deltaRotation } = detail;
-                    const rotationSensitivity = 0.01;
-                    const deltaRot = deltaRotation * rotationSensitivity;
+                } else if (detail.type === 'rotate' && detail.numFingers === 1) {
+                    const { deltaPosition } = detail;
+                    const rotationSensitivity = 0.05;
 
-                    const smoothRot = this.previousRotation + (deltaRot - this.previousRotation) * this.smoothingFactor;
+                    const deltaRotX = deltaPosition.y * rotationSensitivity;
+                    const deltaRotY = deltaPosition.x * rotationSensitivity;
 
-                    if (Math.abs(smoothRot) > this.sensitivityThreshold) {
-                        entity.object3D.rotation.x += smoothRot; // Changed from rotation.y to rotation.z
+                    const smoothRotX = this.previousRotationX + (deltaRotX - this.previousRotationX) * this.smoothingFactor;
+                    const smoothRotY = this.previousRotationY + (deltaRotY - this.previousRotationY) * this.smoothingFactor;
+
+                    if (Math.abs(smoothRotX) > this.sensitivityThreshold) {
+                        entity.object3D.rotation.x += THREE.Math.degToRad(smoothRotX);
+                    }
+                    if (Math.abs(smoothRotY) > this.sensitivityThreshold) {
+                        entity.object3D.rotation.y += THREE.Math.degToRad(smoothRotY);
                     }
 
-                    this.previousRotation = smoothRot;
+                    this.previousRotationX = smoothRotX;
+                    this.previousRotationY = smoothRotY;
                 }
             },
 
