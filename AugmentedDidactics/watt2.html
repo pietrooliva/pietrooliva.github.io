@@ -51,13 +51,13 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 2) {
                     const { deltaRotation } = detail;
-                    const rotationSensitivity = 0.5;
+                    const rotationSensitivity = 0.01;
                     const deltaRot = deltaRotation * rotationSensitivity;
 
                     const smoothRot = this.previousRotation + (deltaRot - this.previousRotation) * this.smoothingFactor;
 
                     if (Math.abs(smoothRot) > this.sensitivityThreshold) {
-                        entity.object3D.rotation.y += smoothRot;
+                        entity.object3D.rotation.z += smoothRot; // Changed from rotation.y to rotation.z
                     }
 
                     this.previousRotation = smoothRot;
@@ -68,12 +68,12 @@
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
                 const rotationSpeed = 0.001; // Adjust this value to control rotation speed
-                const threshold = 30; // Threshold for rotation in degrees
+                const threshold = 35; // Threshold for rotation in degrees
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
                     const gammaAdjusted = gamma - Math.sign(gamma) * threshold; // Adjust gamma to start from 0 after threshold
-                    entity.object3D.rotation.y += gammaAdjusted * rotationSpeed;
+                    entity.object3D.rotation.z += gammaAdjusted * rotationSpeed; // Changed from rotation.y to rotation.z
                 }
             },
 
