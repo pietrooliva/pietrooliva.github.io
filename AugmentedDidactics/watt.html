@@ -97,17 +97,17 @@
             raycaster="objects: .clickable"
             emitevents="true"
             cursor="fuse: false; rayOrigin: mouse;"
-            type="barcode" value="6">
+            type="barcode" value="20">
             
             <!-- Entity representing the augmented content -->
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="-90 180 170"
+                rotation="-90 180 180"
                 position="0.0 0.0 0.8"
                 scale="2 2 2"
                 class="clickable"
-                gesture-handler="minScale: 0.5; maxScale: 50; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.5; maxScale: 20; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler <!-- Apply the new translate-and-rotate-handler component here -->
             ></a-entity>
         </a-marker>
