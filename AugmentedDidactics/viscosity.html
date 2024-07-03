@@ -52,7 +52,7 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.05;
+                    const rotationSensitivity = 0.01;
 
                     const deltaRotX = deltaPosition.y * rotationSensitivity;
                     const deltaRotY = deltaPosition.x * rotationSensitivity;
@@ -75,7 +75,7 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.002; // Adjust this value to control rotation speed
+                const rotationSpeed = 0.001; // Adjust this value to control rotation speed
                 const threshold = 35; // Threshold for rotation in degrees
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
@@ -105,7 +105,7 @@
              id="scene">
 
         <a-assets>
-            <a-asset-item id="model" src="models/crasso/scene.gltf"></a-asset-item>
+            <a-asset-item id="model" src="models/solomon/scene.gltf"></a-asset-item>
         </a-assets>
 
         <a-marker
@@ -119,7 +119,7 @@
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
                 position="0.0 0.0 1.8"
-                scale="2 2 2"
+                scale="1 1 1"
                 class="clickable"
                 gesture-handler="minScale: 0.3; maxScale: 20; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
