@@ -81,7 +81,7 @@
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
                     const gammaAdjusted = gamma - Math.sign(gamma) * threshold; // Adjust gamma to start from 0 after threshold
-                    entity.object3D.rotation.y += gammaAdjusted * rotationSpeed; // Changed from rotation.y 
+                    entity.object3D.rotation.z += gammaAdjusted * rotationSpeed; // Changed from rotation.y 
                 }
             },
 
@@ -117,7 +117,7 @@
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="0 180 0"
+                rotation="0 180 180"
                 position="0.0 0.0 1.8"
                 scale="1.9 1.9 1.9"
                 class="clickable"
