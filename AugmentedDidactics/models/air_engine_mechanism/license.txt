@@ -1,0 +1,11 @@
+Model Information:
+* title:	Diaphragm Air Engine Mechanism
+* source:	https://sketchfab.com/3d-models/diaphragm-air-engine-mechanism-4806344978a84798b3cbfc32ae2f97c0
+* author:	spicymeatballs645 (https://sketchfab.com/spicymeatballs645)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Diaphragm Air Engine Mechanism" (https://sketchfab.com/3d-models/diaphragm-air-engine-mechanism-4806344978a84798b3cbfc32ae2f97c0) by spicymeatballs645 (https://sketchfab.com/spicymeatballs645) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
