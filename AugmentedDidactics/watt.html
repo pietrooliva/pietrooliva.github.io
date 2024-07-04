@@ -75,13 +75,13 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.0005; // Further reduced speed
+                const rotationSpeed = 0.0001; // Further reduced speed
                 const threshold = 45; // Increased threshold
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
                     const gammaAdjusted = gamma - Math.sign(gamma) * threshold; // Adjust gamma to start from 0 after threshold
-                    entity.object3D.rotation.z += gammaAdjusted * rotationSpeed; // Changed from rotation.y to rotation.z
+                    entity.object3D.rotation.y += gammaAdjusted * rotationSpeed; // Changed from rotation.y 
                 }
             },
 
@@ -118,8 +118,8 @@
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="0 180 0"
-                position="0.0 0.0 1.5"
-                scale="0.9 0.9 0.9"
+                position="0.0 0.0 1.8"
+                scale="1.9 1.9 1.9"
                 class="clickable"
                 gesture-handler="minScale: 0.3; maxScale: 20; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
