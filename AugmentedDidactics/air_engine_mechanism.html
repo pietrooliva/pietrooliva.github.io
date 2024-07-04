@@ -19,7 +19,7 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
-                this.smoothingFactor = 0.3;
+                this.smoothingFactor = 0.1;
                 this.sensitivityThreshold = 1.0;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
@@ -52,7 +52,7 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.01;
+                    const rotationSensitivity = 0.005;
 
                     const deltaRotX = deltaPosition.y * rotationSensitivity;
                     const deltaRotY = deltaPosition.x * rotationSensitivity;
@@ -117,9 +117,9 @@
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="-90 180 180"
-                position="0.0 0.0 1.8"
-                scale="1 1 1"
+                rotation="-90 0 180"
+                position="0.0 0.0 1.5"
+                scale="0.5 0.5 0.5"
                 class="clickable"
                 gesture-handler="minScale: 0.3; maxScale: 20; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
