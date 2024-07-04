@@ -19,7 +19,7 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
-                this.smoothingFactor = 0.1;
+                this.smoothingFactor = 0.2; // Increased for more smoothing
                 this.sensitivityThreshold = 1.0;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
@@ -52,7 +52,7 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.005;
+                    const rotationSensitivity = 0.002; // Reduced sensitivity
 
                     const deltaRotX = deltaPosition.y * rotationSensitivity;
                     const deltaRotY = deltaPosition.x * rotationSensitivity;
@@ -75,8 +75,8 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.001; // Adjust this value to control rotation speed
-                const threshold = 35; // Threshold for rotation in degrees
+                const rotationSpeed = 0.0005; // Further reduced speed
+                const threshold = 45; // Increased threshold
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
