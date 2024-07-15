@@ -90,19 +90,6 @@
                 entity.classList.toggle('selected');
             },
         });
-
-        AFRAME.registerComponent('center-model', {
-            init: function () {
-                this.el.addEventListener('model-loaded', () => {
-                    const mesh = this.el.getObject3D('mesh');
-                    if (mesh) {
-                        const box = new THREE.Box3().setFromObject(mesh);
-                        const center = box.getCenter(new THREE.Vector3());
-                        mesh.position.sub(center); // Move the model so that the center is at the origin
-                    }
-                });
-            }
-        });
     </script>
 
     <style>
@@ -130,13 +117,12 @@
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="180 0 0"
-                position="0 0 0.5"
-                scale="3.5 3.5 3.5"
+                rotation="0 180 30"
+                position="0.0 0.0 1.5"
+                scale="2.3 2.3 2.3"
                 class="clickable"
-                gesture-handler="minScale: 0.1; maxScale: 20; translateEnabled: false; rotateEnabled: true"
-                translate-and-rotate-handler
-                center-model>
+                gesture-handler="minScale: 0.3; maxScale: 20; translateEnabled: false; rotateEnabled: true"
+                translate-and-rotate-handler>
             </a-entity>
         </a-marker>
         
