@@ -109,6 +109,7 @@
                 const box = new THREE.Box3().setFromObject(model);
                 const center = box.getCenter(new THREE.Vector3());
                 model.position.sub(center);
+                console.log("Model centralized to:", center); // Log for debugging
             }
         });
     </script>
