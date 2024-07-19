@@ -12,16 +12,16 @@
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-
+    
     <script>
         AFRAME.registerComponent('translate-and-rotate-handler', {
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotation = { x: 0, y: 0 };
-                this.smoothingFactor = 0.25;  // Increased smoothing factor
+                this.smoothingFactor = 0.15;
                 this.sensitivityThreshold = 2.0;
                 this.rotationSpeed = 0.0001;
-                this.rotationThreshold = 35;
+                this.rotationThreshold = 35; // soglia maggiore per il tilting
 
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
@@ -63,8 +63,8 @@
                 const { x, y } = deltaPosition;
                 const rotationSensitivity = 0.002;
 
-                const deltaRotX = y * rotationSensitivity;
-                const deltaRotY = x * rotationSensitivity;
+                const deltaRotX = y * rotationSensitivity; // Alto-basso corrisponde a rotazione intorno a x
+                const deltaRotY = x * rotationSensitivity; // Destra-sinistra corrisponde a rotazione intorno a y
 
                 const smoothRotX = this.previousRotation.x + (deltaRotX - this.previousRotation.x) * this.smoothingFactor;
                 const smoothRotY = this.previousRotation.y + (deltaRotY - this.previousRotation.y) * this.smoothingFactor;
@@ -86,7 +86,7 @@
 
                 if (Math.abs(gamma) > this.rotationThreshold) {
                     const gammaAdjusted = gamma - Math.sign(gamma) * this.rotationThreshold;
-                    entity.object3D.rotation.z += gammaAdjusted * this.rotationSpeed;
+                    entity.object3D.rotation.z += gammaAdjusted * this.rotationSpeed; // Rotazione intorno all'asse z
                 }
             },
 
@@ -95,27 +95,21 @@
             },
         });
 
-        AFRAME.registerComponent('centralize-model', {
+        AFRAME.registerComponent('center-model', {
             init: function () {
-                const model = this.el.getObject3D('mesh');
-                if (model) {
-                    this.centralize(model);
-                } else {
-                    this.el.addEventListener('model-loaded', (e) => this.centralize(e.detail.model));
-                }
-            },
-
-            centralize: function (model) {
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                model.position.sub(center);
-                console.log("Model centralized to:", center); // Log for debugging
+                const el = this.el;
+                el.addEventListener('model-loaded', () => {
+                    const model = el.getObject3D('mesh');
+                    const box = new THREE.Box3().setFromObject(model);
+                    const center = box.getCenter(new THREE.Vector3());
+                    model.position.sub(center);
+                });
             }
         });
     </script>
 </head>
 <body>
-    <a-scene gesture-detector    
+    <a-scene gesture-detector
              embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
              renderer='precision: medium;'
              id="scene">
@@ -137,9 +131,9 @@
                 position="0.0 0.0 1.0"
                 scale="2.3 2.3 2.3"
                 class="clickable"
+                center-model
                 gesture-handler="minScale: 0.3; maxScale: 20; translateEnabled: false; rotateEnabled: true"
-                translate-and-rotate-handler
-                centralize-model>
+                translate-and-rotate-handler>
             </a-entity>
         </a-marker>
 
