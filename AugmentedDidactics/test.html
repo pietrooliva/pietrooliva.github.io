@@ -21,8 +21,8 @@
                 this.previousRotationY = 0;
                 this.smoothingFactor = 0.2; // Maggiore smussamento
                 this.sensitivityThreshold = 1.0;
-                this.rotationSpeed = 0.0005; // Velocità di rotazione
-                this.rotationThreshold = 1.0; // Soglia per applicare la rotazione
+                this.rotationSpeed = 0.0001; // Velocità di rotazione
+                this.rotationThreshold = 40.0; // Soglia per applicare la rotazione
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
                 
