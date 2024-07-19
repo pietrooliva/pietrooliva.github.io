@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AUGMENTED DIDACTICS LAB: Lembo-Oliva</title>
+    <title>AUGMENTED DIDACTICS LAB - Lembo-Oliva</title>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" href="style.css" />
@@ -11,21 +11,16 @@
     <script src="libs/AR.js"></script>
     <script src="libs/gesture-detector.js"></script>
     <script src="libs/gesture-handler.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 
+    <!-- Define the custom translate-rotate-handler component with smoothing -->
     <script>
-        AFRAME.registerComponent('translate-and-rotate-handler', {
+        AFRAME.registerComponent('translate-rotate-handler', {
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
-                this.previousRotationX = 0;
-                this.previousRotationY = 0;
-                this.smoothingFactor = 0.2; // Increased for more smoothing
-                this.sensitivityThreshold = 1.0;
+                this.previousRotation = 0;
+                this.smoothingFactor = 0.2; // Adjust this value for more or less smoothing
+                this.sensitivityThreshold = 0.8; // Adjust this value to ignore small movements
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
-                this.el.addEventListener('click', this.onEntityClick.bind(this));
-                
-                // Add device orientation listener
-                window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
             },
 
             onGestureMove: function (event) {
@@ -38,9 +33,11 @@
                     const deltaX = x * sensitivity;
                     const deltaY = y * sensitivity;
 
+                    // Apply smoothing
                     const smoothX = this.previousPosition.x + (deltaX - this.previousPosition.x) * this.smoothingFactor;
                     const smoothY = this.previousPosition.y + (deltaY - this.previousPosition.y) * this.smoothingFactor;
 
+                    // Apply threshold
                     if (Math.abs(smoothX) > this.sensitivityThreshold) {
                         entity.object3D.position.x += smoothX;
                     }
@@ -50,90 +47,71 @@
 
                     this.previousPosition.x = smoothX;
                     this.previousPosition.y = smoothY;
-                } else if (detail.type === 'rotate' && detail.numFingers === 1) {
-                    const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.002; // Reduced sensitivity
+                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
+                    const { deltaRotation } = detail;
+                    const rotationSensitivity = 0.5;
+                    const deltaRot = deltaRotation * rotationSensitivity;
 
-                    const deltaRotX = deltaPosition.y * rotationSensitivity;
-                    const deltaRotY = deltaPosition.x * rotationSensitivity;
+                    // Apply smoothing
+                    const smoothRot = this.previousRotation + (deltaRot - this.previousRotation) * this.smoothingFactor;
 
-                    const smoothRotX = this.previousRotationX + (deltaRotX - this.previousRotationX) * this.smoothingFactor;
-                    const smoothRotY = this.previousRotationY + (deltaRotY - this.previousRotationY) * this.smoothingFactor;
+                    // Apply threshold
+                    if (Math.abs(smoothRot) > this.sensitivityThreshold) {
+                        // Adjust rotation around the center of the object
+                        const center = new THREE.Vector3();
+                        entity.object3D.geometry.computeBoundingBox();
+                        entity.object3D.geometry.boundingBox.getCenter(center);
 
-                    if (Math.abs(smoothRotX) > this.sensitivityThreshold) {
-                        entity.object3D.rotation.x += THREE.Math.degToRad(smoothRotX);
+                        entity.object3D.position.sub(center); // Move to origin
+                        entity.object3D.rotation.y += smoothRot;
+                        entity.object3D.position.add(center); // Move back to center
                     }
-                    if (Math.abs(smoothRotY) > this.sensitivityThreshold) {
-                        entity.object3D.rotation.y += THREE.Math.degToRad(smoothRotY);
-                    }
 
-                    this.previousRotationX = smoothRotX;
-                    this.previousRotationY = smoothRotY;
+                    this.previousRotation = smoothRot;
                 }
-            },
-
-            onDeviceOrientation: function (event) {
-                const entity = this.el;
-                const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.0005; // Further reduced speed
-                const threshold = 45; // Increased threshold
-
-                // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
-                if (Math.abs(gamma) > threshold) {
-                    const gammaAdjusted = gamma - Math.sign(gamma) * threshold; // Adjust gamma to start from 0 after threshold
-                    entity.object3D.rotation.z += gammaAdjusted * rotationSpeed; // Changed from rotation.y to rotation.z
-                }
-            },
-
-            onEntityClick: function () {
-                const entity = this.el;
-                entity.classList.toggle('selected');
             },
         });
     </script>
-
-    <style>
-        .selected {
-            color: yellow;
-        }
-    </style>
 </head>
 <body>
-    <a-scene gesture-detector    
-             embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-             renderer='precision: medium;'
-             id="scene">
+<a-scene gesture-detector    
+         embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+         renderer='precision: medium;'
+         id="scene">
 
-        <a-assets>
-            <a-asset-item id="model" src="models/nasca_vessel/scene.gltf"></a-asset-item>
-        </a-assets>
+    <a-assets>
+        <!-- Load the GLTF model -->
+        <a-asset-item id="model" src="models/nasca_vessel/scene.gltf"></a-asset-item>
 
-        <a-marker
-            raycaster="objects: .clickable"
-            emitevents="true"
-            cursor="fuse: false; rayOrigin: mouse;"
-            type="barcode" value="0">
-            
-            <a-entity
-                gltf-model="#model"
-                animation-mixer="clip: *;"
-                rotation="-90 180 180"
-                position="0.0 0.0 1.0"
-                scale="1.3 1.3 1.3"
-                class="clickable"
-                gesture-handler="minScale: 0.3; maxScale: 20; translateEnabled: false; rotateEnabled: true"
-                translate-and-rotate-handler>
-            </a-entity>
-        </a-marker>
+        <!-- Load any additional textures -->
+        <img id="texture1" src="models/nasca_vessel/textures/3108_Nasca_Gefaess_baseColor.jpeg"> 
+        <img id="texture2" src="models/nasca_vessel/textures/3108_Nasca_Gefaess_metallicRoughness.png"> 
+        <img id="texture3" src="models/nasca_vessel/textures/3108_Nasca_Gefaess_normal.jpeg"> 
+        <!-- Add more textures as needed -->
+    </a-assets>
+
+    <!-- Marker for triggering the display of the model -->
+    <a-marker
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        type="barcode" value="12">
         
-        <!-- Add various types of lights 
-        <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
-        <a-light type="directional" color="#ffffff" intensity="1" position="1 1 1"></a-light>
-        <a-light type="point" color="#ffffff" intensity="1" position="0 2 2"></a-light> -->
+        <!-- Entity representing the augmented content -->
+        <a-entity
+            gltf-model="#model"
+            rotation="-90 180 180"
+            scale="4.5 4.5 4.5"
+            position="0.0 0.0 0.3"
+            class="clickable"
+            gesture-handler="minScale: 0.4; maxScale: 30; translateEnabled: true; rotateEnabled: true"
+            translate-rotate-handler <!-- Apply the custom translate-rotate-handler component here -->
+        ></a-entity>
+    </a-marker>
+    
+    <!-- Camera entity for the scene -->
+    <a-entity camera></a-entity>
 
-        <a-entity camera></a-entity>
-        <a-entity axis-helper></a-entity>
-
-    </a-scene>
+</a-scene>
 </body>
 </html>
