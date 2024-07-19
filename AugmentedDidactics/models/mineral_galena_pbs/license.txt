@@ -1,0 +1,8 @@
+Model Information:
+* title:	Mineral: Galena (PbS)
+* source:	https://sketchfab.com/3d-models/mineral-galena-pbs-627cdc91f20248e7860e9e5363b91147
+* author:	Digital Atlas of Ancient Life (https://sketchfab.com/DigitalAtlasOfAncientLife)
+
+Model License:
+* license type:	CC0-1.0 (http://creativecommons.org/publicdomain/zero/1.0/)
+* requirements:	Credit is not mandatory. Commercial use is allowed.
