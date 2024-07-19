@@ -20,8 +20,8 @@
                 this.previousRotation = { x: 0, y: 0 };
                 this.smoothingFactor = 0.15;
                 this.sensitivityThreshold = 2.0;
-                this.rotationSpeed = 0.0004;
-                this.rotationThreshold = 25;
+                this.rotationSpeed = 0.0005;
+                this.rotationThreshold = 25; // soglia maggiore per il tilting
 
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
@@ -63,8 +63,8 @@
                 const { x, y } = deltaPosition;
                 const rotationSensitivity = 0.002;
 
-                const deltaRotX = y * rotationSensitivity;
-                const deltaRotY = x * rotationSensitivity;
+                const deltaRotX = y * rotationSensitivity; // Alto-basso corrisponde a rotazione intorno a x
+                const deltaRotY = x * rotationSensitivity; // Destra-sinistra corrisponde a rotazione intorno a y
 
                 const smoothRotX = this.previousRotation.x + (deltaRotX - this.previousRotation.x) * this.smoothingFactor;
                 const smoothRotY = this.previousRotation.y + (deltaRotY - this.previousRotation.y) * this.smoothingFactor;
@@ -86,7 +86,7 @@
 
                 if (Math.abs(gamma) > this.rotationThreshold) {
                     const gammaAdjusted = gamma - Math.sign(gamma) * this.rotationThreshold;
-                    entity.object3D.rotation.z += gammaAdjusted * this.rotationSpeed;
+                    entity.object3D.rotation.z += gammaAdjusted * this.rotationSpeed; // Rotazione intorno all'asse z
                 }
             },
 
