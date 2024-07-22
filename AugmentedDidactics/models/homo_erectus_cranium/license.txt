@@ -1,0 +1,11 @@
+Model Information:
+* title:	Homo erectus cranium
+* source:	https://sketchfab.com/3d-models/homo-erectus-cranium-2e9f6faf44924293a00dac6b9d482eb8
+* author:	Digital Atlas of Ancient Life (https://sketchfab.com/DigitalAtlasOfAncientLife)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Homo erectus cranium" (https://sketchfab.com/3d-models/homo-erectus-cranium-2e9f6faf44924293a00dac6b9d482eb8) by Digital Atlas of Ancient Life (https://sketchfab.com/DigitalAtlasOfAncientLife) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
