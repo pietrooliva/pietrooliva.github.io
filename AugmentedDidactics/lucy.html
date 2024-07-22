@@ -117,7 +117,7 @@
 <body>
     <a-scene gesture-detector
              embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-             renderer='precision: medium;'
+             renderer='precision: high;'
              id="scene">
 
         <a-assets>
@@ -135,7 +135,7 @@
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
                 position="0 0 0"
-                scale="0.1 0.1 0.1"
+                scale="0.08 0.08 0.08"
                 class="clickable"
                 center-model
                 gesture-handler="minScale: 0.05; maxScale: 20; translateEnabled: true; rotateEnabled: true"
