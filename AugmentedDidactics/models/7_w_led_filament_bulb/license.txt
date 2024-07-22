@@ -1,0 +1,11 @@
+Model Information:
+* title:	7 W Led Filament Bulb
+* source:	https://sketchfab.com/3d-models/7-w-led-filament-bulb-5b3c0e43601e403db842b16a878225d8
+* author:	Wieslaw Kruczala (https://sketchfab.com/kruczalaw)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "7 W Led Filament Bulb" (https://sketchfab.com/3d-models/7-w-led-filament-bulb-5b3c0e43601e403db842b16a878225d8) by Wieslaw Kruczala (https://sketchfab.com/kruczalaw) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
