@@ -1,0 +1,11 @@
+Model Information:
+* title:	Australopithecus afarensis cranium
+* source:	https://sketchfab.com/3d-models/australopithecus-afarensis-cranium-4562f063aba647d290abb5808d66f20a
+* author:	Digital Atlas of Ancient Life (https://sketchfab.com/DigitalAtlasOfAncientLife)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Australopithecus afarensis cranium" (https://sketchfab.com/3d-models/australopithecus-afarensis-cranium-4562f063aba647d290abb5808d66f20a) by Digital Atlas of Ancient Life (https://sketchfab.com/DigitalAtlasOfAncientLife) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
