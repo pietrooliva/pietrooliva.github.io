@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 
     <script>
+        // Component to handle translation and rotation
         AFRAME.registerComponent('translate-and-rotate-handler', {
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
@@ -23,7 +24,7 @@
                 this.sensitivityThreshold = 1.0;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
-                
+
                 // Add device orientation listener
                 window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
             },
@@ -90,6 +91,25 @@
                 entity.classList.toggle('selected');
             },
         });
+
+        // Component to center the model
+        AFRAME.registerComponent('center-model', {
+            init: function () {
+                const el = this.el;
+                el.addEventListener('model-loaded', () => {
+                    const model = el.getObject3D('mesh');
+                    if (model) {
+                        const box = new THREE.Box3().setFromObject(model);
+                        const center = box.getCenter(new THREE.Vector3());
+                        model.position.sub(center);
+
+                        // Optional: Adjust position to ensure the model is centered vertically
+                        const size = box.getSize(new THREE.Vector3());
+                        model.position.y -= size.y / 2;
+                    }
+                });
+            }
+        });
     </script>
 
     <style>
@@ -118,16 +138,17 @@
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
-                position="0.0 0.0 0.0"
+                position="0 0 0"
                 scale="0.1 0.1 0.1"
                 class="clickable"
+                center-model
                 gesture-handler="minScale: 0.05; maxScale: 20; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
             </a-entity>
         </a-marker>
         
-        <!-- Add various types of lights 
-        <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
+        <!-- Add various types of lights -->
+        <!-- <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
         <a-light type="directional" color="#ffffff" intensity="1" position="1 1 1"></a-light>
         <a-light type="point" color="#ffffff" intensity="1" position="0 2 2"></a-light> -->
 
