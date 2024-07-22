@@ -105,7 +105,7 @@
              id="scene">
 
         <a-assets>
-            <a-asset-item id="model" src="models/australopithecus_afarensis_cranium/scene.gltf"></a-asset-item>
+            <a-asset-item id="model" src="models/homo_erectus_cranium/scene.gltf"></a-asset-item>
         </a-assets>
 
         <a-marker
@@ -117,8 +117,8 @@
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="-90 0 0"
-                position="0.0 0.0 -0.5"
+                rotation="-90 180 180"
+                position="0.0 0.0 0.0"
                 scale="0.1 0.1 0.1"
                 class="clickable"
                 gesture-handler="minScale: 0.05; maxScale: 20; translateEnabled: false; rotateEnabled: true"
