@@ -21,7 +21,7 @@
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
                 this.smoothingFactor = 0.2; // Increased for more smoothing
-                this.sensitivityThreshold = 1.0;
+                this.sensitivityThreshold = 1.5;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
 
@@ -53,7 +53,7 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.002; // Reduced sensitivity
+                    const rotationSensitivity = 0.001; // Reduced sensitivity
 
                     const deltaRotX = deltaPosition.y * rotationSensitivity;
                     const deltaRotY = deltaPosition.x * rotationSensitivity;
@@ -76,8 +76,8 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.0005; // Further reduced speed
-                const threshold = 45; // Increased threshold
+                const rotationSpeed = 0.0004; // Further reduced speed
+                const threshold = 40; // Increased threshold
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
@@ -132,14 +132,14 @@
             raycaster="objects: .clickable"
             emitevents="true"
             cursor="fuse: false; rayOrigin: mouse;"
-            type="barcode" value="60">
+            type="barcode" value="50">
             
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
                 position="0 0 0"
-                scale="0.5 0.5 0.5"
+                scale="0.3 0.3 0.3"
                 class="clickable"
                 center-model
                 gesture-handler="minScale: 0.01; maxScale: 20; translateEnabled: false; rotateEnabled: true"
