@@ -103,7 +103,6 @@
                 if (event.button === 0) { // Left mouse button
                     this.mouseDown = true;
                     this.mouseStartX = event.clientX;
-                    this.mouseStartY = event.clientY;
                 }
             },
 
@@ -111,18 +110,14 @@
                 if (this.mouseDown) {
                     const entity = this.el;
                     const deltaX = event.clientX - this.mouseStartX;
-                    const deltaY = event.clientY - this.mouseStartY;
 
-                    const rotationSensitivity = 0.01; // Mouse rotation sensitivity
+                    const rotationSensitivity = 0.05; // Mouse rotation sensitivity
 
-                    const deltaRotX = deltaY * rotationSensitivity;
                     const deltaRotY = deltaX * rotationSensitivity;
 
-                    entity.object3D.rotation.x += THREE.Math.degToRad(deltaRotX);
                     entity.object3D.rotation.y += THREE.Math.degToRad(deltaRotY);
 
                     this.mouseStartX = event.clientX;
-                    this.mouseStartY = event.clientY;
                 }
             },
 
@@ -134,7 +129,7 @@
 
             onMouseWheel: function (event) {
                 const entity = this.el;
-                const scaleSensitivity = 0.1; // Mouse wheel zoom sensitivity
+                const scaleSensitivity = 0.05; // Mouse wheel zoom sensitivity
 
                 const deltaScale = (event.deltaY < 0 ? 1 : -1) * scaleSensitivity;
                 entity.object3D.scale.x += deltaScale;
