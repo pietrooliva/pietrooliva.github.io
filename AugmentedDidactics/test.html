@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
 
     <script>
-        // Component to handle translation and rotation
+        // Component to handle translation, rotation, and mouse interactions
         AFRAME.registerComponent('translate-and-rotate-handler', {
             init: function () {
                 this.previousPosition = { x: 0, y: 0 };
@@ -22,11 +22,19 @@
                 this.previousRotationY = 0;
                 this.smoothingFactor = 0.2; // Increased for more smoothing
                 this.sensitivityThreshold = 1.5;
+                this.mouseDown = false;
+
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
-
+                
                 // Add device orientation listener
                 window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
+                
+                // Add mouse listeners
+                window.addEventListener('mousedown', this.onMouseDown.bind(this));
+                window.addEventListener('mousemove', this.onMouseMove.bind(this));
+                window.addEventListener('mouseup', this.onMouseUp.bind(this));
+                window.addEventListener('wheel', this.onMouseWheel.bind(this));
             },
 
             onGestureMove: function (event) {
@@ -90,6 +98,52 @@
                 const entity = this.el;
                 entity.classList.toggle('selected');
             },
+
+            onMouseDown: function (event) {
+                if (event.button === 0) { // Left mouse button
+                    this.mouseDown = true;
+                    this.mouseStartX = event.clientX;
+                    this.mouseStartY = event.clientY;
+                }
+            },
+
+            onMouseMove: function (event) {
+                if (this.mouseDown) {
+                    const entity = this.el;
+                    const deltaX = event.clientX - this.mouseStartX;
+                    const deltaY = event.clientY - this.mouseStartY;
+
+                    const rotationSensitivity = 0.005; // Mouse rotation sensitivity
+
+                    const deltaRotX = deltaY * rotationSensitivity;
+                    const deltaRotY = deltaX * rotationSensitivity;
+
+                    entity.object3D.rotation.x += THREE.Math.degToRad(deltaRotX);
+                    entity.object3D.rotation.y += THREE.Math.degToRad(deltaRotY);
+
+                    this.mouseStartX = event.clientX;
+                    this.mouseStartY = event.clientY;
+                }
+            },
+
+            onMouseUp: function (event) {
+                if (event.button === 0) { // Left mouse button
+                    this.mouseDown = false;
+                }
+            },
+
+            onMouseWheel: function (event) {
+                const entity = this.el;
+                const scaleSensitivity = 0.1; // Mouse wheel zoom sensitivity
+
+                const deltaScale = (event.deltaY < 0 ? 1 : -1) * scaleSensitivity;
+                entity.object3D.scale.x += deltaScale;
+                entity.object3D.scale.y += deltaScale;
+                entity.object3D.scale.z += deltaScale;
+
+                // Ensure the scale stays within the defined limits
+                entity.object3D.scale.clamp(new THREE.Vector3(0.1, 0.1, 0.1), new THREE.Vector3(20, 20, 20));
+            },
         });
 
         // Component to center the model
@@ -121,7 +175,7 @@
 <body>
     <a-scene gesture-detector    
              embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-             renderer='precision: medium;'
+             renderer='precision: high;'
              id="scene">
 
         <a-assets>
@@ -138,7 +192,7 @@
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
-                position="0 0 1"
+                position="0 0 1.3"
                 scale="0.2 0.2 0.2"
                 class="clickable"
                 center-model
