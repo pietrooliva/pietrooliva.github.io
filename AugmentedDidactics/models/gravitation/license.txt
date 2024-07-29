@@ -1,0 +1,14 @@
+Model Information:
+* title:	Gravitation visualized
+* source:	https://sketchfab.com/3d-models/gravitation-visualized-aeb760b964194b43b7274d481af2bf47
+* author:	v124entkl (https://sketchfab.com/v124entkl)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gravitation visualized" (https://sketchfab.com/3d-models/gravitation-visualized-aeb760b964194b43b7274d481af2bf47) by v124entkl (https://sketchfab.com/v124entkl) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+
+
