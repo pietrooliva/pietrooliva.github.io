@@ -35,6 +35,15 @@
                 window.addEventListener('mousemove', this.onMouseMove.bind(this));
                 window.addEventListener('mouseup', this.onMouseUp.bind(this));
                 window.addEventListener('wheel', this.onMouseWheel.bind(this));
+
+                // Initialize orientation values
+                this.orientationValues = {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0
+                };
+                this.orientationHistory = [];
+                this.maxHistoryLength = 5;
             },
 
             onGestureMove: function (event) {
@@ -87,9 +96,18 @@
                 const rotationSpeed = 0.0004; // Further reduced speed
                 const threshold = 40; // Increased threshold
 
+                // Update orientation history
+                this.orientationHistory.push({ gamma });
+                if (this.orientationHistory.length > this.maxHistoryLength) {
+                    this.orientationHistory.shift();
+                }
+
+                // Calculate average gamma
+                const avgGamma = this.orientationHistory.reduce((sum, val) => sum + val.gamma, 0) / this.orientationHistory.length;
+
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
-                if (Math.abs(gamma) > threshold) {
-                    const gammaAdjusted = gamma - Math.sign(gamma) * threshold; // Adjust gamma to start from 0 after threshold
+                if (Math.abs(avgGamma) > threshold) {
+                    const gammaAdjusted = avgGamma - Math.sign(avgGamma) * threshold; // Adjust gamma to start from 0 after threshold
                     entity.object3D.rotation.z += gammaAdjusted * rotationSpeed; // Changed from rotation.y to rotation.z
                 }
             },
@@ -179,24 +197,24 @@
              id="scene">
 
         <a-assets>
-            <a-asset-item id="model" src="models/7_w_led_filament_bulb/scene.gltf"></a-asset-item>
+            <a-asset-item id="model" src="models/Fcomp.gltf"></a-asset-item>
         </a-assets>
 
         <a-marker
             raycaster="objects: .clickable"
             emitevents="true"
             cursor="fuse: false; rayOrigin: mouse;"
-            type="barcode" value="50">
+            type="barcode" value="2">
             
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
                 position="0 0 0"
-                scale="0.2 0.2 0.2"
+                scale="0.3 0.3 0.3"
                 class="clickable"
                 center-model
-                gesture-handler="minScale: 0.1; maxScale: 20; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.1; maxScale: 50; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
             </a-entity>
         </a-marker>
