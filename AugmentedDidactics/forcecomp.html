@@ -93,7 +93,7 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.0004; // Further reduced speed
+                const rotationSpeed = 0.0003; // Further reduced speed
                 const threshold = 40; // Increased threshold
 
                 // Update orientation history
@@ -211,7 +211,7 @@
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
                 position="0 0 0"
-                scale="0.3 0.3 0.3"
+                scale="0.4 0.4 0.4"
                 class="clickable"
                 center-model
                 gesture-handler="minScale: 0.1; maxScale: 50; translateEnabled: false; rotateEnabled: true"
