@@ -20,8 +20,8 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
-                this.smoothingFactor = 0.8; // Increased for more smoothing
-                this.sensitivityThreshold = 10.0; // Increased threshold to reduce minor movements
+                this.smoothingFactor = 0.2; // Increased for more smoothing
+                this.sensitivityThreshold = 5.5;
                 this.mouseDown = false;
 
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
@@ -43,7 +43,7 @@
                     gamma: 0
                 };
                 this.orientationHistory = [];
-                this.maxHistoryLength = 50; // Increased history length for better filtering
+                this.maxHistoryLength = 5;
             },
 
             onGestureMove: function (event) {
@@ -52,7 +52,7 @@
 
                 if (detail.type === 'translate' && detail.numFingers === 2) {
                     const { x, y } = detail.deltaPosition;
-                    const sensitivity = 0.005; // Reduced sensitivity
+                    const sensitivity = 0.01;
                     const deltaX = x * sensitivity;
                     const deltaY = y * sensitivity;
 
@@ -70,7 +70,7 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.0005; // Further reduced sensitivity
+                    const rotationSensitivity = 0.001; // Reduced sensitivity
 
                     const deltaRotX = deltaPosition.y * rotationSensitivity;
                     const deltaRotY = deltaPosition.x * rotationSensitivity;
@@ -93,8 +93,8 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.00005; // Reduced speed
-                const threshold = 70; // Increased threshold
+                const rotationSpeed = 0.0003; // Further reduced speed
+                const threshold = 40; // Increased threshold
 
                 // Update orientation history
                 this.orientationHistory.push({ gamma });
@@ -131,7 +131,7 @@
                     const deltaX = event.clientX - this.mouseStartX;
                     const deltaY = event.clientY - this.mouseStartY;
 
-                    const rotationSensitivity = 0.2; // Further reduced mouse rotation sensitivity
+                    const rotationSensitivity = 0.8; // Mouse rotation sensitivity
 
                     const deltaRotX = deltaY * rotationSensitivity;
                     const deltaRotY = deltaX * rotationSensitivity;
@@ -152,7 +152,7 @@
 
             onMouseWheel: function (event) {
                 const entity = this.el;
-                const scaleSensitivity = 0.025; // Further reduced mouse wheel zoom sensitivity
+                const scaleSensitivity = 0.1; // Mouse wheel zoom sensitivity
 
                 const deltaScale = (event.deltaY < 0 ? 1 : -1) * scaleSensitivity;
                 entity.object3D.scale.x += deltaScale;
@@ -178,12 +178,6 @@
                         // Optional: Adjust position to ensure the model is centered vertically
                         const size = box.getSize(new THREE.Vector3());
                         model.position.y -= size.y / 2;
-
-                        // Set the pivot to the center of the model
-                        const pivot = new THREE.Group();
-                        el.object3D.add(pivot);
-                        pivot.add(model);
-                        pivot.position.copy(center.negate());
                     }
                 });
             }
@@ -217,7 +211,7 @@
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
                 position="0 0 0"
-                scale="2.5 2.5 2.5"
+                scale="3.4 3.4 3.4"
                 class="clickable"
                 center-model
                 gesture-handler="minScale: 0.1; maxScale: 50; translateEnabled: false; rotateEnabled: true"
@@ -226,7 +220,7 @@
         </a-marker>
         
         <!-- Add various types of lights -->
-        <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
+        <!-- <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
         <a-light type="directional" color="#ffffff" intensity="1" position="1 1 1"></a-light>
         <a-light type="point" color="#ffffff" intensity="1" position="0 2 2"></a-light> -->
 
