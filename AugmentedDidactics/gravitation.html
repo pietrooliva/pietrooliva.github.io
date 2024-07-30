@@ -21,7 +21,7 @@
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
                 this.smoothingFactor = 0.8; // Increased for more smoothing
-                this.sensitivityThreshold = 50.0; // Increased threshold to reduce minor movements
+                this.sensitivityThreshold = 10.0; // Increased threshold to reduce minor movements
                 this.mouseDown = false;
 
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
@@ -203,7 +203,7 @@
              id="scene">
 
         <a-assets>
-            <a-asset-item id="model" src="models/gravitation/scene.gltf"></a-asset-item>
+            <a-asset-item id="model" src="models/gravitation2/scene.gltf"></a-asset-item>
         </a-assets>
 
         <a-marker
@@ -216,7 +216,7 @@
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
-                position="0 0 -50"
+                position="0 0 0"
                 scale="2.5 2.5 2.5"
                 class="clickable"
                 center-model
