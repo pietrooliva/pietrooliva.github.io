@@ -21,7 +21,7 @@
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
                 this.smoothingFactor = 0.2; // Increased for more smoothing
-                this.sensitivityThreshold = 5.5;
+                this.sensitivityThreshold = 1.5;
                 this.mouseDown = false;
 
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
@@ -94,7 +94,7 @@
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
                 const rotationSpeed = 0.0003; // Further reduced speed
-                const threshold = 40; // Increased threshold
+                const threshold = 30; // Increased threshold
 
                 // Update orientation history
                 this.orientationHistory.push({ gamma });
@@ -210,8 +210,8 @@
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
-                position="0 0 0"
-                scale="3.4 3.4 3.4"
+                position="0 0 -3"
+                scale="4.4 4.4 4.4"
                 class="clickable"
                 center-model
                 gesture-handler="minScale: 0.1; maxScale: 50; translateEnabled: false; rotateEnabled: true"
