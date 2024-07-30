@@ -21,7 +21,7 @@
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
                 this.smoothingFactor = 0.8; // Increased for more smoothing
-                this.sensitivityThreshold = 20.0; // Increased threshold to reduce minor movements
+                this.sensitivityThreshold = 50.0; // Increased threshold to reduce minor movements
                 this.mouseDown = false;
 
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
@@ -216,8 +216,8 @@
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
-                position="0 0 0"
-                scale="1.5 1.5 1.5"
+                position="0 0 -50"
+                scale="2.5 2.5 2.5"
                 class="clickable"
                 center-model
                 gesture-handler="minScale: 0.1; maxScale: 50; translateEnabled: false; rotateEnabled: true"
