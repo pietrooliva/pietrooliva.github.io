@@ -20,8 +20,8 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
-                this.smoothingFactor = 0.9; // Further increased for more smoothing
-                this.sensitivityThreshold = 10.0; // Increased threshold to reduce minor movements
+                this.smoothingFactor = 0.8; // Increased for more smoothing
+                this.sensitivityThreshold = 20.0; // Increased threshold to reduce minor movements
                 this.mouseDown = false;
 
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
@@ -43,7 +43,7 @@
                     gamma: 0
                 };
                 this.orientationHistory = [];
-                this.maxHistoryLength = 30; // Further increased history length for better filtering
+                this.maxHistoryLength = 50; // Increased history length for better filtering
             },
 
             onGestureMove: function (event) {
@@ -93,8 +93,8 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.0001; // Further reduced speed
-                const threshold = 60; // Increased threshold
+                const rotationSpeed = 0.00005; // Reduced speed
+                const threshold = 70; // Increased threshold
 
                 // Update orientation history
                 this.orientationHistory.push({ gamma });
@@ -226,7 +226,7 @@
         </a-marker>
         
         <!-- Add various types of lights -->
-        <!-- <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
+        <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
         <a-light type="directional" color="#ffffff" intensity="1" position="1 1 1"></a-light>
         <a-light type="point" color="#ffffff" intensity="1" position="0 2 2"></a-light> -->
 
