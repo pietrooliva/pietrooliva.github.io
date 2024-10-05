@@ -52,7 +52,7 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.005; // Reduced sensitivity
+                    const rotationSensitivity = 0.002; // Reduced sensitivity
 
                     const deltaRotX = deltaPosition.y * rotationSensitivity;
                     const deltaRotY = deltaPosition.x * rotationSensitivity;
@@ -76,7 +76,7 @@
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
                 const rotationSpeed = 0.001; // Further reduced speed
-                const threshold = 30; // Increased threshold
+                const threshold = 35; // Increased threshold
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
@@ -117,11 +117,11 @@
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="10 0 0"
+                rotation="5 90 0"
                 position="0.0 0.0 0.0"
-                scale="0.0025 0.0025 0.0025"
+                scale="0.002 0.002 0.002"
                 class="clickable"
-                gesture-handler="minScale: 0.0005; maxScale: 5; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.0005; maxScale: 3; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
             </a-entity>
         </a-marker>
