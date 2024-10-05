@@ -20,7 +20,7 @@
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
                 this.smoothingFactor = 0.2; // Increased for more smoothing
-                this.sensitivityThreshold = 1.0;
+                this.sensitivityThreshold = 1.5;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
                 
@@ -52,7 +52,7 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.002; // Reduced sensitivity
+                    const rotationSensitivity = 0.005; // Reduced sensitivity
 
                     const deltaRotX = deltaPosition.y * rotationSensitivity;
                     const deltaRotY = deltaPosition.x * rotationSensitivity;
@@ -75,8 +75,8 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.0005; // Further reduced speed
-                const threshold = 35; // Increased threshold
+                const rotationSpeed = 0.001; // Further reduced speed
+                const threshold = 30; // Increased threshold
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
@@ -117,11 +117,11 @@
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="0 90 30"
+                rotation="0 90 180"
                 position="0.0 0.0 0.0"
-                scale="0.005 0.005 0.005"
+                scale="0.001 0.001 0.001"
                 class="clickable"
-                gesture-handler="minScale: 0.001; maxScale: 0.5; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.0005; maxScale: 0.5; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
             </a-entity>
         </a-marker>
