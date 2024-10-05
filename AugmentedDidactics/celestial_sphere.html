@@ -76,7 +76,7 @@
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
                 const rotationSpeed = 0.0005; // Further reduced speed
-                const threshold = 45; // Increased threshold
+                const threshold = 35; // Increased threshold
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
@@ -119,9 +119,9 @@
                 animation-mixer="clip: *;"
                 rotation="0 180 30"
                 position="0.0 0.0 0.0"
-                scale="0.1 0.1 0.1"
+                scale="0.05 0.05 0.05"
                 class="clickable"
-                gesture-handler="minScale: 0.05; maxScale: 2; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.01; maxScale: 2; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
             </a-entity>
         </a-marker>
