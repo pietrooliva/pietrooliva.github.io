@@ -19,7 +19,7 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
-                this.smoothingFactor = 0.2; // Increased for more smoothing
+                this.smoothingFactor = 0.3; // Increased for more smoothing
                 this.sensitivityThreshold = 1.5;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
@@ -117,7 +117,7 @@
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="0 180 0"
+                rotation="0 -90 0"
                 position="0.0 0.0 0.0"
                 scale="0.002 0.002 0.002"
                 class="clickable"
