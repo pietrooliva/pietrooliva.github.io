@@ -1,0 +1,11 @@
+Model Information:
+* title:	The quasi-linear nearby Universe
+* source:	https://sketchfab.com/3d-models/the-quasi-linear-nearby-universe-f1c89ad5d4884dcf9c94a01810ac1c4b
+* author:	Daniel Pomarède (https://sketchfab.com/pomarede)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "The quasi-linear nearby Universe" (https://sketchfab.com/3d-models/the-quasi-linear-nearby-universe-f1c89ad5d4884dcf9c94a01810ac1c4b) by Daniel Pomarède (https://sketchfab.com/pomarede) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
