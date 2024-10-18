@@ -19,8 +19,8 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
-                this.smoothingFactor = 1.5; // Increased for more smoothing
-                this.sensitivityThreshold = 2.0;
+                this.smoothingFactor = 1.7; // Increased for more smoothing
+                this.sensitivityThreshold = 1.5;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
                 
@@ -52,7 +52,7 @@
                     this.previousPosition.y = smoothY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const { deltaPosition } = detail;
-                    const rotationSensitivity = 0.0002; // Reduced sensitivity
+                    const rotationSensitivity = 0.0004; // Reduced sensitivity
 
                     const deltaRotX = deltaPosition.y * rotationSensitivity;
                     const deltaRotY = deltaPosition.x * rotationSensitivity;
@@ -121,7 +121,7 @@
                 position="0.0 0.0 0.0"
                 scale="0.0002 0.0002 0.0002"
                 class="clickable"
-                gesture-handler="minScale: 0.0001; maxScale: 3; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.0001; maxScale: 5; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
             </a-entity>
         </a-marker>
