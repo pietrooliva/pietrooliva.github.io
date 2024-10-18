@@ -75,8 +75,8 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.001; // Further reduced speed
-                const threshold = 35; // Increased threshold
+                const rotationSpeed = 0.0003; // Further reduced speed
+                const threshold = 40; // Increased threshold
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
