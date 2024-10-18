@@ -19,8 +19,8 @@
                 this.previousPosition = { x: 0, y: 0 };
                 this.previousRotationX = 0;
                 this.previousRotationY = 0;
-                this.smoothingFactor = 0.3; // Increased for more smoothing
-                this.sensitivityThreshold = 1.5;
+                this.smoothingFactor = 1.5; // Increased for more smoothing
+                this.sensitivityThreshold = 2.0;
                 this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
                 this.el.addEventListener('click', this.onEntityClick.bind(this));
                 
@@ -75,8 +75,8 @@
             onDeviceOrientation: function (event) {
                 const entity = this.el;
                 const gamma = event.gamma; // Left-right tilt in degrees
-                const rotationSpeed = 0.001; // Further reduced speed
-                const threshold = 35; // Increased threshold
+                const rotationSpeed = 0.0003; // Further reduced speed
+                const threshold = 40; // Increased threshold
 
                 // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
                 if (Math.abs(gamma) > threshold) {
@@ -117,11 +117,11 @@
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
-                rotation="0 -90 180"
+                rotation="-90 180 180"
                 position="0.0 0.0 0.0"
-                scale="0.002 0.002 0.002"
+                scale="0.001 0.001 0.001"
                 class="clickable"
-                gesture-handler="minScale: 0.0005; maxScale: 3; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.0002; maxScale: 1; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
             </a-entity>
         </a-marker>
