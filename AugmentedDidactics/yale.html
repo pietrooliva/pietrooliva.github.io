@@ -112,16 +112,16 @@
             raycaster="objects: .clickable"
             emitevents="true"
             cursor="fuse: false; rayOrigin: mouse;"
-            type="barcode" value="30">
+            type="barcode" value="0">
             
             <a-entity
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 rotation="-90 180 180"
                 position="0.0 0.0 0.0"
-                scale="0.0002 0.0002 0.0002"
+                scale="0.02 0.02 0.02"
                 class="clickable"
-                gesture-handler="minScale: 0.0001; maxScale: 5; translateEnabled: false; rotateEnabled: true"
+                gesture-handler="minScale: 0.01; maxScale: 5; translateEnabled: false; rotateEnabled: true"
                 translate-and-rotate-handler>
             </a-entity>
         </a-marker>
