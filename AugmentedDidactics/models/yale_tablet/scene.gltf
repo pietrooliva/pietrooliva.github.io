@@ -88,13 +88,13 @@
 	"images":[
 		{
 			"mimeType":"image/webp",
-			"name":"baseColor0 image",
-			"uri":"baseColor0%20image.webp"
+			"name":"baseColor0image",
+			"uri":"baseColor0image.webp"
 		},
 		{
 			"mimeType":"image/webp",
-			"name":"metallicRoughness1 image",
-			"uri":"metallicRoughness1%20image.webp"
+			"name":"metallicRoughness1image",
+			"uri":"metallicRoughness1image.webp"
 		}
 	],
 	"accessors":[
