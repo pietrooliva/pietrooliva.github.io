@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>COSMOGONIE & COSMOLOGIE AR</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="style.css" />
+
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="libs/AR.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+    <script src="libs/gesture-handler.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+
+    <script>
+        AFRAME.registerComponent('translate-and-rotate-handler', {
+            init: function () {
+                this.previousPosition = { x: 0, y: 0 };
+                this.previousRotationX = 0;
+                this.previousRotationY = 0;
+                this.smoothingFactor = 1.7; // Increased for more smoothing
+                this.sensitivityThreshold = 1.5;
+                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
+                this.el.addEventListener('click', this.onEntityClick.bind(this));
+                
+                // Add device orientation listener
+                window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
+            },
+
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const entity = this.el;
+
+                if (detail.type === 'translate' && detail.numFingers === 2) {
+                    const { x, y } = detail.deltaPosition;
+                    const sensitivity = 0.005;
+                    const deltaX = x * sensitivity;
+                    const deltaY = y * sensitivity;
+
+                    const smoothX = this.previousPosition.x + (deltaX - this.previousPosition.x) * this.smoothingFactor;
+                    const smoothY = this.previousPosition.y + (deltaY - this.previousPosition.y) * this.smoothingFactor;
+
+                    if (Math.abs(smoothX) > this.sensitivityThreshold) {
+                        entity.object3D.position.x += smoothX;
+                    }
+                    if (Math.abs(smoothY) > this.sensitivityThreshold) {
+                        entity.object3D.position.y += smoothY;
+                    }
+
+                    this.previousPosition.x = smoothX;
+                    this.previousPosition.y = smoothY;
+                } else if (detail.type === 'rotate' && detail.numFingers === 1) {
+                    const { deltaPosition } = detail;
+                    const rotationSensitivity = 0.0004; // Reduced sensitivity
+
+                    const deltaRotX = deltaPosition.y * rotationSensitivity;
+                    const deltaRotY = deltaPosition.x * rotationSensitivity;
+
+                    const smoothRotX = this.previousRotationX + (deltaRotX - this.previousRotationX) * this.smoothingFactor;
+                    const smoothRotY = this.previousRotationY + (deltaRotY - this.previousRotationY) * this.smoothingFactor;
+
+                    if (Math.abs(smoothRotX) > this.sensitivityThreshold) {
+                        entity.object3D.rotation.x += THREE.Math.degToRad(smoothRotX);
+                    }
+                    if (Math.abs(smoothRotY) > this.sensitivityThreshold) {
+                        entity.object3D.rotation.y += THREE.Math.degToRad(smoothRotY);
+                    }
+
+                    this.previousRotationX = smoothRotX;
+                    this.previousRotationY = smoothRotY;
+                }
+            },
+
+            onDeviceOrientation: function (event) {
+                const entity = this.el;
+                const gamma = event.gamma; // Left-right tilt in degrees
+                const rotationSpeed = 0.0002; // Further reduced speed
+                const threshold = 35; // Increased threshold
+
+                // Apply rotation based on tilt along the y-axis only if gamma exceeds the threshold
+                if (Math.abs(gamma) > threshold) {
+                    const gammaAdjusted = gamma - Math.sign(gamma) * threshold; // Adjust gamma to start from 0 after threshold
+                    entity.object3D.rotation.z += gammaAdjusted * rotationSpeed; // Changed from rotation.y to rotation.z
+                }
+            },
+
+            onEntityClick: function () {
+                const entity = this.el;
+                entity.classList.toggle('selected');
+            },
+        });
+    </script>
+
+    <style>
+        .selected {
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <a-scene gesture-detector    
+             embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
+             renderer='precision: medium;'
+             id="scene">
+
+        <a-assets>
+            <a-asset-item id="model" src="models/coniche/scene.gltf"></a-asset-item>
+        </a-assets>
+
+        <a-marker
+            raycaster="objects: .clickable"
+            emitevents="true"
+            cursor="fuse: false; rayOrigin: mouse;"
+            type="barcode" value="51">
+            
+            <a-entity
+                gltf-model="#model"
+                animation-mixer="clip: *;"
+                rotation="-90 180 180"
+                position="0.0 0.0 0.0"
+                scale="1.7 1.7 1.7"
+                class="clickable"
+                gesture-handler="minScale: 0.5; maxScale: 20; translateEnabled: false; rotateEnabled: true"
+                translate-and-rotate-handler>
+            </a-entity>
+        </a-marker>
+        
+        <!-- Add various types of lights 
+        <a-light type="ambient" color="#ffffff" intensity="0.5"></a-light>
+        <a-light type="directional" color="#ffffff" intensity="1" position="1 1 1"></a-light>
+        <a-light type="point" color="#ffffff" intensity="1" position="0 2 2"></a-light> -->
+
+        <a-entity camera></a-entity>
+        <a-entity axis-helper></a-entity>
+
+    </a-scene>
+</body>
+</html>
