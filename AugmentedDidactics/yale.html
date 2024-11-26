@@ -44,8 +44,8 @@
                 this.zoomFactor = 0.1;
 
                 // Touch interaction setup
-                this.previousTouch = { x: 0, y: 0 };
-                this.touchSensitivity = 0.005;
+                this.previousTouch = null;
+                this.touchSensitivity = 0.01;
 
                 // Device orientation setup
                 this.rotationSpeed = 0.0002;
@@ -57,7 +57,10 @@
                 canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
                 canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
 
-                this.el.sceneEl.addEventListener('gesturemove', this.onGestureMove.bind(this));
+                this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
+                this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
+                this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
+
                 window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
             },
 
@@ -97,27 +100,68 @@
                 object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
             },
 
-            // Touch gesture handlers
-            onGestureMove: function (event) {
-                const { detail } = event;
+            // Touch event handlers
+            onTouchStart: function (event) {
+                if (event.touches.length === 1) {
+                    this.previousTouch = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY,
+                    };
+                } else if (event.touches.length === 2) {
+                    this.previousTouch = this.getMidpoint(event.touches);
+                    this.initialDistance = this.getDistance(event.touches);
+                }
+            },
+
+            onTouchMove: function (event) {
                 const object3D = this.el.object3D;
 
-                if (detail.type === 'translate' && detail.numFingers === 2) {
-                    const deltaX = detail.deltaPosition.x * this.touchSensitivity;
-                    const deltaY = detail.deltaPosition.y * this.touchSensitivity;
-
-                    object3D.position.x += deltaX;
-                    object3D.position.y -= deltaY;
-                } else if (detail.type === 'rotate' && detail.numFingers === 1) {
-                    const deltaX = detail.deltaPosition.x * this.touchSensitivity;
-                    const deltaY = detail.deltaPosition.y * this.touchSensitivity;
+                if (event.touches.length === 1) {
+                    const currentTouch = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY,
+                    };
+                    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+                    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
 
                     object3D.rotation.y += deltaX;
                     object3D.rotation.x += deltaY;
-                } else if (detail.type === 'scale') {
-                    const scaleDelta = detail.scaleChange;
-                    object3D.scale.multiplyScalar(scaleDelta);
+
+                    this.previousTouch = currentTouch;
+                } else if (event.touches.length === 2) {
+                    const currentMidpoint = this.getMidpoint(event.touches);
+                    const currentDistance = this.getDistance(event.touches);
+
+                    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+                    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+                    const scaleChange = currentDistance / this.initialDistance;
+
+                    object3D.position.x += deltaX;
+                    object3D.position.y -= deltaY;
+                    object3D.scale.multiplyScalar(scaleChange);
+
+                    this.previousTouch = currentMidpoint;
+                    this.initialDistance = currentDistance;
                 }
+            },
+
+            onTouchEnd: function () {
+                this.previousTouch = null;
+                this.initialDistance = null;
+            },
+
+            // Utility methods for touch
+            getMidpoint: function (touches) {
+                return {
+                    x: (touches[0].clientX + touches[1].clientX) / 2,
+                    y: (touches[0].clientY + touches[1].clientY) / 2,
+                };
+            },
+
+            getDistance: function (touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
             },
 
             // Device orientation handler
@@ -133,7 +177,7 @@
                 if (Math.abs(beta) > this.deviceThreshold) {
                     object3D.rotation.x += beta * this.rotationSpeed;
                 }
-            }
+            },
         });
     </script>
 
