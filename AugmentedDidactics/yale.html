@@ -9,6 +9,7 @@
     <script src="libs/aframe-ar.js"></script>
     <script src="libs/AR.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="libs/gesture-detector.js"></script>
 </head>
 <body>
     <a-scene 
@@ -37,16 +38,26 @@
         // Componente per gestire interazioni touch e mouse
         AFRAME.registerComponent('mouse-and-touch-handler', {
             init: function () {
+                // Mouse interaction setup
                 this.isMouseDown = false;
                 this.previousMousePosition = { x: 0, y: 0 };
                 this.zoomFactor = 0.1;
 
-                this.el.sceneEl.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
-                this.el.sceneEl.canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
-                this.el.sceneEl.canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
-                this.el.sceneEl.canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
+                // Touch interaction setup
+                this.previousPosition = { x: 0, y: 0 };
+                this.previousRotation = { x: 0, y: 0 };
+                this.touchSensitivity = 0.005;
+
+                const canvas = this.el.sceneEl.canvas;
+                canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+                canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+                canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+                canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
+
+                this.el.sceneEl.addEventListener('gesturemove', this.onGestureMove.bind(this));
             },
 
+            // Mouse event handlers
             onMouseDown: function (event) {
                 this.isMouseDown = true;
                 this.previousMousePosition.x = event.clientX;
@@ -80,6 +91,35 @@
             onMouseWheel: function (event) {
                 const object3D = this.el.object3D;
                 object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
+            },
+
+            // Touch event handlers
+            onGestureMove: function (event) {
+                const { detail } = event;
+                const object3D = this.el.object3D;
+
+                if (detail.type === 'translate' && detail.numFingers === 2) {
+                    const deltaX = detail.deltaPosition.x * this.touchSensitivity;
+                    const deltaY = detail.deltaPosition.y * this.touchSensitivity;
+
+                    object3D.position.x += deltaX;
+                    object3D.position.y -= deltaY;
+
+                    this.previousPosition.x = deltaX;
+                    this.previousPosition.y = deltaY;
+                } else if (detail.type === 'rotate' && detail.numFingers === 1) {
+                    const deltaX = detail.deltaPosition.x * this.touchSensitivity;
+                    const deltaY = detail.deltaPosition.y * this.touchSensitivity;
+
+                    object3D.rotation.y += deltaX;
+                    object3D.rotation.x += deltaY;
+
+                    this.previousRotation.x = deltaX;
+                    this.previousRotation.y = deltaY;
+                } else if (detail.type === 'scale') {
+                    const scaleDelta = detail.scaleChange;
+                    object3D.scale.multiplyScalar(scaleDelta);
+                }
             }
         });
     </script>
