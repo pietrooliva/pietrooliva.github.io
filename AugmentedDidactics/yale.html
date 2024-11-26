@@ -136,7 +136,7 @@
                     const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
                     const scaleChange = currentDistance / this.initialDistance;
 
-                    object3D.position.x += deltaX;
+                    object3D.position.x += deltaX;   //movimento traslatorio laterale
                     object3D.position.y -= deltaY;
                     object3D.scale.multiplyScalar(scaleChange);
 
