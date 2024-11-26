@@ -134,15 +134,15 @@ onTouchMove: function (event) {
         const currentMidpoint = this.getMidpoint(event.touches);
         const currentDistance = this.getDistance(event.touches);
 
+        // Calcolare la differenza rispetto al punto precedente
         const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
         const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
-        const scaleChange = currentDistance / this.initialDistance;
 
         object3D.position.x += deltaX;   // Movimento laterale
-        object3D.position.y -= deltaY;  // Movimento alto-basso
-        object3D.scale.multiplyScalar(scaleChange);
+        object3D.position.y -= deltaY;   // Movimento alto-basso
+        object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
 
-        // Aggiorna riferimenti
+        // Aggiorna riferimenti per la prossima mossa
         this.previousTouch = currentMidpoint;
         this.initialDistance = currentDistance;
     }
