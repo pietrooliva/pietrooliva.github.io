@@ -113,37 +113,40 @@
                 }
             },
 
-            onTouchMove: function (event) {
-                const object3D = this.el.object3D;
+onTouchMove: function (event) {
+    const object3D = this.el.object3D;
 
-                if (event.touches.length === 1) {
-                    const currentTouch = {
-                        x: event.touches[0].clientX,
-                        y: event.touches[0].clientY,
-                    };
-                    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
-                    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+    if (event.touches.length === 1) {
+        // Rotazione con un dito
+        const currentTouch = {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY,
+        };
+        const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+        const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
 
-                    object3D.rotation.y += deltaX;
-                    object3D.rotation.x += deltaY;
+        object3D.rotation.y += deltaX;
+        object3D.rotation.x += deltaY;
 
-                    this.previousTouch = currentTouch;
-                } else if (event.touches.length === 2) {
-                    const currentMidpoint = this.getMidpoint(event.touches);
-                    const currentDistance = this.getDistance(event.touches);
+        this.previousTouch = currentTouch;
+    } else if (event.touches.length === 2) {
+        // Traslazione e zoom con due dita
+        const currentMidpoint = this.getMidpoint(event.touches);
+        const currentDistance = this.getDistance(event.touches);
 
-                    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
-                    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
-                    const scaleChange = currentDistance / this.initialDistance;
+        const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+        const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+        const scaleChange = currentDistance / this.initialDistance;
 
-                    object3D.position.x += deltaX;   //movimento traslatorio laterale
-                    object3D.position.y -= deltaY;
-                    object3D.scale.multiplyScalar(scaleChange);
+        object3D.position.x += deltaX;   // Movimento laterale
+        object3D.position.y -= deltaY;  // Movimento alto-basso
+        object3D.scale.multiplyScalar(scaleChange);
 
-                    this.previousTouch = currentMidpoint;
-                    this.initialDistance = currentDistance;
-                }
-            },
+        // Aggiorna riferimenti
+        this.previousTouch = currentMidpoint;
+        this.initialDistance = currentDistance;
+    }
+},
 
             onTouchEnd: function () {
                 this.previousTouch = null;
