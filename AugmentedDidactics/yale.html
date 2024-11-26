@@ -174,7 +174,7 @@ onTouchMove: function (event) {
                 const beta = event.beta;   // Tilt front-back
 
                 if (Math.abs(gamma) > this.deviceThreshold) {
-                    object3D.rotation.y += gamma * this.rotationSpeed;
+                    object3D.rotation.y -= gamma * this.rotationSpeed;
                 }
 
  //               if (Math.abs(beta) > this.deviceThreshold) {
