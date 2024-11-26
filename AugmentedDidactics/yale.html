@@ -28,15 +28,15 @@
                 scale="0.05 0.05 0.05"
                 rotation="-90 180 180"
                 class="clickable"
-                mouse-and-touch-handler></a-entity>
+                interaction-handler></a-entity>
         </a-marker>
 
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-        // Componente per gestire interazioni touch e mouse
-        AFRAME.registerComponent('mouse-and-touch-handler', {
+        // Componente per gestire interazioni touch, mouse e orientamento dispositivo
+        AFRAME.registerComponent('interaction-handler', {
             init: function () {
                 // Mouse interaction setup
                 this.isMouseDown = false;
@@ -44,9 +44,12 @@
                 this.zoomFactor = 0.1;
 
                 // Touch interaction setup
-                this.previousPosition = { x: 0, y: 0 };
-                this.previousRotation = { x: 0, y: 0 };
+                this.previousTouch = { x: 0, y: 0 };
                 this.touchSensitivity = 0.005;
+
+                // Device orientation setup
+                this.rotationSpeed = 0.0002;
+                this.deviceThreshold = 15;
 
                 const canvas = this.el.sceneEl.canvas;
                 canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
@@ -55,6 +58,7 @@
                 canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
 
                 this.el.sceneEl.addEventListener('gesturemove', this.onGestureMove.bind(this));
+                window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
             },
 
             // Mouse event handlers
@@ -93,7 +97,7 @@
                 object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
             },
 
-            // Touch event handlers
+            // Touch gesture handlers
             onGestureMove: function (event) {
                 const { detail } = event;
                 const object3D = this.el.object3D;
@@ -104,21 +108,30 @@
 
                     object3D.position.x += deltaX;
                     object3D.position.y -= deltaY;
-
-                    this.previousPosition.x = deltaX;
-                    this.previousPosition.y = deltaY;
                 } else if (detail.type === 'rotate' && detail.numFingers === 1) {
                     const deltaX = detail.deltaPosition.x * this.touchSensitivity;
                     const deltaY = detail.deltaPosition.y * this.touchSensitivity;
 
                     object3D.rotation.y += deltaX;
                     object3D.rotation.x += deltaY;
-
-                    this.previousRotation.x = deltaX;
-                    this.previousRotation.y = deltaY;
                 } else if (detail.type === 'scale') {
                     const scaleDelta = detail.scaleChange;
                     object3D.scale.multiplyScalar(scaleDelta);
+                }
+            },
+
+            // Device orientation handler
+            onDeviceOrientation: function (event) {
+                const object3D = this.el.object3D;
+                const gamma = event.gamma; // Tilt left-right
+                const beta = event.beta;   // Tilt front-back
+
+                if (Math.abs(gamma) > this.deviceThreshold) {
+                    object3D.rotation.y += gamma * this.rotationSpeed;
+                }
+
+                if (Math.abs(beta) > this.deviceThreshold) {
+                    object3D.rotation.x += beta * this.rotationSpeed;
                 }
             }
         });
