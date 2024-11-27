@@ -27,8 +27,8 @@
                 gltf-model="#model"
                 animation-mixer="clip: *;"
                 scale="1.9 1.9 1.9"
-                rotation="0 180 180"
-                position="0.0 0.0 1.8"
+                rotation="-90 180 180"
+                position="0.0 0.0 0.2"
                 class="clickable"
                 gesture-handler="minScale: 0.3; maxScale: 20"
                 interaction-handler></a-entity>
@@ -52,7 +52,7 @@
 
                 // Device orientation setup
                 this.rotationSpeed = 0.0002;
-                this.deviceThreshold = 60;
+                this.deviceThreshold = 65;
 
                 const canvas = this.el.sceneEl.canvas;
                 canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
