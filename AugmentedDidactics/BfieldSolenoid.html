@@ -1,120 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AUGMENTED DIDACTICS LAB: Lembo-Oliva</title>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>COSMOGONIE & COSMOLOGIE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
-
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
     <script src="libs/AR.js"></script>
-    <script src="libs/gesture-detector.js"></script>
-    <script src="libs/gesture-handler.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+</head>
+<body>
+    <a-scene 
+        gesture-detector 
+        embedded 
+        arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" 
+        renderer="precision: medium;">
+        
+        <a-assets>
+            <a-asset-item id="model" src="models/solenoid/scene.gltf"></a-asset-item>
+        </a-assets>
 
-    <!-- Define the custom translate-and-rotate-handler component with smoothing -->
+        <a-marker type="barcode" value="0">
+            <a-entity 
+                gltf-model="#model"
+                animation-mixer="clip: *;"
+                scale="5 5 5"
+                rotation="-90 180 180"
+                position="0.0 0.0 0.8"
+                gesture-handler="minScale: 0.5; maxScale: 30; rotateEnabled: true"
+                interaction-handler></a-entity>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
     <script>
-        AFRAME.registerComponent('translate-and-rotate-handler', {
+        // Componente per gestire interazioni touch, mouse e orientamento dispositivo
+        AFRAME.registerComponent('interaction-handler', {
             init: function () {
-                this.previousPosition = { x: 0, y: 0 };
-                this.previousRotation = 0;
-                this.smoothingFactor = 0.3; // Adjust this value for more or less smoothing
-                this.sensitivityThreshold = 3.0; // Adjust this value to ignore small movements
-                this.el.addEventListener('gesturemove', this.onGestureMove.bind(this));
-                this.el.addEventListener('click', this.onEntityClick.bind(this));
+                // Mouse interaction setup
+                this.isMouseDown = false;
+                this.previousMousePosition = { x: 0, y: 0 };
+                this.zoomFactor = 0.1;
+
+                // Touch interaction setup
+                this.previousTouch = null;
+                this.touchSensitivity = 0.01;
+
+                // Device orientation setup
+                this.rotationSpeed = 0.0002;
+                this.deviceThreshold = 60;
+
+                const canvas = this.el.sceneEl.canvas;
+                canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+                canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+                canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+                canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
+
+                this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
+                this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
+                this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
+
+                window.addEventListener('deviceorientation', this.onDeviceOrientation.bind(this));
             },
 
-            onGestureMove: function (event) {
-                const { detail } = event;
-                const entity = this.el;
+            // Mouse event handlers
+            onMouseDown: function (event) {
+                this.isMouseDown = true;
+                this.previousMousePosition.x = event.clientX;
+                this.previousMousePosition.y = event.clientY;
+            },
 
-                if (detail.type === 'translate' && detail.numFingers === 2) {
-                    const { x, y } = detail.deltaPosition;
-                    const sensitivity = 0.01;
-                    const deltaX = x * sensitivity;
-                    const deltaY = y * sensitivity;
+            onMouseUp: function () {
+                this.isMouseDown = false;
+            },
 
-                    // Apply smoothing
-                    const smoothX = this.previousPosition.x + (deltaX - this.previousPosition.x) * this.smoothingFactor;
-                    const smoothY = this.previousPosition.y + (deltaY - this.previousPosition.y) * this.smoothingFactor;
+            onMouseMove: function (event) {
+                if (!this.isMouseDown) return;
 
-                    // Apply threshold
-                    if (Math.abs(smoothX) > this.sensitivityThreshold) {
-                        entity.object3D.position.x += smoothX;
-                    }
-                    if (Math.abs(smoothY) > this.sensitivityThreshold) {
-                        entity.object3D.position.y += smoothY;
-                    }
+                const deltaX = event.clientX - this.previousMousePosition.x;
+                const deltaY = event.clientY - this.previousMousePosition.y;
 
-                    this.previousPosition.x = smoothX;
-                    this.previousPosition.y = smoothY;
-                } else if (detail.type === 'rotate' && detail.numFingers === 2) {
-                    const { deltaRotation } = detail;
-                    const rotationSensitivity = 0.5;
-                    const deltaRot = deltaRotation * rotationSensitivity;
+                const object3D = this.el.object3D;
 
-                    // Apply smoothing
-                    const smoothRot = this.previousRotation + (deltaRot - this.previousRotation) * this.smoothingFactor;
+                if (event.buttons === 1) { // Tasto sinistro: rotazione
+                    object3D.rotation.y += deltaX * 0.005;
+                    object3D.rotation.x += deltaY * 0.005;
+                } else if (event.buttons === 2) { // Tasto destro: traslazione
+                    object3D.position.x += deltaX * 0.001;
+                    object3D.position.y -= deltaY * 0.001;
+                }
 
-                    // Apply threshold
-                    if (Math.abs(smoothRot) > this.sensitivityThreshold) {
-                        entity.object3D.rotation.y += smoothRot;
-                    }
+                this.previousMousePosition.x = event.clientX;
+                this.previousMousePosition.y = event.clientY;
+            },
 
-                    this.previousRotation = smoothRot;
+            onMouseWheel: function (event) {
+                const object3D = this.el.object3D;
+                object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
+            },
+
+            // Touch event handlers
+            onTouchStart: function (event) {
+                if (event.touches.length === 1) {
+                    this.previousTouch = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY,
+                    };
+                } else if (event.touches.length === 2) {
+                    this.previousTouch = this.getMidpoint(event.touches);
+                    this.initialDistance = this.getDistance(event.touches);
                 }
             },
 
-            onEntityClick: function () {
-                // Add or remove the "selected" class for visual feedback
-                const entity = this.el;
-                entity.classList.toggle('selected');
+onTouchMove: function (event) {
+    const object3D = this.el.object3D;
+
+    if (event.touches.length === 1) {
+        // Rotazione con un dito
+        const currentTouch = {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY,
+        };
+        const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+        const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+
+        object3D.rotation.y += deltaX;
+        object3D.rotation.x += deltaY;
+
+        this.previousTouch = currentTouch;
+    } else if (event.touches.length === 2) {
+        // Traslazione e zoom con due dita
+        const currentMidpoint = this.getMidpoint(event.touches);
+        const currentDistance = this.getDistance(event.touches);
+
+        // Calcolare la differenza rispetto al punto precedente
+        const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+        const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+
+        object3D.position.x += deltaX;   // Movimento laterale
+        object3D.position.y -= deltaY;   // Movimento alto-basso
+        object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
+
+        // Aggiorna riferimenti per la prossima mossa
+        this.previousTouch = currentMidpoint;
+        this.initialDistance = currentDistance;
+    }
+},
+
+            onTouchEnd: function () {
+                this.previousTouch = null;
+                this.initialDistance = null;
+            },
+
+            // Utility methods for touch
+            getMidpoint: function (touches) {
+                return {
+                    x: (touches[0].clientX + touches[1].clientX) / 2,
+                    y: (touches[0].clientY + touches[1].clientY) / 2,
+                };
+            },
+
+            getDistance: function (touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            },
+
+            // Device orientation handler
+            onDeviceOrientation: function (event) {
+                const object3D = this.el.object3D;
+                const gamma = event.gamma; // Tilt left-right
+                const beta = event.beta;   // Tilt front-back
+
+                if (Math.abs(gamma) > this.deviceThreshold) {
+                    object3D.rotation.y -= gamma * this.rotationSpeed;
+                }
+
+ //               if (Math.abs(beta) > this.deviceThreshold) {
+ //                   object3D.rotation.x += beta * this.rotationSpeed;
+ //               }
             },
         });
     </script>
 
-    <!-- Style for visual feedback -->
     <style>
-        .selected {
-            color: yellow;
+        body {
+            margin: 0;
+            overflow: hidden;
         }
     </style>
-</head>
-<body>
-    <a-scene gesture-detector    
-             embedded arjs='sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;'
-             renderer='precision: medium;'
-             id="scene">
-
-        <a-assets>
-            <!-- Load the GLTF model -->
-            <a-asset-item id="model" src="models/solenoid/scene.gltf"></a-asset-item>
-        </a-assets>
-
-        <!-- Marker for triggering the display of the model -->
-        <a-marker
-            raycaster="objects: .clickable"
-            emitevents="true"
-            cursor="fuse: false; rayOrigin: mouse;"
-            type="barcode" value="0">
-            
-            <!-- Entity representing the augmented content -->
-            <a-entity
-                gltf-model="#model"
-                animation-mixer="clip: *;"
-                rotation="-90 180 180"
-                position="0.0 0.0 0.8"
-                scale="5 5 5"
-                class="clickable"
-                gesture-handler="minScale: 1; maxScale: 50; translateEnabled: false; rotateEnabled: true"
-                translate-and-rotate-handler <!-- Apply the new translate-and-rotate-handler component here -->
-            ></a-entity>
-        </a-marker>
-        
-        <!-- Camera entity for the scene -->
-        <a-entity camera></a-entity>
-
-    </a-scene>
 </body>
 </html>
