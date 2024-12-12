@@ -22,14 +22,15 @@
             <a-asset-item id="model" src="models/menelik/scene.gltf"></a-asset-item>
         </a-assets>
 
-        <a-marker type="barcode" value="70">
+        <a-marker type="barcode" value="60">
             <a-entity 
                 gltf-model="#model"
-                scale="0.7 0.7 0.7"
-                position="0.0 0.0 0.2"
+                animation-mixer="clip: *;"
+                scale="1.9 1.9 1.9"
                 rotation="-90 180 180"
+                position="0.0 0.0 0.2"
                 class="clickable"
-                gesture-handler="minScale: 0.3; maxScale: 10"
+                gesture-handler="minScale: 0.3; maxScale: 20"
                 interaction-handler></a-entity>
         </a-marker>
 
@@ -51,7 +52,7 @@
 
                 // Device orientation setup
                 this.rotationSpeed = 0.0002;
-                this.deviceThreshold = 60;
+                this.deviceThreshold = 65;
 
                 const canvas = this.el.sceneEl.canvas;
                 canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
