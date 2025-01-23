@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title>COSMOGONIE & COSMOLOGIE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
     <script src="libs/AR.js"></script>
@@ -11,34 +12,15 @@
     <script src="libs/gesture-detector.js"></script>
 </head>
 <body>
-    <!-- Schermata iniziale -->
-    <div id="start-screen" style="
-        position: absolute; 
-        top: 50%; 
-        left: 50%; 
-        transform: translate(-50%, -50%); 
-        z-index: 10; 
-        background: #000; 
-        color: #fff; 
-        padding: 20px; 
-        text-align: center; 
-        font-family: Arial, sans-serif; 
-        cursor: pointer;">
-        <h1>Tocca per iniziare</h1>
-        <p>Consenti al browser di riprodurre audio e accedere alla fotocamera.</p>
-    </div>
-
-    <!-- Scena A-Frame -->
     <a-scene 
         gesture-detector 
         embedded 
         arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" 
-        renderer="precision: medium;" 
-        style="display: none;">
+        renderer="precision: medium;">
         
         <a-assets>
             <a-asset-item id="model" src="models/yale_tablet/scene.gltf"></a-asset-item>
-            <audio id="background-audio" src="models/yale_tablet/background.mp3" playsinline></audio>
+            <audio id="background-audio" src="models/yale_tablet/background.mp3"></audio>
         </a-assets>
 
         <a-marker type="barcode" value="30">
@@ -53,120 +35,113 @@
         <a-entity camera></a-entity>
     </a-scene>
 
-    <!-- Bottone per controllare l'audio -->
-    <button id="audio-control" style="
-        position: absolute; 
-        bottom: 20px; 
-        left: 50%; 
-        transform: translateX(-50%); 
-        z-index: 10; 
-        background: rgba(0, 0, 0, 0.7); 
-        color: #fff; 
-        border: none; 
+    <button id="audioButton" style="
+        position: fixed; 
+        bottom: 10px; 
+        left: 10px; 
         padding: 10px 20px; 
-        border-radius: 20px; 
-        font-family: Arial, sans-serif; 
-        cursor: pointer; 
-        display: none;">
-        Riproduci Audio
+        background: rgba(0, 0, 0, 0.8); 
+        color: white; 
+        border: none; 
+        border-radius: 5px; 
+        font-size: 16px;">
+        Play Audio
     </button>
 
     <script>
-        // Schermata iniziale
-        document.getElementById('start-screen').addEventListener('click', function () {
-            const audio = document.querySelector('#background-audio');
-            const scene = document.querySelector('a-scene');
-            const audioButton = document.getElementById('audio-control');
-            
-            // Tentativo di riprodurre l'audio iniziale
-            audio.play().then(() => {
-                console.log('Audio avviato con successo.');
-            }).catch((error) => {
-                console.warn('Autoplay non consentito. Richiesta interazione manuale.');
-            });
+        const audioElement = document.getElementById('background-audio');
+        const audioButton = document.getElementById('audioButton');
 
-            // Mostra la scena e nasconde la schermata iniziale
-            scene.style.display = 'block';
-            document.getElementById('start-screen').style.display = 'none';
-
-            // Mostra il pulsante per il controllo dell'audio
-            audioButton.style.display = 'block';
-        });
-
-        // Controllo audio tramite bottone
-        document.getElementById('audio-control').addEventListener('click', function () {
-            const audio = document.querySelector('#background-audio');
-            
-            if (audio.paused) {
-                audio.play().then(() => {
-                    console.log('Audio riprodotto.');
-                    this.textContent = 'Pausa Audio';
-                }).catch((error) => {
-                    console.error('Impossibile riprodurre l\'audio:', error);
-                });
+        // Play audio when the button is clicked
+        audioButton.addEventListener('click', () => {
+            if (audioElement.paused) {
+                audioElement.play();
+                audioButton.textContent = "Pause Audio";
             } else {
-                audio.pause();
-                this.textContent = 'Riproduci Audio';
-                console.log('Audio in pausa.');
+                audioElement.pause();
+                audioButton.textContent = "Play Audio";
             }
         });
 
-        // Componente per interazioni mouse, touch e orientamento
+        // Interaction handler for gestures (mouse + touch)
         AFRAME.registerComponent('interaction-handler', {
             init: function () {
-                // Stato del mouse
+                // Mouse interaction
                 this.isMouseDown = false;
                 this.previousMousePosition = { x: 0, y: 0 };
+                this.zoomFactor = 0.1;
 
-                // Stato del touch
+                // Touch interaction
                 this.previousTouch = null;
+                this.initialDistance = null;
                 this.touchSensitivity = 0.01;
 
                 const canvas = this.el.sceneEl.canvas;
+
+                // Mouse events
                 canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
                 canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
                 canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
                 canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
 
+                // Touch events
                 this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
                 this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
                 this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
             },
 
-            // Eventi mouse
+            // Mouse event handlers
             onMouseDown: function (event) {
                 this.isMouseDown = true;
                 this.previousMousePosition.x = event.clientX;
                 this.previousMousePosition.y = event.clientY;
             },
+
             onMouseUp: function () {
                 this.isMouseDown = false;
             },
+
             onMouseMove: function (event) {
                 if (!this.isMouseDown) return;
+
                 const deltaX = event.clientX - this.previousMousePosition.x;
                 const deltaY = event.clientY - this.previousMousePosition.y;
 
-                this.el.object3D.rotation.y += deltaX * 0.005;
-                this.el.object3D.rotation.x += deltaY * 0.005;
+                const object3D = this.el.object3D;
+
+                if (event.buttons === 1) { // Left button: rotation
+                    object3D.rotation.y += deltaX * 0.005;
+                    object3D.rotation.x += deltaY * 0.005;
+                } else if (event.buttons === 2) { // Right button: translation
+                    object3D.position.x += deltaX * 0.001;
+                    object3D.position.y -= deltaY * 0.001;
+                }
 
                 this.previousMousePosition.x = event.clientX;
                 this.previousMousePosition.y = event.clientY;
             },
+
             onMouseWheel: function (event) {
-                this.el.object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * 0.1);
+                const object3D = this.el.object3D;
+                object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
             },
 
-            // Eventi touch
+            // Touch event handlers
             onTouchStart: function (event) {
                 if (event.touches.length === 1) {
                     this.previousTouch = {
                         x: event.touches[0].clientX,
                         y: event.touches[0].clientY,
                     };
+                } else if (event.touches.length === 2) {
+                    this.previousTouch = this.getMidpoint(event.touches);
+                    this.initialDistance = this.getDistance(event.touches);
                 }
             },
+
             onTouchMove: function (event) {
+                const object3D = this.el.object3D;
+
                 if (event.touches.length === 1) {
                     const currentTouch = {
                         x: event.touches[0].clientX,
@@ -175,14 +150,43 @@
                     const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
                     const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
 
-                    this.el.object3D.rotation.y += deltaX;
-                    this.el.object3D.rotation.x += deltaY;
+                    object3D.rotation.y += deltaX;
+                    object3D.rotation.x += deltaY;
 
                     this.previousTouch = currentTouch;
+                } else if (event.touches.length === 2) {
+                    const currentMidpoint = this.getMidpoint(event.touches);
+                    const currentDistance = this.getDistance(event.touches);
+
+                    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+                    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+
+                    object3D.position.x += deltaX;
+                    object3D.position.y -= deltaY;
+                    object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
+
+                    this.previousTouch = currentMidpoint;
+                    this.initialDistance = currentDistance;
                 }
             },
+
             onTouchEnd: function () {
                 this.previousTouch = null;
+                this.initialDistance = null;
+            },
+
+            // Utility methods
+            getMidpoint: function (touches) {
+                return {
+                    x: (touches[0].clientX + touches[1].clientX) / 2,
+                    y: (touches[0].clientY + touches[1].clientY) / 2,
+                };
+            },
+
+            getDistance: function (touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
             },
         });
     </script>
