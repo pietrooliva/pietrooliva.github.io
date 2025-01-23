@@ -20,6 +20,8 @@
         
         <a-assets>
             <a-asset-item id="model" src="models/yale_tablet/scene.gltf"></a-asset-item>
+                <!-- Traccia audio -->
+            <audio id="background-audio" src="models/yale_tablet/background.mp3"></audio>
         </a-assets>
 
         <a-marker type="barcode" value="30">
@@ -30,6 +32,14 @@
                 class="clickable"
                 interaction-handler></a-entity>
         </a-marker>
+
+        <!-- Aggiungi l'audio alla scena -->
+            <a-sound
+                src="#background-audio"
+                autoplay="true"
+                loop="true"
+                position="0 0 0">
+             </a-sound>
 
         <a-entity camera></a-entity>
     </a-scene>
