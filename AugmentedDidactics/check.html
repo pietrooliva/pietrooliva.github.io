@@ -25,7 +25,7 @@
         text-align: center;
         z-index: 9999;">
         <div>
-            <h1>This immersive website requires access to your device motion sensors</h1>
+            <h1>È necessario consentire l'accesso ai sensori di movimento di questo dispositivo</h1>
             <button id="allowButton" style="
                 padding: 10px 20px;
                 font-size: 16px;
@@ -105,7 +105,6 @@
                     console.error('Error while requesting motion sensor permissions:', err);
                 }
             } else {
-                // For browsers that don't require explicit permission
                 splash.style.display = 'none';
             }
         });
@@ -113,7 +112,6 @@
         // Automatically hide the splash screen on unsupported devices
         window.addEventListener('load', () => {
             if (!('DeviceMotionEvent' in window)) {
-                console.warn('DeviceMotionEvent is not supported on this device.');
                 splash.style.display = 'none';
             }
         });
@@ -195,8 +193,11 @@
                     const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
                     const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
+                    // Traslazione destra/sinistra e alto/basso
                     object3D.position.x += deltaX;
                     object3D.position.y -= deltaY;
+
+                    // Zoom
                     object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
 
                     this.previousTouch = currentMidpoint;
