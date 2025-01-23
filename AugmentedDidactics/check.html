@@ -12,16 +12,34 @@
     <script src="libs/gesture-detector.js"></script>
 </head>
 <body>
+    <!-- Schermata iniziale per avviare l'interazione -->
+    <div id="start-screen" style="
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        z-index: 10; 
+        background: #000; 
+        color: #fff; 
+        padding: 20px; 
+        text-align: center; 
+        font-family: Arial, sans-serif; 
+        cursor: pointer;">
+        <h1>Tocca per iniziare</h1>
+        <p>Consenti al browser di riprodurre audio e accedere alla fotocamera.</p>
+    </div>
+
+    <!-- Scena A-Frame nascosta inizialmente -->
     <a-scene 
         gesture-detector 
         embedded 
         arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" 
-        renderer="precision: medium;">
+        renderer="precision: medium;" 
+        style="display: none;">
         
         <a-assets>
             <a-asset-item id="model" src="models/yale_tablet/scene.gltf"></a-asset-item>
-                <!-- Traccia audio -->
-            <audio id="background-audio" src="models/yale_tablet/background.wav"></audio>
+            <audio id="background-audio" src="models/yale_tablet/background.wav" playsinline></audio>
         </a-assets>
 
         <a-marker type="barcode" value="30">
@@ -33,17 +51,34 @@
                 interaction-handler></a-entity>
         </a-marker>
 
-        <!-- Aggiungi l'audio alla scena -->
-            <a-sound
-                src="#background-audio"
-                autoplay="true"
-                position="0 0 0">
-             </a-sound>
+        <a-sound
+            id="audio-player"
+            src="#background-audio"
+            autoplay="true"
+            position="0 0 0">
+        </a-sound>
 
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
+        // Avvio interazione utente per iOS e altri dispositivi con restrizioni autoplay
+        document.getElementById('start-screen').addEventListener('click', function () {
+            const audio = document.querySelector('#background-audio');
+            const scene = document.querySelector('a-scene');
+            
+            // Tentativo di riprodurre l'audio
+            audio.play().then(() => {
+                console.log('Audio avviato con successo.');
+            }).catch((error) => {
+                console.warn('Autoplay non consentito. Richiesta interazione manuale.');
+            });
+
+            // Mostra la scena e nasconde la schermata iniziale
+            scene.style.display = 'block';
+            document.getElementById('start-screen').style.display = 'none';
+        });
+
         // Componente per gestire interazioni touch, mouse e orientamento dispositivo
         AFRAME.registerComponent('interaction-handler', {
             init: function () {
@@ -122,40 +157,40 @@
                 }
             },
 
-onTouchMove: function (event) {
-    const object3D = this.el.object3D;
+            onTouchMove: function (event) {
+                const object3D = this.el.object3D;
 
-    if (event.touches.length === 1) {
-        // Rotazione con un dito
-        const currentTouch = {
-            x: event.touches[0].clientX,
-            y: event.touches[0].clientY,
-        };
-        const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
-        const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+                if (event.touches.length === 1) {
+                    // Rotazione con un dito
+                    const currentTouch = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY,
+                    };
+                    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+                    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
 
-        object3D.rotation.y += deltaX;
-        object3D.rotation.x += deltaY;
+                    object3D.rotation.y += deltaX;
+                    object3D.rotation.x += deltaY;
 
-        this.previousTouch = currentTouch;
-    } else if (event.touches.length === 2) {
-        // Traslazione e zoom con due dita
-        const currentMidpoint = this.getMidpoint(event.touches);
-        const currentDistance = this.getDistance(event.touches);
+                    this.previousTouch = currentTouch;
+                } else if (event.touches.length === 2) {
+                    // Traslazione e zoom con due dita
+                    const currentMidpoint = this.getMidpoint(event.touches);
+                    const currentDistance = this.getDistance(event.touches);
 
-        // Calcolare la differenza rispetto al punto precedente
-        const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
-        const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+                    // Calcolare la differenza rispetto al punto precedente
+                    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+                    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
-        object3D.position.x += deltaX;   // Movimento laterale
-        object3D.position.y -= deltaY;   // Movimento alto-basso
-        object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
+                    object3D.position.x += deltaX;   // Movimento laterale
+                    object3D.position.y -= deltaY;   // Movimento alto-basso
+                    object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
 
-        // Aggiorna riferimenti per la prossima mossa
-        this.previousTouch = currentMidpoint;
-        this.initialDistance = currentDistance;
-    }
-},
+                    // Aggiorna riferimenti per la prossima mossa
+                    this.previousTouch = currentMidpoint;
+                    this.initialDistance = currentDistance;
+                }
+            },
 
             onTouchEnd: function () {
                 this.previousTouch = null;
@@ -186,9 +221,10 @@ onTouchMove: function (event) {
                     object3D.rotation.y -= gamma * this.rotationSpeed;
                 }
 
- //               if (Math.abs(beta) > this.deviceThreshold) {
- //                   object3D.rotation.x += beta * this.rotationSpeed;
- //               }
+                // Disabilitato il controllo verticale per evitare problemi di usabilità
+                // if (Math.abs(beta) > this.deviceThreshold) {
+                //     object3D.rotation.x += beta * this.rotationSpeed;
+                // }
             },
         });
     </script>
