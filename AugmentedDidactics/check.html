@@ -99,46 +99,41 @@
                     if (permission === 'granted') {
                         splash.style.display = 'none';
                     } else {
-                        alert('Permission denied. This experience requires motion sensors.');
+                        alert('Permission denied. This experience requires motion sensors.");
                     }
                 } catch (err) {
                     console.error('Error while requesting motion sensor permissions:', err);
                 }
             } else {
-                // For browsers that don't require explicit permission
                 splash.style.display = 'none';
             }
         });
 
-        // Automatically hide the splash screen on unsupported devices
+        // Automatically hide splash screen on unsupported devices
         window.addEventListener('load', () => {
             if (!('DeviceMotionEvent' in window)) {
-                console.warn('DeviceMotionEvent is not supported on this device.');
                 splash.style.display = 'none';
             }
         });
 
-        // Interaction handler for touch and mouse
+        // Interaction handler for both touch and mouse
         AFRAME.registerComponent('interaction-handler', {
             init: function () {
                 this.isMouseDown = false;
                 this.previousMousePosition = { x: 0, y: 0 };
                 this.zoomFactor = 0.1;
 
-                this.previousTouch = null;
-                this.initialDistance = null;
-                this.touchSensitivity = 0.01; // General sensitivity
-                this.verticalTouchSensitivity = 0.005; // Specific sensitivity for vertical movement
+                this.previousMidpoint = null;
+                this.previousDistance = null;
+                this.touchSensitivity = 0.01;
 
                 const canvas = this.el.sceneEl.canvas;
 
-                // Mouse events
                 canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
                 canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
                 canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
                 canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
 
-                // Touch events
                 this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
                 this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
                 this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
@@ -173,47 +168,31 @@
 
             // Touch controls
             onTouchStart: function (event) {
-                if (event.touches.length === 1) {
-                    this.previousTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-                } else if (event.touches.length === 2) {
-                    this.previousTouch = this.getMidpoint(event.touches);
-                    this.initialDistance = this.getDistance(event.touches);
+                if (event.touches.length === 2) {
+                    this.previousMidpoint = this.getMidpoint(event.touches);
+                    this.previousDistance = this.getDistance(event.touches);
                 }
             },
             onTouchMove: function (event) {
-                const object3D = this.el.object3D;
-                if (event.touches.length === 1) {
-                    const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-                    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
-                    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
-
-                    object3D.rotation.y += deltaX;
-                    object3D.rotation.x += deltaY;
-
-                    this.previousTouch = currentTouch;
-                } else if (event.touches.length === 2) {
+                if (event.touches.length === 2) {
                     const currentMidpoint = this.getMidpoint(event.touches);
                     const currentDistance = this.getDistance(event.touches);
 
-                    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
-                    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.verticalTouchSensitivity;
+                    const deltaX = (currentMidpoint.x - this.previousMidpoint.x) * this.touchSensitivity;
+                    const deltaY = (currentMidpoint.y - this.previousMidpoint.y) * this.touchSensitivity;
 
-                    // Traslazione destra/sinistra
+                    const object3D = this.el.object3D;
                     object3D.position.x += deltaX;
+                    object3D.position.y -= deltaY;
+                    object3D.scale.multiplyScalar(currentDistance / this.previousDistance);
 
-                    // Traslazione alto/basso
-                    object3D.position.y += deltaY;
-
-                    // Zoom
-                    object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
-
-                    this.previousTouch = currentMidpoint;
-                    this.initialDistance = currentDistance;
+                    this.previousMidpoint = currentMidpoint;
+                    this.previousDistance = currentDistance;
                 }
             },
             onTouchEnd: function () {
-                this.previousTouch = null;
-                this.initialDistance = null;
+                this.previousMidpoint = null;
+                this.previousDistance = null;
             },
 
             getMidpoint: function (touches) {
