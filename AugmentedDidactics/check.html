@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>COSMOGONIE & COSMOLOGIE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
     <script src="libs/AR.js"></script>
@@ -112,11 +111,78 @@
             }
         });
 
-        // Componente per interazioni avanzate (come nel codice precedente)
+        // Componente per interazioni mouse, touch e orientamento
         AFRAME.registerComponent('interaction-handler', {
             init: function () {
-                // Configurazione delle interazioni (mouse, touch, ecc.)
-                // Può essere lasciato invariato rispetto alla versione precedente.
+                // Stato del mouse
+                this.isMouseDown = false;
+                this.previousMousePosition = { x: 0, y: 0 };
+
+                // Stato del touch
+                this.previousTouch = null;
+                this.touchSensitivity = 0.01;
+
+                const canvas = this.el.sceneEl.canvas;
+                canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+                canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+                canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+                canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
+
+                this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
+                this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
+                this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
+            },
+
+            // Eventi mouse
+            onMouseDown: function (event) {
+                this.isMouseDown = true;
+                this.previousMousePosition.x = event.clientX;
+                this.previousMousePosition.y = event.clientY;
+            },
+            onMouseUp: function () {
+                this.isMouseDown = false;
+            },
+            onMouseMove: function (event) {
+                if (!this.isMouseDown) return;
+                const deltaX = event.clientX - this.previousMousePosition.x;
+                const deltaY = event.clientY - this.previousMousePosition.y;
+
+                this.el.object3D.rotation.y += deltaX * 0.005;
+                this.el.object3D.rotation.x += deltaY * 0.005;
+
+                this.previousMousePosition.x = event.clientX;
+                this.previousMousePosition.y = event.clientY;
+            },
+            onMouseWheel: function (event) {
+                this.el.object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * 0.1);
+            },
+
+            // Eventi touch
+            onTouchStart: function (event) {
+                if (event.touches.length === 1) {
+                    this.previousTouch = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY,
+                    };
+                }
+            },
+            onTouchMove: function (event) {
+                if (event.touches.length === 1) {
+                    const currentTouch = {
+                        x: event.touches[0].clientX,
+                        y: event.touches[0].clientY,
+                    };
+                    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+                    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+
+                    this.el.object3D.rotation.y += deltaX;
+                    this.el.object3D.rotation.x += deltaY;
+
+                    this.previousTouch = currentTouch;
+                }
+            },
+            onTouchEnd: function () {
+                this.previousTouch = null;
             },
         });
     </script>
