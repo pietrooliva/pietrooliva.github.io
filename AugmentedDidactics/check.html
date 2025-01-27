@@ -127,18 +127,15 @@
 
                 this.previousTouch = null;
                 this.initialDistance = null;
-                this.touchSensitivity = 0.01; // General sensitivity
-                this.verticalTouchSensitivity = 0.005; // Specific sensitivity for vertical movement
+                this.touchSensitivity = 0.01;
 
                 const canvas = this.el.sceneEl.canvas;
 
-                // Mouse events
                 canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
                 canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
                 canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
                 canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
 
-                // Touch events
                 this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
                 this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
                 this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
@@ -196,15 +193,10 @@
                     const currentDistance = this.getDistance(event.touches);
 
                     const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
-                    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.verticalTouchSensitivity;
+                    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
-                    // Traslazione destra/sinistra
                     object3D.position.x += deltaX;
-
-                    // Traslazione alto/basso
-                    object3D.position.y += deltaY;
-
-                    // Zoom
+                    object3D.position.y -= deltaY;
                     object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
 
                     this.previousTouch = currentMidpoint;
