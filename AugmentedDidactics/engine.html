@@ -59,33 +59,25 @@
     </a-assets>
 
   <!-- Marker for triggering the display of the model -->
-    <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="8">
-        
-        <!-- Entity representing the augmented content -->
-        <a-entity
+
+        <a-marker type="barcode" value="8">
+            <a-entity 
             gltf-model="#model"
             animation-mixer="clip: *;"
-            rotation="90 0 0"
+            rotation="-90 180 180"
             scale="0.1 0.1 0.1"
             position="0.0 0.0 0.7"
             class="clickable"
             gesture-handler="minScale: 0.1; maxScale: 3; translateEnabled: true; rotateEnabled: true"
-            interaction-handler>
-        </a-entity>
-    </a-marker>
+                interaction-handler>
+            </a-entity>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+
 
     <!-- Marker for triggering the display of the second model -->
-    <a-marker
-        raycaster="objects: .clickable"
-        emitevents="true"
-        cursor="fuse: false; rayOrigin: mouse;"
-        type="barcode" value="7">
-        
-        <!-- Entity representing the second augmented content with animations -->
+    <a-marker  type="barcode" value="7">
         <a-entity
             gltf-model="#model2"
             animation-mixer="clip: *;"
