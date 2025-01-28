@@ -1,0 +1,11 @@
+Model Information:
+* title:	CFM56-5B Engine A319 NEO 98–120 kN
+* source:	https://sketchfab.com/3d-models/cfm56-5b-engine-a319-neo-98120-kn-1c5a079eb4da44fcb72be3554592112a
+* author:	CloudHub (https://sketchfab.com/cloudhub)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "CFM56-5B Engine A319 NEO 98–120 kN" (https://sketchfab.com/3d-models/cfm56-5b-engine-a319-neo-98120-kn-1c5a079eb4da44fcb72be3554592112a) by CloudHub (https://sketchfab.com/cloudhub) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
