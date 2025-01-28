@@ -1,0 +1,11 @@
+Model Information:
+* title:	Symmetric Opposed Pistons Engine Mechanism
+* source:	https://sketchfab.com/3d-models/symmetric-opposed-pistons-engine-mechanism-d662cbf69ace4d72a8e262a49aeafe7a
+* author:	trinityscsp (https://sketchfab.com/trinityscsp)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Symmetric Opposed Pistons Engine Mechanism" (https://sketchfab.com/3d-models/symmetric-opposed-pistons-engine-mechanism-d662cbf69ace4d72a8e262a49aeafe7a) by trinityscsp (https://sketchfab.com/trinityscsp) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
