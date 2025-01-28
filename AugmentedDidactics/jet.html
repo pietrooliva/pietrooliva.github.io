@@ -33,7 +33,7 @@
                 color: white;
                 border: 2px solid white;
                 border-radius: 5px;">
-                Allow
+                Consentire
             </button>
         </div>
     </div>
@@ -49,7 +49,7 @@
             <audio id="background-audio" src="models/jet_engine/background.mp3"></audio>
         </a-assets>
 
-        <a-marker type="barcode" value="150">
+        <a-marker type="barcode" value="54">
             <a-entity 
                 gltf-model="#model"
                 animation-mixer="clip: *;"
@@ -72,7 +72,7 @@
         border: none; 
         border-radius: 5px; 
         font-size: 16px;">
-        Play Audio
+        Riproduci Audio
     </button>
 
     <script>
@@ -85,10 +85,10 @@
         audioButton.addEventListener('click', () => {
             if (audioElement.paused) {
                 audioElement.play();
-                audioButton.textContent = "Pause Audio";
+                audioButton.textContent = "Interrompi Audio";
             } else {
                 audioElement.pause();
-                audioButton.textContent = "Play Audio";
+                audioButton.textContent = "Riproduci Audio";
             }
         });
 
