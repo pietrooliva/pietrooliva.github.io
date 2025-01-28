@@ -59,16 +59,15 @@
     </a-assets>
 
   <!-- Marker for triggering the display of the model -->
-
         <a-marker type="barcode" value="8">
             <a-entity 
-            gltf-model="#model"
-            animation-mixer="clip: *;"
-            rotation="-90 120 180"
-            scale="0.1 0.1 0.1"
-            position="0.0 0.0 0.7"
-            class="clickable"
-            gesture-handler="minScale: 0.1; maxScale: 3; translateEnabled: true; rotateEnabled: true"
+                gltf-model="#model"
+                animation-mixer="clip: *;"
+                rotation="-90 120 180"
+                scale="0.1 0.1 0.1"
+                position="0.0 0.0 0.7"
+                class="clickable"
+                gesture-handler="minScale: 0.1; maxScale: 3; translateEnabled: true; rotateEnabled: true"
                 interaction-handler>
             </a-entity>
         </a-marker>
