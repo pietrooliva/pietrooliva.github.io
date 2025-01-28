@@ -42,7 +42,14 @@
         gesture-detector 
         embedded 
         arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;" 
-        renderer="gammaOutput: true; physicallyCorrectLights: true;">
+        renderer="
+          antialias: true; 
+          precision: highp; 
+          gammaOutput: true; 
+          gammaFactor: 2.0;
+          physicallyCorrectLights: true; 
+          shadowMap.enabled: true; 
+          toneMapping: ACESFilmicToneMapping;">
         
         <a-assets>
             <a-asset-item id="model" src="models/jet_engine/scene.gltf"></a-asset-item>
@@ -55,17 +62,13 @@
                 animation-mixer="clip: *;"
                 scale="0.1 0.1 0.1"
                 rotation="-90 180 180"
-                position="0.0 0.0 0.2"
+                position="0.0 0.0 0.3"
                 class="clickable"
                 interaction-handler></a-entity>
         </a-marker>
 
         <a-entity camera></a-entity>
     </a-scene>
-    
-    <a-light type="ambient" intensity="1.5" color="#ffffff"></a-light>
-    <a-light type="directional" intensity="1" position="1 1 0.5"></a-light>
-    <a-light type="point" intensity="1.5" position="0 5 5" color="#ffffff"></a-light>
 
     <button id="audioButton" style="
         position: fixed; 
