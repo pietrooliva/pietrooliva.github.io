@@ -55,13 +55,17 @@
                 animation-mixer="clip: *;"
                 scale="0.1 0.1 0.1"
                 rotation="-90 180 180"
-                position="0.0 0.0 0.8"
+                position="0.0 0.0 0.2"
                 class="clickable"
                 interaction-handler></a-entity>
         </a-marker>
 
         <a-entity camera></a-entity>
     </a-scene>
+    
+    <a-light type="ambient" intensity="1.5" color="#ffffff"></a-light>
+    <a-light type="directional" intensity="1" position="1 1 0.5"></a-light>
+    <a-light type="point" intensity="1.5" position="0 5 5" color="#ffffff"></a-light>
 
     <button id="audioButton" style="
         position: fixed; 
