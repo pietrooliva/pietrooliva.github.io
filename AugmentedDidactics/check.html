@@ -55,16 +55,14 @@
         <audio id="background-audio" src="models/bosch/background.mp3"></audio>
       </a-assets>
 
-      <!-- Modello 3D posizionato in AR senza marcatore -->
       <a-entity 
-        id="animatedModel"
         gltf-model="#model"
         position="0 0 -2"
         scale="0.5 0.5 0.5"
         rotation="0 0 0"
+        animation-mixer
         class="clickable"
-        interaction-handler>
-      </a-entity>
+        interaction-handler></a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
@@ -82,7 +80,7 @@
       Riproduci Audio
     </button>
 
-    <button id="animateButton" style="
+    <button id="animationButton" style="
         position: fixed; 
         bottom: 10px; 
         right: 10px; 
@@ -100,8 +98,9 @@
       const allowButton = document.getElementById('allowButton');
       const audioElement = document.getElementById('background-audio');
       const audioButton = document.getElementById('audioButton');
-      const modelEl = document.getElementById('animatedModel');
-      const animateButton = document.getElementById('animateButton');
+      const animationButton = document.getElementById('animationButton');
+      const modelEntity = document.querySelector('[gltf-model]');
+      let isAnimationPlaying = false;
 
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
@@ -140,15 +139,20 @@
         }
       });
 
-      // Avvio e riavvio dell'animazione
-      animateButton.addEventListener('click', () => {
-        if (!modelEl.hasAttribute('animation-mixer')) {
-          modelEl.setAttribute('animation-mixer', '');
-          animateButton.textContent = "Riavvia Animazione";
+      // Animation toggle button logic
+      animationButton.addEventListener('click', () => {
+        const animationMixer = modelEntity.components['animation-mixer'];
+
+        if (!animationMixer) return;
+
+        if (isAnimationPlaying) {
+          animationMixer.pause();
+          animationButton.textContent = "Avvia Animazione";
         } else {
-          modelEl.removeAttribute('animation-mixer');
-          setTimeout(() => modelEl.setAttribute('animation-mixer', ''), 50);
+          animationMixer.play();
+          animationButton.textContent = "Ferma Animazione";
         }
+        isAnimationPlaying = !isAnimationPlaying;
       });
 
       // Interaction handler for touch and mouse
