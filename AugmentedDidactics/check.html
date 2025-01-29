@@ -49,7 +49,7 @@
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
-      
+
       <a-assets>
         <a-asset-item id="model" src="models/bosch/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/bosch/background.mp3"></audio>
@@ -159,100 +159,55 @@
       AFRAME.registerComponent('interaction-handler', {
         init: function () {
           this.isMouseDown = false;
+          this.isRightMouseDown = false;
           this.previousMousePosition = { x: 0, y: 0 };
           this.zoomFactor = 0.1;
-
-          this.previousTouch = null;
-          this.initialDistance = null;
-          this.touchSensitivity = 0.01;
 
           const canvas = this.el.sceneEl.canvas;
 
           canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
           canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
           canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
-          canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
-
-          this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
-          this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
-          this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
+          canvas.addEventListener('contextmenu', (e) => e.preventDefault()); // Disable right-click menu
         },
 
         onMouseDown: function (event) {
-          this.isMouseDown = true;
+          if (event.button === 0) { // Left mouse button
+            this.isMouseDown = true;
+          } else if (event.button === 2) { // Right mouse button
+            this.isRightMouseDown = true;
+          }
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
-        onMouseUp: function () {
-          this.isMouseDown = false;
-        },
-        onMouseMove: function (event) {
-          if (!this.isMouseDown) return;
 
+        onMouseUp: function (event) {
+          if (event.button === 0) {
+            this.isMouseDown = false;
+          } else if (event.button === 2) {
+            this.isRightMouseDown = false;
+          }
+        },
+
+        onMouseMove: function (event) {
           const deltaX = event.clientX - this.previousMousePosition.x;
           const deltaY = event.clientY - this.previousMousePosition.y;
           const object3D = this.el.object3D;
 
-          object3D.rotation.y += deltaX * 0.005;
-          object3D.rotation.x += deltaY * 0.005;
+          if (this.isMouseDown) {
+            // Rotate model
+            object3D.rotation.y += deltaX * 0.005;
+            object3D.rotation.x += deltaY * 0.005;
+          }
+
+          if (this.isRightMouseDown) {
+            // Translate model
+            object3D.position.x += deltaX * 0.005;
+            object3D.position.y -= deltaY * 0.005;
+          }
 
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
-        },
-        onMouseWheel: function (event) {
-          const object3D = this.el.object3D;
-          object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
-        },
-
-        onTouchStart: function (event) {
-          if (event.touches.length === 1) {
-            this.previousTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-          } else if (event.touches.length === 2) {
-            this.previousTouch = this.getMidpoint(event.touches);
-            this.initialDistance = this.getDistance(event.touches);
-          }
-        },
-        onTouchMove: function (event) {
-          const object3D = this.el.object3D;
-          if (event.touches.length === 1) {
-            const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-            const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
-            const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
-
-            object3D.rotation.y += deltaX;
-            object3D.rotation.x += deltaY;
-
-            this.previousTouch = currentTouch;
-          } else if (event.touches.length === 2) {
-            const currentMidpoint = this.getMidpoint(event.touches);
-            const currentDistance = this.getDistance(event.touches);
-
-            const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
-            const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
-
-            object3D.position.x += deltaX;
-            object3D.position.y -= deltaY;
-            object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
-
-            this.previousTouch = currentMidpoint;
-            this.initialDistance = currentDistance;
-          }
-        },
-        onTouchEnd: function () {
-          this.previousTouch = null;
-          this.initialDistance = null;
-        },
-
-        getMidpoint: function (touches) {
-          return {
-            x: (touches[0].clientX + touches[1].clientX) / 2,
-            y: (touches[0].clientY + touches[1].clientY) / 2,
-          };
-        },
-        getDistance: function (touches) {
-          const dx = touches[0].clientX - touches[1].clientX;
-          const dy = touches[0].clientY - touches[1].clientY;
-          return Math.sqrt(dx * dx + dy * dy);
         },
       });
     </script>
