@@ -145,11 +145,19 @@
       // Start/stop animation on button click
       animationButton.addEventListener('click', () => {
         if (!isAnimationActive) {
-          animatedModel.setAttribute('animation-mixer', '');
+          if (!animatedModel.hasAttribute('animation-mixer')) {
+            animatedModel.setAttribute('animation-mixer', '');
+          }
+          animationComponent = animatedModel.components['animation-mixer'];
+          if (animationComponent) {
+            animationComponent.play();
+          }
           animationButton.textContent = "Ferma Animazione";
           isAnimationActive = true;
         } else {
-          animatedModel.removeAttribute('animation-mixer');
+          if (animationComponent) {
+            animationComponent.pause();
+          }
           animationButton.textContent = "Avvia Animazione";
           isAnimationActive = false;
         }
@@ -161,6 +169,7 @@
           this.isMouseDown = false;
           this.previousMousePosition = { x: 0, y: 0 };
           this.zoomFactor = 0.1;
+          this.rightClickActive = false;
 
           this.previousTouch = null;
           this.initialDistance = null;
@@ -172,6 +181,7 @@
           canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
           canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
           canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
+          canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
           this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
           this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
@@ -180,6 +190,7 @@
 
         onMouseDown: function (event) {
           this.isMouseDown = true;
+          this.rightClickActive = event.button === 2; // Detect right click
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
@@ -193,8 +204,15 @@
           const deltaY = event.clientY - this.previousMousePosition.y;
           const object3D = this.el.object3D;
 
-          object3D.rotation.y += deltaX * 0.005;
-          object3D.rotation.x += deltaY * 0.005;
+          if (this.rightClickActive) {
+            // Perform translations with right click
+            object3D.position.x += deltaX * 0.005;
+            object3D.position.y -= deltaY * 0.005;
+          } else {
+            // Perform rotations with left click
+            object3D.rotation.y += deltaX * 0.005;
+            object3D.rotation.x += deltaY * 0.005;
+          }
 
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
