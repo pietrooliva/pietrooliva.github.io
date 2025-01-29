@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>DIDATTICA AUMENTATA - SENZA MARCATORE</title>
+    <title>DIDATTICA AUMENTATA - UNICUSANO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
@@ -45,7 +45,7 @@
         antialias: true; 
         precision: highp; 
         gammaOutput: true; 
-        gammaFactor: 1.8;
+        gammaFactor: 2.2;
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
@@ -62,12 +62,14 @@
         scale="0.5 0.5 0.5"
         rotation="0 0 0"
         animation-mixer
+        id="animatedModel"
         class="clickable"
         interaction-handler></a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
 
+    <!-- Pulsante per l'audio -->
     <button id="audioButton" style="
         position: fixed; 
         bottom: 10px; 
@@ -81,11 +83,27 @@
       Riproduci Audio
     </button>
 
+    <!-- Pulsante per l'animazione -->
+    <button id="animationButton" style="
+        position: fixed; 
+        bottom: 10px; 
+        right: 10px; 
+        padding: 10px 20px; 
+        background: rgba(0, 0, 0, 0.8); 
+        color: white; 
+        border: none; 
+        border-radius: 5px; 
+        font-size: 16px;">
+      Avvia Animazione
+    </button>
+
     <script>
       const splash = document.getElementById('splash');
       const allowButton = document.getElementById('allowButton');
       const audioElement = document.getElementById('background-audio');
       const audioButton = document.getElementById('audioButton');
+      const animationButton = document.getElementById('animationButton');
+      const modelEntity = document.getElementById('animatedModel');
 
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
@@ -121,6 +139,15 @@
         if (!('DeviceMotionEvent' in window)) {
           console.warn('DeviceMotionEvent is not supported on this device.');
           splash.style.display = 'none';
+        }
+      });
+
+      // Handle animation start/reset on button click
+      animationButton.addEventListener('click', () => {
+        const mixer = modelEntity.components['animation-mixer'];
+        if (mixer) {
+          mixer.stopAllAction();
+          mixer.play();
         }
       });
 
