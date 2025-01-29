@@ -63,7 +63,7 @@
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
-        interaction-handler></a-entity>
+        animation-mixer></a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
@@ -103,7 +103,7 @@
       const animatedModel = document.getElementById('animatedModel');
 
       let isAnimationActive = false;
-      let animationComponent = null;
+      let animationComponent = animatedModel.components['animation-mixer'];
 
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
@@ -144,23 +144,18 @@
 
       // Start/stop animation on button click
       animationButton.addEventListener('click', () => {
+        animationComponent = animatedModel.components['animation-mixer'];
+
+        if (!animationComponent) return;
+
         if (!isAnimationActive) {
-          if (!animatedModel.hasAttribute('animation-mixer')) {
-            animatedModel.setAttribute('animation-mixer', '');
-          }
-          animationComponent = animatedModel.components['animation-mixer'];
-          if (animationComponent) {
-            animationComponent.play();
-          }
+          animationComponent.mixer.timeScale = 1; // Riprendi animazione
           animationButton.textContent = "Ferma Animazione";
-          isAnimationActive = true;
         } else {
-          if (animationComponent) {
-            animationComponent.stop();
-          }
+          animationComponent.mixer.timeScale = 0; // Ferma animazione
           animationButton.textContent = "Avvia Animazione";
-          isAnimationActive = false;
         }
+        isAnimationActive = !isAnimationActive;
       });
 
       // Interaction handler for touch and mouse
@@ -169,7 +164,6 @@
           this.isMouseDown = false;
           this.previousMousePosition = { x: 0, y: 0 };
           this.zoomFactor = 0.1;
-          this.rightClickActive = false;
 
           this.previousTouch = null;
           this.initialDistance = null;
@@ -181,7 +175,6 @@
           canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
           canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
           canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
-          canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
           this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
           this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
@@ -190,7 +183,6 @@
 
         onMouseDown: function (event) {
           this.isMouseDown = true;
-          this.rightClickActive = event.button === 2; // Detect right click
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
@@ -204,15 +196,8 @@
           const deltaY = event.clientY - this.previousMousePosition.y;
           const object3D = this.el.object3D;
 
-          if (this.rightClickActive) {
-            // Perform translations with right click
-            object3D.position.x += deltaX * 0.005;
-            object3D.position.y -= deltaY * 0.005;
-          } else {
-            // Perform rotations with left click
-            object3D.rotation.y += deltaX * 0.005;
-            object3D.rotation.x += deltaY * 0.005;
-          }
+          object3D.rotation.y += deltaX * 0.005;
+          object3D.rotation.x += deltaY * 0.005;
 
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
