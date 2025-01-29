@@ -61,10 +61,37 @@
         position="0 0 -2"
         scale="0.5 0.5 0.5"
         rotation="0 0 0"
-        animation-mixer
-        id="animatedModel"
         class="clickable"
         interaction-handler></a-entity>
+
+      <button id="animateButton" style="
+    position: fixed; 
+    bottom: 10px; 
+    right: 10px; 
+    padding: 10px 20px; 
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    font-size: 16px;">
+  Avvia Animazione
+</button>
+
+<script>
+  const modelEl = document.getElementById('animatedModel');
+  const animateButton = document.getElementById('animateButton');
+
+  animateButton.addEventListener('click', () => {
+    if (!modelEl.hasAttribute('animation-mixer')) {
+      modelEl.setAttribute('animation-mixer', '');
+      animateButton.textContent = "Riavvia Animazione";
+    } else {
+      modelEl.removeAttribute('animation-mixer');
+      // Timeout per riapplicare l'animazione senza glitch
+      setTimeout(() => modelEl.setAttribute('animation-mixer', ''), 50);
+    }
+  });
+</script>
 
       <a-entity camera></a-entity>
     </a-scene>
