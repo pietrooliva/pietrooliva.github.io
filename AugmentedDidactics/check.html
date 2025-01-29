@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>DIDATTICA AUMENTATA - UNICUSANO</title>
+    <title>DIDATTICA AUMENTATA - SENZA MARCATORE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
@@ -45,7 +45,7 @@
         antialias: true; 
         precision: highp; 
         gammaOutput: true; 
-        gammaFactor: 2.2;
+        gammaFactor: 1.8;
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
@@ -57,46 +57,18 @@
 
       <!-- Modello 3D posizionato in AR senza marcatore -->
       <a-entity 
+        id="animatedModel"
         gltf-model="#model"
         position="0 0 -2"
         scale="0.5 0.5 0.5"
         rotation="0 0 0"
         class="clickable"
-        interaction-handler></a-entity>
-
-      <button id="animateButton" style="
-    position: fixed; 
-    bottom: 10px; 
-    right: 10px; 
-    padding: 10px 20px; 
-    background: rgba(0, 0, 0, 0.8); 
-    color: white; 
-    border: none; 
-    border-radius: 5px; 
-    font-size: 16px;">
-  Avvia Animazione
-</button>
-
-<script>
-  const modelEl = document.getElementById('animatedModel');
-  const animateButton = document.getElementById('animateButton');
-
-  animateButton.addEventListener('click', () => {
-    if (!modelEl.hasAttribute('animation-mixer')) {
-      modelEl.setAttribute('animation-mixer', '');
-      animateButton.textContent = "Riavvia Animazione";
-    } else {
-      modelEl.removeAttribute('animation-mixer');
-      // Timeout per riapplicare l'animazione senza glitch
-      setTimeout(() => modelEl.setAttribute('animation-mixer', ''), 50);
-    }
-  });
-</script>
+        interaction-handler>
+      </a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
 
-    <!-- Pulsante per l'audio -->
     <button id="audioButton" style="
         position: fixed; 
         bottom: 10px; 
@@ -110,8 +82,7 @@
       Riproduci Audio
     </button>
 
-    <!-- Pulsante per l'animazione -->
-    <button id="animationButton" style="
+    <button id="animateButton" style="
         position: fixed; 
         bottom: 10px; 
         right: 10px; 
@@ -129,8 +100,8 @@
       const allowButton = document.getElementById('allowButton');
       const audioElement = document.getElementById('background-audio');
       const audioButton = document.getElementById('audioButton');
-      const animationButton = document.getElementById('animationButton');
-      const modelEntity = document.getElementById('animatedModel');
+      const modelEl = document.getElementById('animatedModel');
+      const animateButton = document.getElementById('animateButton');
 
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
@@ -169,12 +140,14 @@
         }
       });
 
-      // Handle animation start/reset on button click
-      animationButton.addEventListener('click', () => {
-        const mixer = modelEntity.components['animation-mixer'];
-        if (mixer) {
-          mixer.stopAllAction();
-          mixer.play();
+      // Avvio e riavvio dell'animazione
+      animateButton.addEventListener('click', () => {
+        if (!modelEl.hasAttribute('animation-mixer')) {
+          modelEl.setAttribute('animation-mixer', '');
+          animateButton.textContent = "Riavvia Animazione";
+        } else {
+          modelEl.removeAttribute('animation-mixer');
+          setTimeout(() => modelEl.setAttribute('animation-mixer', ''), 50);
         }
       });
 
