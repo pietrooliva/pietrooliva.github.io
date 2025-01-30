@@ -142,18 +142,25 @@
         }
       });
 
-      // Start/stop animation on button click
-      animationButton.addEventListener('click', () => {
-        if (!isAnimationActive) {
-          animatedModel.setAttribute('rotation-animation', 'speed: 0.5');
-          animationButton.textContent = "Ferma Animazione";
-          isAnimationActive = true;
-        } else {
-          animatedModel.removeAttribute('rotation-animation');
-          animationButton.textContent = "Avvia Animazione";
-          isAnimationActive = false;
-        }
-      });
+// Start/stop animation on button click
+animationButton.addEventListener('click', () => {
+  if (!isAnimationActive) {
+    // Iniziare l'animazione con il componente 'animation'
+    animatedModel.setAttribute('animation', {
+      property: 'rotation',
+      to: '0 360 0',
+      dur: 5000,  // La durata dell'animazione di rotazione in millisecondi
+      loop: 'true'
+    });
+    animationButton.textContent = "Ferma Animazione";
+    isAnimationActive = true;
+  } else {
+    // Rimuovere l'animazione e fermare la rotazione
+    animatedModel.removeAttribute('animation');
+    animationButton.textContent = "Avvia Animazione";
+    isAnimationActive = false;
+  }
+});
 
       // Interaction handler for touch and mouse
       AFRAME.registerComponent('interaction-handler', {
