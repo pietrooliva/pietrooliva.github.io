@@ -36,7 +36,6 @@
         </button>
       </div>
     </div>
-
     <a-scene 
       gesture-detector 
       embedded 
@@ -54,7 +53,6 @@
         <a-asset-item id="model" src="models/cosmography/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/cosmography/background.mp3"></audio>
       </a-assets>
-
       <!-- Modello 3D posizionato in AR senza marcatore -->
       <a-entity 
         gltf-model="#model"
@@ -64,10 +62,8 @@
         class="clickable"
         id="animatedModel"
         interaction-handler></a-entity>
-
       <a-entity camera></a-entity>
     </a-scene>
-
     <button id="audioButton" style="
         position: fixed; 
         bottom: 10px; 
@@ -80,7 +76,6 @@
         font-size: 16px;">
       Riproduci Audio
     </button>
-
     <button id="animationButton" style="
         position: fixed; 
         bottom: 10px; 
@@ -93,7 +88,6 @@
         font-size: 16px;">
       Avvia Animazione
     </button>
-
     <script>
       const splash = document.getElementById('splash');
       const allowButton = document.getElementById('allowButton');
@@ -101,9 +95,8 @@
       const audioButton = document.getElementById('audioButton');
       const animationButton = document.getElementById('animationButton');
       const animatedModel = document.getElementById('animatedModel');
-
       let isAnimationActive = false;
-
+      let animationComponent = null;
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
         if (audioElement.paused) {
@@ -114,7 +107,6 @@
           audioButton.textContent = "Riproduci Audio";
         }
       });
-
       // Handle sensor permission request
       allowButton.addEventListener('click', async () => {
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
@@ -132,7 +124,6 @@
           splash.style.display = 'none';
         }
       });
-
       // Automatically hide the splash screen on unsupported devices
       window.addEventListener('load', () => {
         if (!('DeviceMotionEvent' in window)) {
@@ -140,68 +131,122 @@
           splash.style.display = 'none';
         }
       });
-
       // Start/stop animation on button click
       animationButton.addEventListener('click', () => {
         if (!isAnimationActive) {
-          animatedModel.object3D.rotation.set(0, 0, 0);
-          animatedModel.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear');
+          if (!animatedModel.hasAttribute('animation-mixer')) {
+            animatedModel.setAttribute('animation-mixer', '');
+          }
+          animationComponent = animatedModel.components['animation-mixer'];
+          if (animationComponent) {
+            animationComponent.play();
+          }
           animationButton.textContent = "Ferma Animazione";
           isAnimationActive = true;
         } else {
-          animatedModel.removeAttribute('animation');
+          if (animationComponent) {
+            animationComponent.pause();
+          }
           animationButton.textContent = "Avvia Animazione";
           isAnimationActive = false;
         }
       });
-
-      // Interaction handler for mouse and touch
+      // Interaction handler for touch and mouse
       AFRAME.registerComponent('interaction-handler', {
         init: function () {
           this.isMouseDown = false;
           this.previousMousePosition = { x: 0, y: 0 };
           this.zoomFactor = 0.1;
-
+          this.rightClickActive = false;
+          this.previousTouch = null;
+          this.initialDistance = null;
+          this.touchSensitivity = 0.01;
           const canvas = this.el.sceneEl.canvas;
-
           canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
           canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
           canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
           canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
           canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+          this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
+          this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
+          this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
         },
-
         onMouseDown: function (event) {
           this.isMouseDown = true;
+          this.rightClickActive = event.button === 2; // Detect right click
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
-
         onMouseUp: function () {
           this.isMouseDown = false;
         },
-
         onMouseMove: function (event) {
           if (!this.isMouseDown) return;
-
           const deltaX = event.clientX - this.previousMousePosition.x;
           const deltaY = event.clientY - this.previousMousePosition.y;
           const object3D = this.el.object3D;
-
-          object3D.rotation.y += deltaX * 0.005;
-          object3D.rotation.x += deltaY * 0.005;
-
+          if (this.rightClickActive) {
+            // Perform translations with right click
+            object3D.position.x += deltaX * 0.005;
+            object3D.position.y -= deltaY * 0.005;
+          } else {
+            // Perform rotations with left click
+            object3D.rotation.y += deltaX * 0.005;
+            object3D.rotation.x += deltaY * 0.005;
+          }
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
-
         onMouseWheel: function (event) {
           const object3D = this.el.object3D;
           object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
         },
+        onTouchStart: function (event) {
+          if (event.touches.length === 1) {
+            this.previousTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+          } else if (event.touches.length === 2) {
+            this.previousTouch = this.getMidpoint(event.touches);
+            this.initialDistance = this.getDistance(event.touches);
+          }
+        },
+        onTouchMove: function (event) {
+          const object3D = this.el.object3D;
+          if (event.touches.length === 1) {
+            const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+            const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+            const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+            object3D.rotation.y += deltaX;
+            object3D.rotation.x += deltaY;
+            this.previousTouch = currentTouch;
+          } else if (event.touches.length === 2) {
+            const currentMidpoint = this.getMidpoint(event.touches);
+            const currentDistance = this.getDistance(event.touches);
+            const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+            const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+            object3D.position.x += deltaX;
+            object3D.position.y -= deltaY;
+            object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
+            this.previousTouch = currentMidpoint;
+            this.initialDistance = currentDistance;
+          }
+        },
+        onTouchEnd: function () {
+          this.previousTouch = null;
+          this.initialDistance = null;
+        },
+        getMidpoint: function (touches) {
+          return {
+            x: (touches[0].clientX + touches[1].clientX) / 2,
+            y: (touches[0].clientY + touches[1].clientY) / 2,
+          };
+        },
+        getDistance: function (touches) {
+          const dx = touches[0].clientX - touches[1].clientX;
+          const dy = touches[0].clientY - touches[1].clientY;
+          return Math.sqrt(dx * dx + dy * dy);
+        },
       });
     </script>
-
     <style>
       body {
         margin: 0;
