@@ -1,0 +1,11 @@
+Model Information:
+* title:	Cosmography of the Local Universe
+* source:	https://sketchfab.com/3d-models/cosmography-of-the-local-universe-44cc223ce5ad4227818ea9dde5893431
+* author:	Daniel Pomarède (https://sketchfab.com/pomarede)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Cosmography of the Local Universe" (https://sketchfab.com/3d-models/cosmography-of-the-local-universe-44cc223ce5ad4227818ea9dde5893431) by Daniel Pomarède (https://sketchfab.com/pomarede) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
