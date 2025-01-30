@@ -145,19 +145,11 @@
       // Start/stop animation on button click
       animationButton.addEventListener('click', () => {
         if (!isAnimationActive) {
-          if (!animatedModel.hasAttribute('animation-mixer')) {
-            animatedModel.setAttribute('animation-mixer', '');
-          }
-          animationComponent = animatedModel.components['animation-mixer'];
-          if (animationComponent) {
-            animationComponent.play();
-          }
+          animatedModel.setAttribute('rotation-animation', 'speed: 0.5');
           animationButton.textContent = "Ferma Animazione";
           isAnimationActive = true;
         } else {
-          if (animationComponent) {
-            animationComponent.pause();
-          }
+          animatedModel.removeAttribute('rotation-animation');
           animationButton.textContent = "Avvia Animazione";
           isAnimationActive = false;
         }
