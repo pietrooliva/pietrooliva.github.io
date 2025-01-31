@@ -55,7 +55,6 @@
         <audio id="background-audio" src="models/cosmography/background.mp3"></audio>
       </a-assets>
 
-      <!-- Modello 3D posizionato in AR senza marcatore -->
       <a-entity 
         gltf-model="#model"
         position="0 0 -2"
@@ -103,32 +102,29 @@
       const animatedModel = document.getElementById('animatedModel');
 
       let isAnimationActive = false;
-      let animationComponent = null;
 
       // Componente personalizzato per la rotazione costante
-AFRAME.registerComponent('constant-rotation', {
-  schema: { speed: { type: 'number', default: 30 } }, // Velocità angolare in gradi al secondo
+      AFRAME.registerComponent('constant-rotation', {
+        schema: { speed: { type: 'number', default: 30 } },
+        tick: function (time, timeDelta) {
+          const rotation = this.el.object3D.rotation;
+          const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
+          rotation.y += delta;
+        }
+      });
 
-  tick: function (time, timeDelta) {
-    const rotation = this.el.object3D.rotation;
-    const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
-    rotation.y += delta; // Ruota attorno all'asse Y
-  }
-});
-
-animationButton.addEventListener('click', () => {
-  if (!isAnimationActive) {
-    // Avvia la rotazione costante
-    animatedModel.setAttribute('constant-rotation', 'speed: 30'); // Velocità in gradi al secondo
-    animationButton.textContent = "Ferma Animazione";
-    isAnimationActive = true;
-  } else {
-    // Ferma la rotazione
-    animatedModel.removeAttribute('constant-rotation');
-    animationButton.textContent = "Avvia Animazione";
-    isAnimationActive = false;
-  }
-});
+      // Pulsante animazione
+      animationButton.addEventListener('click', () => {
+        if (!isAnimationActive) {
+          animatedModel.setAttribute('constant-rotation', 'speed: 30');
+          animationButton.textContent = "Ferma Animazione";
+          isAnimationActive = true;
+        } else {
+          animatedModel.removeAttribute('constant-rotation');
+          animationButton.textContent = "Avvia Animazione";
+          isAnimationActive = false;
+        }
+      });
 
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
@@ -159,7 +155,6 @@ animationButton.addEventListener('click', () => {
         }
       });
 
-      // Automatically hide the splash screen on unsupported devices
       window.addEventListener('load', () => {
         if (!('DeviceMotionEvent' in window)) {
           console.warn('DeviceMotionEvent is not supported on this device.');
@@ -167,28 +162,7 @@ animationButton.addEventListener('click', () => {
         }
       });
 
-// Start/stop animation on button click
-animationButton.addEventListener('click', () => {
-  if (!isAnimationActive) {
-    // Iniziare l'animazione con il componente 'animation'
-    animatedModel.setAttribute('animation', {
-      property: 'rotation',
-      to: '0 360 0',
-      dur: 5000, // La durata dell'animazione di rotazione in millisecondi
-      easing: 'linear',
-      loop: true
-    });
-    animationButton.textContent = "Ferma Animazione";
-    isAnimationActive = true;
-  } else {
-    // Rimuovere l'animazione e ripristinare la rotazione iniziale
-    animatedModel.removeAttribute('animation');
-    animationButton.textContent = "Avvia Animazione";
-    isAnimationActive = false;
-  }
-});
-
-      // Interaction handler for touch and mouse
+      // Manipolazione con mouse e touch
       AFRAME.registerComponent('interaction-handler', {
         init: function () {
           this.isMouseDown = false;
@@ -215,7 +189,7 @@ animationButton.addEventListener('click', () => {
 
         onMouseDown: function (event) {
           this.isMouseDown = true;
-          this.rightClickActive = event.button === 2; // Detect right click
+          this.rightClickActive = event.button === 2;
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
@@ -230,11 +204,9 @@ animationButton.addEventListener('click', () => {
           const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-            // Perform translations with right click
             object3D.position.x += deltaX * 0.005;
             object3D.position.y -= deltaY * 0.005;
           } else {
-            // Perform rotations with left click
             object3D.rotation.y += deltaX * 0.005;
             object3D.rotation.x += deltaY * 0.005;
           }
