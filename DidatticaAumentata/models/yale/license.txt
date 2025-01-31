@@ -1,0 +1,11 @@
+Model Information:
+* title:	The Diagonal of a Square tablet
+* source:	https://sketchfab.com/3d-models/the-diagonal-of-a-square-tablet-605c9d9573d14b52b8880e14c826e133
+* author:	IPCH Digitization Lab (https://sketchfab.com/IPCH_Yale)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "The Diagonal of a Square tablet" (https://sketchfab.com/3d-models/the-diagonal-of-a-square-tablet-605c9d9573d14b52b8880e14c826e133) by IPCH Digitization Lab (https://sketchfab.com/IPCH_Yale) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
