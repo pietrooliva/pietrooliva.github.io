@@ -58,7 +58,7 @@
       <a-entity 
         gltf-model="#model"
         position="0 0 0"
-        scale="0.01 0.01 0.01"
+        scale="0.001 0.001 0.001"
         rotation="-90 180 180"
         class="clickable"
         id="animatedModel"
@@ -167,7 +167,7 @@ AFRAME.registerComponent('interaction-handler', {
   init: function () {
     this.isMouseDown = false;
     this.previousMousePosition = { x: 0, y: 0 };
-    this.zoomFactor = 0.01;
+    this.zoomFactor = 0.001;
     this.rightClickActive = false;
 
     this.previousTouch = null;
@@ -221,7 +221,7 @@ AFRAME.registerComponent('interaction-handler', {
     const object3D = this.el.object3D;
     const scaleFactor = event.deltaY > 0 ? 0.95 : 1.05;
     object3D.scale.multiplyScalar(scaleFactor);
-    object3D.scale.clampScalar(0.0001, 0.1);  // Limiti min e max dello zoom
+    object3D.scale.clampScalar(0.0001, 0.01);  // Limiti min e max dello zoom
   },
 
   onTouchStart: function (event) {
@@ -257,7 +257,7 @@ AFRAME.registerComponent('interaction-handler', {
       if (this.initialDistance) {
         const scaleFactor = currentDistance / this.initialDistance;
         object3D.scale.multiplyScalar(scaleFactor);
-        object3D.scale.clampScalar(0.001, 0.1);  // Limiti min e max
+        object3D.scale.clampScalar(0.0001, 0.01);  // Limiti min e max
         this.initialDistance = currentDistance;
       }
 
