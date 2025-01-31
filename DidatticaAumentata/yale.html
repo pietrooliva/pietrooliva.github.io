@@ -221,7 +221,7 @@ AFRAME.registerComponent('interaction-handler', {
     const object3D = this.el.object3D;
     const scaleFactor = event.deltaY > 0 ? 0.95 : 1.05;
     object3D.scale.multiplyScalar(scaleFactor);
-    object3D.scale.clampScalar(0.1, 5);  // Limiti min e max dello zoom
+    object3D.scale.clampScalar(0.01, 5);  // Limiti min e max dello zoom
   },
 
   onTouchStart: function (event) {
