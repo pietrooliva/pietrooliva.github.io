@@ -174,13 +174,14 @@ animationButton.addEventListener('click', () => {
     animatedModel.setAttribute('animation', {
       property: 'rotation',
       to: '0 360 0',
-      dur: 5000,  // La durata dell'animazione di rotazione in millisecondi
-      loop: 'true'
+      dur: 5000, // La durata dell'animazione di rotazione in millisecondi
+      easing: 'linear',
+      loop: true
     });
     animationButton.textContent = "Ferma Animazione";
     isAnimationActive = true;
   } else {
-    // Rimuovere l'animazione e fermare la rotazione
+    // Rimuovere l'animazione e ripristinare la rotazione iniziale
     animatedModel.removeAttribute('animation');
     animationButton.textContent = "Avvia Animazione";
     isAnimationActive = false;
