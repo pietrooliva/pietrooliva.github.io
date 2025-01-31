@@ -105,6 +105,31 @@
       let isAnimationActive = false;
       let animationComponent = null;
 
+      // Componente personalizzato per la rotazione costante
+AFRAME.registerComponent('constant-rotation', {
+  schema: { speed: { type: 'number', default: 30 } }, // Velocità angolare in gradi al secondo
+
+  tick: function (time, timeDelta) {
+    const rotation = this.el.object3D.rotation;
+    const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
+    rotation.y += delta; // Ruota attorno all'asse Y
+  }
+});
+
+animationButton.addEventListener('click', () => {
+  if (!isAnimationActive) {
+    // Avvia la rotazione costante
+    animatedModel.setAttribute('constant-rotation', 'speed: 30'); // Velocità in gradi al secondo
+    animationButton.textContent = "Ferma Animazione";
+    isAnimationActive = true;
+  } else {
+    // Ferma la rotazione
+    animatedModel.removeAttribute('constant-rotation');
+    animationButton.textContent = "Avvia Animazione";
+    isAnimationActive = false;
+  }
+});
+
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
         if (audioElement.paused) {
