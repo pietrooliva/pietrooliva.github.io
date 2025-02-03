@@ -102,6 +102,15 @@
       const animationButton = document.getElementById('animationButton');
       const animatedModel = document.getElementById('animatedModel');
 
+animatedModel.addEventListener('model-loaded', () => {
+  animatedModel.object3D.traverse((node) => {
+    if (node.isMesh) {
+      node.material.transparent = true;
+      node.material.alphaTest = 0.5;
+    }
+  });
+});
+
       let isAnimationActive = false;
 
       // Componente personalizzato per la rotazione costante
