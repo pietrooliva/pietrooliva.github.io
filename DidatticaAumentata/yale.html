@@ -163,19 +163,23 @@
       });
 
       // Funzione per adattare automaticamente la scala del modello
-      animatedModel.addEventListener('model-loaded', () => {
-        const model = animatedModel.getObject3D('mesh');
-        if (!model) return;
+animatedModel.addEventListener('model-loaded', () => {
+  const model = animatedModel.getObject3D('mesh');
+  if (!model) return;
 
-        const boundingBox = new THREE.Box3().setFromObject(model);
-        const size = new THREE.Vector3();
-        boundingBox.getSize(size);
+  const boundingBox = new THREE.Box3().setFromObject(model);
+  const size = new THREE.Vector3();
+  boundingBox.getSize(size);
 
-        const maxDimension = Math.max(size.x, size.y, size.z);
-        const scaleFactor = 1 / maxDimension;
+  // Determina il massimo delle dimensioni del modello
+  const maxDimension = Math.max(size.x, size.y, size.z);
+  
+  // Riduce in base a una dimensione predefinita target, ad esempio 1 unità
+  const targetDimension = 1;
+  const scaleFactor = targetDimension / maxDimension;
 
-        animatedModel.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
-      });
+  animatedModel.object3D.scale.set(scaleFactor, scaleFactor, scaleFactor);
+});
 
       // Manipolazione con mouse e touch
       AFRAME.registerComponent('interaction-handler', {
