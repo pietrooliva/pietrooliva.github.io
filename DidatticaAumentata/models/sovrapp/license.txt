@@ -1,0 +1,11 @@
+Model Information:
+* title:	Kolme vektori liitmine
+* source:	https://sketchfab.com/3d-models/kolme-vektori-liitmine-4f608da828ce44b294bfb6ad64941b18
+* author:	nilsausta (https://sketchfab.com/nilsausta)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Kolme vektori liitmine" (https://sketchfab.com/3d-models/kolme-vektori-liitmine-4f608da828ce44b294bfb6ad64941b18) by nilsausta (https://sketchfab.com/nilsausta) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
