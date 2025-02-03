@@ -1,99 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIDATTICA AUMENTATA</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="libs/aframe-master.min.js"></script>
-    <script src="libs/aframe-ar.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-    <script src="libs/gesture-detector.js"></script>
   </head>
   <body>
-    <div id="splash" style="
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        text-align: center;
-        z-index: 9999;">
-      <div>
-        <h1>È necessario l'accesso ai sensori di movimento di questo dispositivo</h1>
-        <button id="allowButton" style="
-                padding: 10px 20px;
-                font-size: 16px;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                border: 2px solid white;
-                border-radius: 5px;">
-          Consentire
-        </button>
-      </div>
+    <!-- Splash Screen -->
+    <div id="splash" style="position: fixed; background: rgba(0, 0, 0, 0.8); color: white; width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;">
+      <h1>Benvenuto! Abilita i sensori per proseguire</h1>
+      <button id="allowButton" style="padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; border-radius: 5px;">Consenti</button>
     </div>
 
-    <a-scene 
-      gesture-detector 
-      embedded 
-      arjs="trackingMethod: best; sourceType: webcam;" 
-      renderer="
-        antialias: true; 
-        precision: highp; 
-        gammaOutput: true; 
-        gammaFactor: 1.8;
-        physicallyCorrectLights: true; 
-        shadowMap.enabled: false; 
-        toneMapping: ACESFilmicToneMapping;">
-      
+    <!-- AR Scene -->
+    <a-scene embedded arjs="trackingMethod: best; sourceType: webcam;">
       <a-assets>
         <a-asset-item id="model" src="models/yale/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/yale/background.mp3"></audio>
       </a-assets>
 
       <a-entity 
-        gltf-model="#model"
-        position="0 0 0"
-        scale="1 1 1"
-        rotation="-90 180 180"
-        class="clickable"
+        gltf-model="#model" 
+        position="0 0 0" 
+        scale="0.005 0.005 0.005" 
+        rotation="-90 180 180" 
+        class="clickable" 
         id="animatedModel"
-        interaction-handler></a-entity>
+        interaction-handler>
+      </a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
 
-    <button id="audioButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        left: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
-      Riproduci Audio
-    </button>
+    <!-- Audio and Animation Buttons -->
+    <div style="position: absolute; bottom: 20px; width: 100%; text-align: center; z-index: 1000;">
+      <button id="audioButton" style="margin: 5px; padding: 10px 20px; background: rgba(0, 0, 0, 0.8); color: white; border: none; border-radius: 5px;">Riproduci Audio</button>
+      <button id="animationButton" style="margin: 5px; padding: 10px 20px; background: rgba(0, 0, 0, 0.8); color: white; border: none; border-radius: 5px;">Avvia Animazione</button>
+    </div>
 
-    <button id="animationButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        right: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
-      Avvia Animazione
-    </button>
-
-        <script>
+    <script>
       const splash = document.getElementById('splash');
       const allowButton = document.getElementById('allowButton');
       const audioElement = document.getElementById('background-audio');
@@ -103,30 +50,26 @@
 
       let isAnimationActive = false;
 
-      // Componente personalizzato per la rotazione costante
-      AFRAME.registerComponent('constant-rotation', {
-        schema: { speed: { type: 'number', default: 30 } },
-        tick: function (time, timeDelta) {
-          const rotation = this.el.object3D.rotation;
-          const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
-          rotation.y += delta;
+      // Richiesta permessi sensori
+      allowButton.addEventListener('click', async () => {
+        splash.style.display = 'none';
+        try {
+          if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            const permissionState = await DeviceOrientationEvent.requestPermission();
+            if (permissionState === 'granted') {
+              alert('Permessi sensori concessi.');
+            } else {
+              alert('Permessi negati. Alcune funzionalità potrebbero non funzionare correttamente.');
+            }
+          } else {
+            alert('I sensori sono già disponibili o non necessari.');
+          }
+        } catch (error) {
+          alert('Errore durante la richiesta dei permessi: ' + error);
         }
       });
 
-      // Pulsante animazione
-      animationButton.addEventListener('click', () => {
-        if (!isAnimationActive) {
-          animatedModel.setAttribute('constant-rotation', 'speed: 30');
-          animationButton.textContent = "Ferma Animazione";
-          isAnimationActive = true;
-        } else {
-          animatedModel.removeAttribute('constant-rotation');
-          animationButton.textContent = "Avvia Animazione";
-          isAnimationActive = false;
-        }
-      });
-
-      // Riproduzione audio con pulsante
+      // Pulsante audio
       audioButton.addEventListener('click', () => {
         if (audioElement.paused) {
           audioElement.play();
@@ -137,38 +80,40 @@
         }
       });
 
-      // Adattamento automatico delle dimensioni del modello
-      animatedModel.addEventListener('model-loaded', () => {
-        const model = animatedModel.getObject3D('mesh');
-        if (!model) return;
-
-        const boundingBox = new THREE.Box3().setFromObject(model);
-        const size = new THREE.Vector3();
-        boundingBox.getSize(size);
-
-        const maxDimension = Math.max(size.x, size.y, size.z);
-        const scaleFactor = 1 / maxDimension;
-
-        animatedModel.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+      // Pulsante animazione
+      animationButton.addEventListener('click', () => {
+        if (!isAnimationActive) {
+          animatedModel.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 4000');
+          animationButton.textContent = "Ferma Animazione";
+          isAnimationActive = true;
+        } else {
+          animatedModel.removeAttribute('animation');
+          animationButton.textContent = "Avvia Animazione";
+          isAnimationActive = false;
+        }
       });
 
-      // Manipolazione touch e mouse mantenuta
+      // Manipolazione del modello con mouse e touch
       AFRAME.registerComponent('interaction-handler', {
         init: function () {
           this.isMouseDown = false;
           this.previousMousePosition = { x: 0, y: 0 };
-          this.zoomFactor = 0.001;
 
+          const canvas = this.el.sceneEl.canvas;
+          if (!canvas) {
+            this.el.sceneEl.addEventListener('render-target-loaded', () => this.initListeners());
+          } else {
+            this.initListeners();
+          }
+        },
+
+        initListeners: function () {
           const canvas = this.el.sceneEl.canvas;
 
           canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
           canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
           canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
           canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
-
-          this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
-          this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
-          this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
         },
 
         onMouseDown: function (event) {
@@ -188,8 +133,8 @@
           const deltaY = event.clientY - this.previousMousePosition.y;
           const object3D = this.el.object3D;
 
-          object3D.rotation.y += deltaX * 0.005;
-          object3D.rotation.x += deltaY * 0.005;
+          object3D.rotation.y += deltaX * 0.01;
+          object3D.rotation.x += deltaY * 0.01;
 
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
@@ -197,30 +142,9 @@
 
         onMouseWheel: function (event) {
           const object3D = this.el.object3D;
-          const scaleFactor = event.deltaY > 0 ? 0.95 : 1.05;
+          const scaleFactor = event.deltaY > 0 ? 0.9 : 1.1;
           object3D.scale.multiplyScalar(scaleFactor);
-          object3D.scale.clampScalar(0.01, 5);
-        },
-
-        onTouchStart: function (event) {
-          this.previousTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-        },
-
-        onTouchMove: function (event) {
-          const object3D = this.el.object3D;
-          const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-          const deltaX = (currentTouch.x - this.previousTouch.x) * 0.005;
-          const deltaY = (currentTouch.y - this.previousTouch.y) * 0.005;
-
-          object3D.rotation.y += deltaX;
-          object3D.rotation.x += deltaY;
-
-          this.previousTouch = currentTouch;
-        },
-
-        onTouchEnd: function () {
-          this.previousTouch = null;
-        },
+        }
       });
     </script>
 
@@ -228,6 +152,7 @@
       body {
         margin: 0;
         overflow: hidden;
+        font-family: Arial, sans-serif;
       }
     </style>
   </body>
