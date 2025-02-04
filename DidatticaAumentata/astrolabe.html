@@ -45,7 +45,7 @@
         antialias: true; 
         precision: highp; 
         gammaOutput: true; 
-        gammaFactor: 1.8;
+        gammaFactor: 2.2;
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
@@ -55,11 +55,10 @@
         <audio id="background-audio" src="models/astrolabe/background.mp3"></audio>
       </a-assets>
 
-      <!-- Modello 3D posizionato in AR senza marcatore -->
       <a-entity 
         gltf-model="#model"
-        position="0 0 -2"
-        scale="0.5 0.5 0.5"
+        position="0 0 0"
+        scale="0.2 0.2 0.2"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -103,7 +102,29 @@
       const animatedModel = document.getElementById('animatedModel');
 
       let isAnimationActive = false;
-      let animationComponent = null;
+
+      // Componente personalizzato per la rotazione costante
+      AFRAME.registerComponent('constant-rotation', {
+        schema: { speed: { type: 'number', default: 30 } },
+        tick: function (time, timeDelta) {
+          const rotation = this.el.object3D.rotation;
+          const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
+          rotation.y += delta;
+        }
+      });
+
+      // Pulsante animazione
+      animationButton.addEventListener('click', () => {
+        if (!isAnimationActive) {
+          animatedModel.setAttribute('constant-rotation', 'speed: 30');
+          animationButton.textContent = "Ferma Animazione";
+          isAnimationActive = true;
+        } else {
+          animatedModel.removeAttribute('constant-rotation');
+          animationButton.textContent = "Avvia Animazione";
+          isAnimationActive = false;
+        }
+      });
 
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
@@ -134,7 +155,6 @@
         }
       });
 
-      // Automatically hide the splash screen on unsupported devices
       window.addEventListener('load', () => {
         if (!('DeviceMotionEvent' in window)) {
           console.warn('DeviceMotionEvent is not supported on this device.');
@@ -142,28 +162,7 @@
         }
       });
 
-      // Start/stop animation on button click
-      animationButton.addEventListener('click', () => {
-        if (!isAnimationActive) {
-          if (!animatedModel.hasAttribute('animation-mixer')) {
-            animatedModel.setAttribute('animation-mixer', '');
-          }
-          animationComponent = animatedModel.components['animation-mixer'];
-          if (animationComponent) {
-            animationComponent.play();
-          }
-          animationButton.textContent = "Ferma Animazione";
-          isAnimationActive = true;
-        } else {
-          if (animationComponent) {
-            animationComponent.pause();
-          }
-          animationButton.textContent = "Avvia Animazione";
-          isAnimationActive = false;
-        }
-      });
-
-      // Interaction handler for touch and mouse
+      // Manipolazione con mouse e touch
       AFRAME.registerComponent('interaction-handler', {
         init: function () {
           this.isMouseDown = false;
@@ -190,7 +189,7 @@
 
         onMouseDown: function (event) {
           this.isMouseDown = true;
-          this.rightClickActive = event.button === 2; // Detect right click
+          this.rightClickActive = event.button === 2;
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
@@ -205,11 +204,9 @@
           const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-            // Perform translations with right click
             object3D.position.x += deltaX * 0.005;
             object3D.position.y -= deltaY * 0.005;
           } else {
-            // Perform rotations with left click
             object3D.rotation.y += deltaX * 0.005;
             object3D.rotation.x += deltaY * 0.005;
           }
