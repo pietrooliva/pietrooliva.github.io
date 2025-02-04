@@ -1,0 +1,11 @@
+Model Information:
+* title:	Planispheric astrolabe
+* source:	https://sketchfab.com/3d-models/planispheric-astrolabe-f6dac1748e964711ad4331767317d7b9
+* author:	Virtual Museums of Małopolska (https://sketchfab.com/WirtualneMuzeaMalopolski)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Planispheric astrolabe" (https://sketchfab.com/3d-models/planispheric-astrolabe-f6dac1748e964711ad4331767317d7b9) by Virtual Museums of Małopolska (https://sketchfab.com/WirtualneMuzeaMalopolski) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
