@@ -461,7 +461,7 @@
         "metallicRoughnessTexture": {
           "index": 1
         },
-        "roughnessFactor": 0.5
+        "roughnessFactor": 0.5914868455453611
       }
     },
     {
@@ -596,8 +596,8 @@
       "children": [
         1
       ],
-"matrix": [
-      0.01203303225338459,
+      "matrix": [
+        0.01203303225338459,
         0.0,
         0.0,
         0.0,
@@ -613,7 +613,7 @@
         0.0,
         0.0,
         1.0
-],
+      ],
       "name": "Sketchfab_model"
     },
     {
