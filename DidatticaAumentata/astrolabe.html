@@ -54,12 +54,16 @@
         <a-asset-item id="model" src="models/astrolabe/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/astrolabe/background.mp3"></audio>
       </a-assets>
-
+      
+        <!-- Luce ambientale per illuminazione uniforme -->
+      <a-light type="ambient" color="#ffffff" intensity="5"></a-light>
+        <!-- Luce direzionale per illuminare il modello dall'alto -->
+      <a-light type="directional" color="#ffffff" intensity="10" position="5 10 5"></a-light>
       <a-entity 
         gltf-model="#model"
         position="0 -0.02 -1.5"
         scale="0.03 0.03 0.03"
-        rotation="0 -90 -30"
+        rotation="0 0 0"
         class="clickable"
         id="animatedModel"
         interaction-handler>
