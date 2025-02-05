@@ -103,7 +103,29 @@
       const animatedModel = document.getElementById('animatedModel');
 
       let isAnimationActive = false;
-      let rotationSpeed = 0.5; // Velocità di rotazione in gradi per frame
+
+      // Componente personalizzato per la rotazione costante
+      AFRAME.registerComponent('constant-rotation', {
+        schema: { speed: { type: 'number', default: 30 } },
+        tick: function (time, timeDelta) {
+          const rotation = this.el.object3D.rotation;
+          const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
+          rotation.y += delta;
+        }
+      });
+
+      // Pulsante animazione
+      animationButton.addEventListener('click', () => {
+        if (!isAnimationActive) {
+          animatedModel.setAttribute('constant-rotation', 'speed: 30');
+          animationButton.textContent = "Ferma Animazione";
+          isAnimationActive = true;
+        } else {
+          animatedModel.removeAttribute('constant-rotation');
+          animationButton.textContent = "Avvia Animazione";
+          isAnimationActive = false;
+        }
+      });
       
       // Play/pause audio on button click
       audioButton.addEventListener('click', () => {
