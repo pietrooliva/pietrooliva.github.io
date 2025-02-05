@@ -451,6 +451,7 @@
     {
       "doubleSided": true,
       "name": "4065_mat",
+      "emissiveFactor": [0.5, 0.5, 0.5],
       "occlusionTexture": {
         "index": 1
       },
