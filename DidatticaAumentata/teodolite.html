@@ -58,7 +58,7 @@
       <a-entity 
         gltf-model="#model"
         position="0 -0.08 -1"
-        scale="0.7 0.7 0.7"
+        scale="0.1 0.1 0.1"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -186,7 +186,7 @@
         tick: function (time, timeDelta) {
           const rotation = this.el.object3D.rotation;
           const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
-          rotation.z += delta;
+          rotation.y += delta;
         }
       });
 
