@@ -49,21 +49,21 @@
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
-      
+
       <a-assets>
         <a-asset-item id="model" src="models/astrolabe/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/astrolabe/background.mp3"></audio>
       </a-assets>
 
-      <!-- Modello 3D posizionato in AR senza marcatore -->
       <a-entity 
         gltf-model="#model"
-        position="0 0 -2"
-        scale="0.1 0.1 0.1"
+        position="0 0 -1"
+        scale="0.06 0.06 0.06"
         rotation="-90 180 180"
         class="clickable"
         id="animatedModel"
-        interaction-handler></a-entity>
+        interaction-handler>
+      </a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
@@ -103,31 +103,47 @@
       const animatedModel = document.getElementById('animatedModel');
 
       let isAnimationActive = false;
+      let isNativeAnimation = false;
 
-      // Componente personalizzato per la rotazione costante
-      AFRAME.registerComponent('constant-rotation', {
-        schema: { speed: { type: 'number', default: 30 } },
-        tick: function (time, timeDelta) {
-          const rotation = this.el.object3D.rotation;
-          const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
-          rotation.y += delta;
+      animatedModel.addEventListener('model-loaded', () => {
+        const model = animatedModel.getObject3D('mesh');
+        if (model && model.animations && model.animations.length > 0) {
+          isNativeAnimation = true;
         }
       });
 
       // Pulsante animazione
       animationButton.addEventListener('click', () => {
+        if (isNativeAnimation) {
+          toggleNativeAnimation();
+        } else {
+          toggleCustomRotation();
+        }
+      });
+
+      function toggleNativeAnimation() {
+        if (!isAnimationActive) {
+          animatedModel.setAttribute('animation-mixer', '');
+          animationButton.textContent = "Ferma Animazione";
+        } else {
+          animatedModel.removeAttribute('animation-mixer');
+          animationButton.textContent = "Avvia Animazione";
+        }
+        isAnimationActive = !isAnimationActive;
+      }
+
+      function toggleCustomRotation() {
         if (!isAnimationActive) {
           animatedModel.setAttribute('constant-rotation', 'speed: 30');
           animationButton.textContent = "Ferma Animazione";
-          isAnimationActive = true;
         } else {
           animatedModel.removeAttribute('constant-rotation');
           animationButton.textContent = "Avvia Animazione";
-          isAnimationActive = false;
         }
-      });
-      
-      // Play/pause audio on button click
+        isAnimationActive = !isAnimationActive;
+      }
+
+      // Pulsante audio
       audioButton.addEventListener('click', () => {
         if (audioElement.paused) {
           audioElement.play();
@@ -164,26 +180,17 @@
         }
       });
 
-      // Start/stop rotation animation on button click
-      animationButton.addEventListener('click', () => {
-        if (!isAnimationActive) {
-          animatedModel.setAttribute('rotation', '0 0 0'); // Reset initial rotation
-          animatedModel.setAttribute('animation', {
-            property: 'rotation',
-            to: `0 360 0`,
-            loop: true,
-            dur: 6000 // Durata completa della rotazione (6 secondi)
-          });
-          animationButton.textContent = "Ferma Animazione";
-          isAnimationActive = true;
-        } else {
-          animatedModel.removeAttribute('animation');
-          animationButton.textContent = "Avvia Animazione";
-          isAnimationActive = false;
+      // Componente personalizzato per rotazione continua
+      AFRAME.registerComponent('constant-rotation', {
+        schema: { speed: { type: 'number', default: 30 } },
+        tick: function (time, timeDelta) {
+          const rotation = this.el.object3D.rotation;
+          const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
+          rotation.y += delta;
         }
       });
 
-      // Interaction handler for touch and mouse
+      // Interaction handler per touch e mouse
       AFRAME.registerComponent('interaction-handler', {
         init: function () {
           this.isMouseDown = false;
@@ -210,7 +217,7 @@
 
         onMouseDown: function (event) {
           this.isMouseDown = true;
-          this.rightClickActive = event.button === 2; // Detect right click
+          this.rightClickActive = event.button === 2;
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
@@ -225,11 +232,9 @@
           const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-            // Perform translations with right click
             object3D.position.x += deltaX * 0.005;
             object3D.position.y -= deltaY * 0.005;
           } else {
-            // Perform rotations with left click
             object3D.rotation.y += deltaX * 0.005;
             object3D.rotation.x += deltaY * 0.005;
           }
@@ -237,6 +242,7 @@
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
+
         onMouseWheel: function (event) {
           const object3D = this.el.object3D;
           object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
@@ -250,6 +256,7 @@
             this.initialDistance = this.getDistance(event.touches);
           }
         },
+
         onTouchMove: function (event) {
           const object3D = this.el.object3D;
           if (event.touches.length === 1) {
@@ -276,10 +283,12 @@
             this.initialDistance = currentDistance;
           }
         },
+
         onTouchEnd: function () {
           this.previousTouch = null;
           this.initialDistance = null;
         },
+
 
         getMidpoint: function (touches) {
           return {
