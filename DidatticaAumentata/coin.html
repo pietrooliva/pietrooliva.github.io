@@ -62,7 +62,7 @@
       <a-entity 
         gltf-model="#model"
         position="0 0 -2.0"
-        scale="0.5 0.5 0.5"
+        scale="0.7 0.7 0.7"
         rotation="90 0 0"
         class="clickable"
         id="animatedModel"
@@ -81,7 +81,7 @@
         color: white; 
         border: none; 
         border-radius: 5px; 
-        font-size: 16px;">
+        font-size: 18px;">
       Riproduci Audio
     </button>
 
@@ -94,7 +94,7 @@
         color: white; 
         border: none; 
         border-radius: 5px; 
-        font-size: 16px;">
+        font-size: 18px;">
       Avvia Animazione
     </button>
 
@@ -190,7 +190,7 @@
         tick: function (time, timeDelta) {
           const rotation = this.el.object3D.rotation;
           const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
-          rotation.y += delta;
+          rotation.x += delta;
         }
       });
 
