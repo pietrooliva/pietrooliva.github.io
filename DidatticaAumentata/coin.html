@@ -190,7 +190,7 @@
         tick: function (time, timeDelta) {
           const rotation = this.el.object3D.rotation;
           const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
-          rotation.x += delta;
+          rotation.z += delta;
         }
       });
 
