@@ -1,0 +1,354 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.42403072118759155,
+        0.8863218426704407,
+        0.43350470066070557
+      ],
+      "min": [
+        -0.42580360174179077,
+        -2.9802320611338473e-08,
+        -0.4545900523662567
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 298116,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.9999868869781494,
+        0.9998660087585449,
+        0.9999253749847412
+      ],
+      "min": [
+        -0.9999726414680481,
+        -0.9999938607215881,
+        -0.9998234510421753
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 198744,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 397488,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 596232,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 794976,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 993720,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1192464,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1391208,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 1589952,
+      "componentType": 5126,
+      "count": 24843,
+      "max": [
+        0.999993622303009,
+        0.9914379715919495
+      ],
+      "min": [
+        7.705023745074868e-05,
+        0.0001429915428161621
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 115659,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "Digitales Marktarchiv (https://sketchfab.com/marktarchiv)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/ethiopian-coptic-stone-icon-w-5-panels-bb654302a9e44261ad552c0419874486",
+      "title": "Ethiopian Coptic Stone Icon W/ 5 Panels"
+    },
+    "generator": "Sketchfab-15.61.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 462636,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 1788696,
+      "byteOffset": 462636,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 596232,
+      "byteOffset": 2251332,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 2847564,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_materials_unlit"
+  ],
+  "images": [
+    {
+      "uri": "textures/meshes0__0_baseColor.jpeg"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_unlit": {}
+      },
+      "name": "meshes0__0",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "meshes[0]__0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2,
+            "TEXCOORD_1": 3,
+            "TEXCOORD_2": 4,
+            "TEXCOORD_3": 5,
+            "TEXCOORD_4": 6,
+            "TEXCOORD_5": 7,
+            "TEXCOORD_6": 8,
+            "TEXCOORD_7": 9,
+            "TEXCOORD_8": 10
+          },
+          "indices": 11,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "563ce939296e479d83aea4b6527f605a.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4
+      ],
+      "name": "meshes[0]"
+    },
+    {
+      "mesh": 0,
+      "name": "meshes[0]__0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ]
+}
