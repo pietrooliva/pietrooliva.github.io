@@ -51,11 +51,11 @@
         <!-- Luce ambientale per illuminazione uniforme -->
   <!--   <a-light type="ambient" color="#ffffff" intensity="5"></a-light> -->
         <!-- Luce direzionale per illuminare il modello dall'alto -->
-      <a-light type="directional" color="#ffffff" intensity="6" position="7 7 5"></a-light>
+<!--      <a-light type="directional" color="#ffffff" intensity="6" position="7 7 5"></a-light> -->
       <a-entity 
         gltf-model="#model"
-        position="0 0 -4.0"
-        scale="1.8 1.8 1.8"
+        position="0 0 -10.0"
+        scale="2.8 2.8 2.8"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -91,15 +91,15 @@
       Avvia Animazione
     </button>
 
-   <!--    <div id="imageContainer" style="
+    <div id="imageContainer" style="
   position: fixed;
   bottom: 120px;
   left: 50%; 
   transform: translateX(-50%);
   text-align: center;">
   <img src="models/penicillin/Penicillin.png" alt="Penicillin" style="
-    max-width: 200px;
-    max-height: 200px;
+    max-width: 220px;
+    max-height: 220px;
     opacity: 0.9;">
 </div>
 
@@ -116,7 +116,7 @@
   <span style="color: blue;">Blue</span> = Nitrogen, 
   <span style="color: red;">Red</span> = Oxygen, 
   <span style="color: yellow;">Yellow</span> = Sulphur
-</div> -->
+</div> 
 
     <script>
       const splash = document.getElementById('splash');
