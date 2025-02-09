@@ -45,7 +45,7 @@
         antialias: true; 
         precision: highp; 
         gammaOutput: true; 
-        gammaFactor: 3.0;
+        gammaFactor: 2.2;
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
@@ -97,6 +97,21 @@
         font-size: 18px;">
       Avvia Animazione
     </button>
+
+    <div id="legend" style="
+  position: fixed;
+  bottom: 50px;
+  left: 50%; 
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 16px; 
+  color: white;">
+  <span style="color: black;">Black</span> = Carbon, 
+  <span style="color: grey;">Grey</span> = Hydrogen, 
+  <span style="color: blue;">Blue</span> = Nitrogen, 
+  <span style="color: red;">Red</span> = Oxygen, 
+  <span style="color: yellow;">Yellow</span> = Sulphur
+</div>
 
     <script>
       const splash = document.getElementById('splash');
