@@ -41,7 +41,11 @@
       gesture-detector 
       embedded 
       arjs="trackingMethod: best; sourceType: webcam;" 
-      renderer="renderer="antialias: true; gammaOutput: true; toneMapping: ACESFilmicToneMapping;">
+       renderer="antialias: true; gammaOutput: true; toneMapping: LinearToneMapping;">
+<!--      renderer="renderer="antialias: true; gammaOutput: true; toneMapping: ACESFilmicToneMapping;">  -->
+ <!--      renderer="renderer="antialias: true; gammaOutput: true; toneMapping: ACESFilmicToneMapping;"> -->
+     
+
 
       <a-assets>
         <a-asset-item id="model" src="models/penicillin/scene.gltf"></a-asset-item>
@@ -54,7 +58,7 @@
 <!--      <a-light type="directional" color="#ffffff" intensity="6" position="7 7 5"></a-light> -->
       <a-entity 
         gltf-model="#model"
-        position="0 0 -10.0"
+        position="0 0 -20.0"
         scale="2.8 2.8 2.8"
         rotation="0 0 0"
         class="clickable"
@@ -211,7 +215,7 @@
         tick: function (time, timeDelta) {
           const rotation = this.el.object3D.rotation;
           const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
-          rotation.y += delta;
+          rotation.z += delta;
         }
       });
 
@@ -225,7 +229,7 @@
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 0.001;
+          this.touchSensitivity = 0.003;
 
           const canvas = this.el.sceneEl.canvas;
 
