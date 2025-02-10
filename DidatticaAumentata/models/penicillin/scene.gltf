@@ -1,38 +1,36 @@
 {
+  "asset": {
+    "generator": "Sketchfab-12.65.0",
+    "version": "2.0",
+    "extras": {
+      "author": "Thomas Flynn (https://sketchfab.com/nebulousflynn)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/alexander-flemming-describes-penicillin-audio-e2c2e88f3f794ff496ab8baa51e60b3e",
+      "title": "Alexander Flemming describes Penicillin [audio]"
+    }
+  },
+  "buffers": [
+    {
+      "uri": "scene.bin",
+      "byteLength": 1740936
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 769968,
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 769968,
+      "byteLength": 970968,
+      "byteStride": 12,
+      "target": 34962
+    }
+  ],
   "accessors": [
-    {
-      "bufferView": 1,
-      "componentType": 5126,
-      "count": 3015,
-      "max": [
-        159.81500244140625,
-        104.80000305175781,
-        174.20578002929688
-      ],
-      "min": [
-        66.24099731445313,
-        48.0,
-        65.7229995727539
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 36180,
-      "componentType": 5126,
-      "count": 3015,
-      "max": [
-        1.0,
-        1.0,
-        0.9998525977134705
-      ],
-      "min": [
-        -0.999849259853363,
-        -1.0,
-        -1.0
-      ],
-      "type": "VEC3"
-    },
     {
       "bufferView": 0,
       "componentType": 5125,
@@ -41,37 +39,38 @@
     },
     {
       "bufferView": 1,
+      "componentType": 5126,
+      "count": 3015,
+      "type": "VEC3",
+      "min": [66.24099731445313, 48.0, 65.7229995727539],
+      "max": [159.81500244140625, 104.80000305175781, 174.20578002929688]
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 36180,
+      "componentType": 5126,
+      "count": 3015,
+      "type": "VEC3",
+      "min": [-0.999849259853363, -1.0, -1.0],
+      "max": [1.0, 1.0, 0.9998525977134705]
+    },
+    {
+      "bufferView": 1,
       "byteOffset": 72360,
       "componentType": 5126,
       "count": 20634,
-      "max": [
-        158.56700134277344,
-        104.9000015258789,
-        189.53799438476563
-      ],
-      "min": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "type": "VEC3"
+      "type": "VEC3",
+      "min": [0.0, 0.0, 0.0],
+      "max": [158.56700134277344, 104.9000015258789, 189.53799438476563]
     },
     {
       "bufferView": 1,
       "byteOffset": 319968,
       "componentType": 5126,
       "count": 20634,
-      "max": [
-        0.9999992251396179,
-        1.0,
-        0.9999997019767761
-      ],
-      "min": [
-        -0.9999443292617798,
-        -1.0,
-        -1.0
-      ],
-      "type": "VEC3"
+      "type": "VEC3",
+      "min": [-0.9999443292617798, -1.0, -1.0],
+      "max": [0.9999992251396179, 1.0, 0.9999997019767761]
     },
     {
       "bufferView": 0,
@@ -79,161 +78,6 @@
       "componentType": 5125,
       "count": 94458,
       "type": "SCALAR"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 567576,
-      "componentType": 5126,
-      "count": 778,
-      "max": [
-        118.07300567626953,
-        49.608985900878906,
-        112.14900207519531
-      ],
-      "min": [
-        108.07500457763672,
-        39.80000305175781,
-        102.1510009765625
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 576912,
-      "componentType": 5126,
-      "count": 778,
-      "max": [
-        0.999849259853363,
-        0.9658360481262207,
-        0.9983239769935608
-      ],
-      "min": [
-        -0.9998423457145691,
-        -1.0,
-        -0.9998425245285034
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 442692,
-      "componentType": 5125,
-      "count": 3921,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 586248,
-      "componentType": 5126,
-      "count": 1749,
-      "max": [
-        128.11900329589844,
-        85.4000015258789,
-        130.78700256347656
-      ],
-      "min": [
-        106.19300079345703,
-        65.19999694824219,
-        71.875
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 607236,
-      "componentType": 5126,
-      "count": 1749,
-      "max": [
-        0.9998425245285034,
-        1.0,
-        0.999849259853363
-      ],
-      "min": [
-        -0.9998491406440735,
-        -1.0,
-        -0.9998491406440735
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 458376,
-      "componentType": 5125,
-      "count": 8751,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 628224,
-      "componentType": 5126,
-      "count": 14281,
-      "max": [
-        140.92947387695313,
-        98.9000015258789,
-        165.33599853515625
-      ],
-      "min": [
-        14.660003662109375,
-        15.5,
-        5.0240020751953125
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 799596,
-      "componentType": 5126,
-      "count": 14281,
-      "max": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "min": [
-        -1.0,
-        -1.0,
-        -0.9999999403953552
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 493380,
-      "componentType": 5125,
-      "count": 69147,
-      "type": "SCALAR"
-    }
-  ],
-  "asset": {
-    "extras": {
-      "author": "Thomas Flynn (https://sketchfab.com/nebulousflynn)",
-      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
-      "source": "https://sketchfab.com/3d-models/alexander-flemming-describes-penicillin-audio-e2c2e88f3f794ff496ab8baa51e60b3e",
-      "title": "Alexander Flemming describes Penicillin [audio]"
-    },
-    "generator": "Sketchfab-12.65.0",
-    "version": "2.0"
-  },
-  "bufferViews": [
-    {
-      "buffer": 0,
-      "byteLength": 769968,
-      "name": "floatBufferViews",
-      "target": 34963
-    },
-    {
-      "buffer": 0,
-      "byteLength": 970968,
-      "byteOffset": 769968,
-      "byteStride": 12,
-      "name": "floatBufferViews",
-      "target": 34962
-    }
-  ],
-  "buffers": [
-    {
-      "byteLength": 1740936,
-      "uri": "scene.bin"
     }
   ],
   "materials": [
@@ -241,12 +85,7 @@
       "doubleSided": true,
       "name": "color_15277357",
       "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.913725,
-          0.113725,
-          0.176471,
-          1.0
-        ],
+        "baseColorFactor": [0.913725, 0.113725, 0.176471, 1.0],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.6
       }
@@ -255,54 +94,7 @@
       "doubleSided": true,
       "name": "color_16448250",
       "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.980392,
-          0.980392,
-          0.980392,
-          1.0
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.6
-      }
-    },
-    {
-      "doubleSided": true,
-      "name": "color_16768282",
-      "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          1.0,
-          0.866667,
-          0.101961,
-          1.0
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.6
-      }
-    },
-    {
-      "doubleSided": true,
-      "name": "color_3888547",
-      "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.231373,
-          0.333333,
-          0.639216,
-          1.0
-        ],
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.6
-      }
-    },
-    {
-      "doubleSided": true,
-      "name": "color_6383466",
-      "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.380392,
-          0.403922,
-          0.415686,
-          1.0
-        ],
+        "baseColorFactor": [0.980392, 0.980392, 0.980392, 1.0],
         "metallicFactor": 0.0,
         "roughnessFactor": 0.6
       }
@@ -314,67 +106,11 @@
       "primitives": [
         {
           "attributes": {
-            "NORMAL": 1,
-            "POSITION": 0
+            "POSITION": 0,
+            "NORMAL": 1
           },
           "indices": 2,
           "material": 0,
-          "mode": 4
-        }
-      ]
-    },
-    {
-      "name": "Object_1",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 4,
-            "POSITION": 3
-          },
-          "indices": 5,
-          "material": 1,
-          "mode": 4
-        }
-      ]
-    },
-    {
-      "name": "Object_2",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 7,
-            "POSITION": 6
-          },
-          "indices": 8,
-          "material": 2,
-          "mode": 4
-        }
-      ]
-    },
-    {
-      "name": "Object_3",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 10,
-            "POSITION": 9
-          },
-          "indices": 11,
-          "material": 3,
-          "mode": 4
-        }
-      ]
-    },
-    {
-      "name": "Object_4",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 13,
-            "POSITION": 12
-          },
-          "indices": 14,
-          "material": 4,
           "mode": 4
         }
       ]
@@ -382,91 +118,29 @@
   ],
   "nodes": [
     {
-      "children": [
-        1
-      ],
+      "name": "Sketchfab_model",
       "matrix": [
-        0.020365601405501366,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        -0.020365601405501366,
-        -9.044143836290426e-18,
-        0.0,
-        0.0,
-        9.044143836290426e-18,
-        -0.020365601405501366,
-        0.0,
-        0.0,
-        -110.780876159668,
-        114.31907653808591,
-        1.0
+        0.020365601405501366, 0.0, 0.0, 0.0,
+        0.0, -0.020365601405501366, -9.044143836290426e-18, 0.0,
+        0.0, 9.044143836290426e-18, -0.020365601405501366, 0.0,
+        0.0, -110.780876159668, 114.31907653808591, 1.0
       ],
-      "name": "Sketchfab_model"
+      "children": [1]
     },
     {
-      "children": [
-        2
-      ],
+      "name": "tinker.obj.cleaner.materialmerger.gles",
       "matrix": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        -104.81500244140625,
-        -165.0,
-        -93.0,
-        1.0
-      ],
-      "name": "tinker.obj.cleaner.materialmerger.gles"
-    },
-    {
-      "children": [
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
-      "name": "Object_2"
-    },
-    {
-      "mesh": 0,
-      "name": "Object_3"
-    },
-    {
-      "mesh": 1,
-      "name": "Object_4"
-    },
-    {
-      "mesh": 2,
-      "name": "Object_5"
-    },
-    {
-      "mesh": 3,
-      "name": "Object_6"
-    },
-    {
-      "mesh": 4,
-      "name": "Object_7"
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        -104.81500244140625, -165.0, -93.0, 1.0
+      ]
     }
   ],
-  "scene": 0,
   "scenes": [
     {
       "name": "Sketchfab_Scene",
-      "nodes": [
-        0
-      ]
+      "nodes": [0]
     }
   ]
 }
