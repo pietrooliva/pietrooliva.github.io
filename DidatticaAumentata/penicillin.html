@@ -41,14 +41,7 @@
       gesture-detector 
       embedded 
       arjs="trackingMethod: best; sourceType: webcam;" 
-      renderer="
-        antialias: true; 
-        precision: highp; 
-        gammaOutput: true; 
-        gammaFactor: 2.2;
-        physicallyCorrectLights: true; 
-        shadowMap.enabled: false; 
-        toneMapping: ACESFilmicToneMapping;">
+      renderer="antialias: true; gammaOutput: true; toneMapping: LinearToneMapping;">
 
       <a-assets>
         <a-asset-item id="model" src="models/penicillin/scene.gltf"></a-asset-item>
@@ -61,8 +54,8 @@
       <a-light type="directional" color="#ffffff" intensity="10" position="5 10 5"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 -0.02 -1.5"
-        scale="1.3 1.3 1.3"
+        position="0 0 -2.5"
+        scale="2.3 2.3 2.3"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -81,7 +74,7 @@
         color: white; 
         border: none; 
         border-radius: 5px; 
-        font-size: 16px;">
+        font-size: 18px;">
       Riproduci Audio
     </button>
 
@@ -94,9 +87,36 @@
         color: white; 
         border: none; 
         border-radius: 5px; 
-        font-size: 16px;">
+        font-size: 18px;">
       Avvia Animazione
     </button>
+
+     <div id="imageContainer" style="
+  position: fixed;
+  bottom: 120px;
+  left: 50%; 
+  transform: translateX(-50%);
+  text-align: center;">
+  <img src="models/penicillin/Penicillin.png" alt="Penicillin" style="
+    max-width: 220px;
+    max-height: 220px;
+    opacity: 0.9;">
+</div>
+
+    <div id="legend" style="
+  position: fixed;
+  bottom: 50px;
+  left: 50%; 
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 24px; 
+  color: white;">
+  <span style="color: grey;">Grey</span> = Carbon, 
+  <span style="color: white;">White</span> = Hydrogen, 
+  <span style="color: blue;">Blue</span> = Nitrogen, 
+  <span style="color: red;">Red</span> = Oxygen, 
+  <span style="color: yellow;">Yellow</span> = Sulphur
+</div> 
 
     <script>
       const splash = document.getElementById('splash');
