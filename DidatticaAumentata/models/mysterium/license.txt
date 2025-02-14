@@ -1,0 +1,11 @@
+Model Information:
+* title:	Solid Of Kepler
+* source:	https://sketchfab.com/3d-models/solid-of-kepler-b923a94eebf34d08b8933aa5eb42e1d3
+* author:	rongrafico (https://sketchfab.com/rongrafico)
+
+Model License:
+* license type:	CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+* requirements:	Author must be credited. Modified versions must have the same license. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Solid Of Kepler" (https://sketchfab.com/3d-models/solid-of-kepler-b923a94eebf34d08b8933aa5eb42e1d3) by rongrafico (https://sketchfab.com/rongrafico) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
