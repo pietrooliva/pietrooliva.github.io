@@ -56,13 +56,13 @@
       </a-assets>
       
         <!-- Luce ambientale per illuminazione uniforme -->
-  <!--     <a-light type="ambient" color="#ffffff" intensity="5"></a-light> -->
+     <a-light type="ambient" color="#ffffff" intensity="7"></a-light> 
         <!-- Luce direzionale per illuminare il modello dall'alto -->
-      <a-light type="directional" color="#ffffff" intensity="3" position="-5 -10 4"></a-light>
+      <a-light type="directional" color="#ffffff" intensity="3" position="5 10 4"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 -0.02 -1.5"
-        scale="0.1 0.1 0.1"
+        position="0 0 -1.5"
+        scale="0.3 0.3 0.3"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -204,7 +204,7 @@
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 0.007;
+          this.touchSensitivity = 0.005;
 
           const canvas = this.el.sceneEl.canvas;
 
