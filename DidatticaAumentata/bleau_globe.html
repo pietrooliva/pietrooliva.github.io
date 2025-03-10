@@ -56,14 +56,14 @@
       </a-assets>
       
         <!-- Luce ambientale per illuminazione uniforme -->
-     <a-light type="ambient" color="#ffffff" intensity="4"></a-light> 
+     <a-light type="ambient" color="#ffffff" intensity="3"></a-light> 
         <!-- Luce direzionale per illuminare il modello dall'alto -->
       <a-light type="directional" color="#ffffff" intensity="1" position="5 10 4"></a-light>
       <a-entity 
         gltf-model="#model"
         position="0 0 -1.5"
-        scale="0.3 0.3 0.3"
-        rotation="0 120 0"
+        scale="0.27 0.27 0.27"
+        rotation="0 0 0"
         class="clickable"
         id="animatedModel"
         interaction-handler>
@@ -190,7 +190,7 @@
         tick: function (time, timeDelta) {
           const rotation = this.el.object3D.rotation;
           const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
-          rotation.z += delta;
+          rotation.y += delta;
         }
       });
 
