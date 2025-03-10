@@ -1,0 +1,11 @@
+Model Information:
+* title:	Celestial sphere 2020 update
+* source:	https://sketchfab.com/3d-models/celestial-sphere-2020-update-6a9fbfbac60f437fa1ce9aea2a38c692
+* author:	commonfactory (https://sketchfab.com/commonfactory)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Celestial sphere 2020 update" (https://sketchfab.com/3d-models/celestial-sphere-2020-update-6a9fbfbac60f437fa1ce9aea2a38c692) by commonfactory (https://sketchfab.com/commonfactory) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
