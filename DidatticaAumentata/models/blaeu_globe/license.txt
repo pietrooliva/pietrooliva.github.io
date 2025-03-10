@@ -1,0 +1,11 @@
+Model Information:
+* title:	1603 Williem Blaeu Celestial Globe
+* source:	https://sketchfab.com/3d-models/1603-williem-blaeu-celestial-globe-9d5a401d985144ce80f9934492a78f35
+* author:	David Neikirk (https://sketchfab.com/drneikirk)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "1603 Williem Blaeu Celestial Globe" (https://sketchfab.com/3d-models/1603-williem-blaeu-celestial-globe-9d5a401d985144ce80f9934492a78f35) by David Neikirk (https://sketchfab.com/drneikirk) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
