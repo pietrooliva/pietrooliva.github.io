@@ -57,11 +57,11 @@
         <!-- Luce ambientale per illuminazione uniforme -->
      <a-light type="ambient" color="#ffffff" intensity="3"></a-light> 
         <!-- Luce direzionale per illuminare il modello dall'alto -->
-      <a-light type="directional" color="#ffffff" intensity="1" position="5 10 4"></a-light>
+      <a-light type="directional" color="#ffffff" intensity="2" position="5 10 10"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 0 -2.0"
-        scale="1.3 1.3 1.3"
+        position="0 0 -1.0"
+        scale="1.5 1.5 1.5"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -75,11 +75,11 @@
     position: fixed; 
     bottom: 10px; 
     left: 10px; 
-    padding: 1vw 2vw; 
-    font-size: min(2vw, 16px); /* Evita testi troppo grandi su schermi piccoli */
+    padding: 2vw 1vw; /* Aumenta altezza, riduce larghezza */
+    font-size: min(2vw, 18px); /* Leggermente più grande per leggibilità */
     width: auto;
-    max-width: 40vw; /* Evita larghezze eccessive su schermi piccoli */
-    min-width: 200px; 
+    max-width: 35vw; /* Riduce la larghezza massima */
+    min-width: 150px; /* Riduce la larghezza minima */
     background: rgba(0, 0, 0, 0.8); 
     color: white; 
     border: none; 
@@ -91,11 +91,11 @@
     position: fixed; 
     bottom: 10px; 
     right: 10px; 
-    padding: 1vw 2vw; 
-    font-size: min(2vw, 16px);
+    padding: 2vw 1vw; /* Aumenta altezza, riduce larghezza */
+    font-size: min(2vw, 18px); /* Leggermente più grande per leggibilità */
     width: auto;
-    max-width: 40vw; 
-    min-width: 200px; 
+    max-width: 35vw; /* Riduce la larghezza massima */
+    min-width: 150px; /* Riduce la larghezza minima */
     background: rgba(0, 0, 0, 0.8); 
     color: white; 
     border: none; 
