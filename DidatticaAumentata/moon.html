@@ -60,8 +60,8 @@
       <a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 0.0 -4.0"
-        scale="0.005 0.005 0.005"
+        position="0 0.0 -10.0"
+        scale="0.001 0.0001 0.0001"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -124,8 +124,8 @@ animatedModel.addEventListener('model-loaded', () => {
     // Determina la larghezza dello schermo
     const screenWidth = window.innerWidth;
 
-    // Calcola una scala proporzionale, limitata tra 0.02 e 1
-    let scaleFactor = Math.max(0.02, Math.min(1, screenWidth / 1500));
+    // Calcola una scala proporzionale, limitata tra 0.0001 e 10
+    let scaleFactor = Math.max(0.0001, Math.min(10, screenWidth / 1500));
 
     // Applica la nuova scala
     animatedModel.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
