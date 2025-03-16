@@ -72,35 +72,37 @@
       <a-entity camera></a-entity>
     </a-scene>
 
-    <button id="audioButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        left: 10px; 
-        padding: 1vw 2vw; /* Dimensioni proporzionali alla larghezza dello schermo */
-        font-size: 2vw; /* Dimensione del testo relativa */
-        min-width: 350px; /* Evita che diventino troppo piccoli */
-        background: rgba(0, 0, 0, 0.8); 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
-      Riproduci Audio
-    </button>
+<button id="audioButton" style="
+    position: fixed; 
+    bottom: 10px; 
+    left: 10px; 
+    padding: 1vw 2vw; 
+    font-size: min(2vw, 16px); /* Evita testi troppo grandi su schermi piccoli */
+    width: auto;
+    max-width: 40vw; /* Evita larghezze eccessive su schermi piccoli */
+    min-width: 200px; 
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px;">
+  Riproduci Audio
+</button>
 
-    <button id="animationButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        right: 10px; 
-        padding: 1vw 2vw; /* Dimensioni proporzionali alla larghezza dello schermo */
-        font-size: 2vw; /* Dimensione del testo relativa */
-        min-width: 350px; /* Evita che diventino troppo piccoli */
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px;">
-      Avvia Animazione
-    </button>
+<button id="animationButton" style="
+    position: fixed; 
+    bottom: 60px; /* Lo sposta sopra il primo bottone */
+    right: 10px; 
+    padding: 1vw 2vw; 
+    font-size: min(2vw, 16px);
+    width: auto;
+    max-width: 40vw; 
+    min-width: 200px; 
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px;">
+  Avvia Animazione
+</button>
 
     <script>
       const splash = document.getElementById('splash');
