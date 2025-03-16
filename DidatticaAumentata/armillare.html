@@ -163,23 +163,25 @@
         }
       });
 
-      // Handle sensor permission request
-      allowButton.addEventListener('click', async () => {
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-          try {
-            const permission = await DeviceMotionEvent.requestPermission();
-            if (permission === 'granted') {
-              splash.style.display = 'none';
-            } else {
-              alert('Permission denied. This experience requires motion sensors.');
-            }
-          } catch (err) {
-            console.error('Error while requesting motion sensor permissions:', err);
-          }
-        } else {
-          splash.style.display = 'none';
-        }
-      });
+// Gestione richiesta permessi per i sensori di movimento
+allowButton.addEventListener('click', async () => {
+  if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+    try {
+      const permission = await DeviceMotionEvent.requestPermission();
+      if (permission === 'granted') {
+        splash.style.display = 'none';
+      } else {
+        alert('Permesso negato. Questa esperienza richiede l’uso dei sensori di movimento.');
+      }
+    } catch (err) {
+      console.error('Errore nella richiesta di permesso per i sensori di movimento:', err);
+      alert('Si è verificato un errore. Controlla le impostazioni del tuo dispositivo.');
+    }
+  } else {
+    console.warn('DeviceMotionEvent non supportato o non richiede permessi.');
+    splash.style.display = 'none';
+  }
+});
 
       // Automatically hide the splash screen on unsupported devices
       window.addEventListener('load', () => {
