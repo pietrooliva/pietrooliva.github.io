@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>Didattica Aumentata | Dr. P.OLIVA</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
@@ -44,11 +44,11 @@
       renderer="
         antialias: true; 
         precision: highp; 
-        gammaOutput: true; 
-        gammaFactor: 2.2;
+        colorManagement: true;             <!--   renderer.outputEncoding = THREE.sRGBEncoding; -->
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
+
 
       <a-assets>
         <a-asset-item id="model" src="models/sferaceleste/scene.gltf"></a-asset-item>
@@ -56,13 +56,13 @@
       </a-assets>
       
         <!-- Luce ambientale per illuminazione uniforme -->
-     <a-light type="ambient" color="#ffffff" intensity="4"></a-light> 
+     <a-light type="ambient" color="#ffffff" intensity="3"></a-light> 
         <!-- Luce direzionale per illuminare il modello dall'alto -->
-      <a-light type="directional" color="#ffffff" intensity="1" position="5 10 4"></a-light>
+      <a-light type="directional" color="#ffffff" intensity="3" position="5 5 1"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 0 -2.5"
-        scale="0.01 0.01 0.01"
+        position="0 0.0 -0.3"
+        scale="1.6 1.6 1.6"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -72,31 +72,37 @@
       <a-entity camera></a-entity>
     </a-scene>
 
-    <button id="audioButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        left: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
-      Riproduci Audio
-    </button>
+<button id="audioButton" style="
+    position: fixed; 
+    bottom: 10px; 
+    left: 10px; 
+    padding: 2vw 1vw; /* Aumenta altezza, riduce larghezza */
+    font-size: min(2vw, 18px); /* Leggermente più grande per leggibilità */
+    width: auto;
+    max-width: 35vw; /* Riduce la larghezza massima */
+    min-width: 150px; /* Riduce la larghezza minima */
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px;">
+  Riproduci Audio
+</button>
 
-    <button id="animationButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        right: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
-      Avvia Animazione
-    </button>
+<button id="animationButton" style="
+    position: fixed; 
+    bottom: 10px; 
+    right: 10px; 
+    padding: 2vw 1vw; /* Aumenta altezza, riduce larghezza */
+    font-size: min(2vw, 18px); /* Leggermente più grande per leggibilità */
+    width: auto;
+    max-width: 35vw; /* Riduce la larghezza massima */
+    min-width: 150px; /* Riduce la larghezza minima */
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px;">
+  Avvia Animazione
+</button>
 
     <script>
       const splash = document.getElementById('splash');
@@ -109,12 +115,22 @@
       let isAnimationActive = false;
       let isNativeAnimation = false;
 
-      animatedModel.addEventListener('model-loaded', () => {
-        const model = animatedModel.getObject3D('mesh');
-        if (model && model.animations && model.animations.length > 0) {
-          isNativeAnimation = true;
-        }
-      });
+animatedModel.addEventListener('model-loaded', () => {
+    const model = animatedModel.getObject3D('mesh');
+
+    if (model && model.animations && model.animations.length > 0) {
+        isNativeAnimation = true;
+    }
+
+    // Determina la larghezza dello schermo
+    const screenWidth = window.innerWidth;
+
+    // Calcola una scala proporzionale, limitata tra 0.02 e 1
+    let scaleFactor = Math.max(0.02, Math.min(1, screenWidth / 1500));
+
+    // Applica la nuova scala
+    animatedModel.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
+});
 
       // Pulsante animazione
       animationButton.addEventListener('click', () => {
@@ -158,23 +174,25 @@
         }
       });
 
-      // Handle sensor permission request
-      allowButton.addEventListener('click', async () => {
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-          try {
-            const permission = await DeviceMotionEvent.requestPermission();
-            if (permission === 'granted') {
-              splash.style.display = 'none';
-            } else {
-              alert('Permission denied. This experience requires motion sensors.');
-            }
-          } catch (err) {
-            console.error('Error while requesting motion sensor permissions:', err);
-          }
-        } else {
-          splash.style.display = 'none';
-        }
-      });
+// Gestione richiesta permessi per i sensori di movimento
+allowButton.addEventListener('click', async () => {
+  if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+    try {
+      const permission = await DeviceMotionEvent.requestPermission();
+      if (permission === 'granted') {
+        splash.style.display = 'none';
+      } else {
+        alert('Permesso negato. Questa esperienza richiede l’uso dei sensori di movimento.');
+      }
+    } catch (err) {
+      console.error('Errore nella richiesta di permesso per i sensori di movimento:', err);
+      alert('Si è verificato un errore. Controlla le impostazioni del tuo dispositivo.');
+    }
+  } else {
+    console.warn('DeviceMotionEvent non supportato o non richiede permessi.');
+    splash.style.display = 'none';
+  }
+});
 
       // Automatically hide the splash screen on unsupported devices
       window.addEventListener('load', () => {
@@ -204,7 +222,7 @@
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 0.005;
+          this.touchSensitivity = 0.002;
 
           const canvas = this.el.sceneEl.canvas;
 
