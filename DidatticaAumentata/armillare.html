@@ -115,17 +115,20 @@
       let isNativeAnimation = false;
 
 animatedModel.addEventListener('model-loaded', () => {
-  const model = animatedModel.getObject3D('mesh');
-  if (model && model.animations && model.animations.length > 0) {
-    isNativeAnimation = true;
-  }
+    const model = animatedModel.getObject3D('mesh');
 
-  // Adatta la scala del modello a seconda della dimensione dello schermo
-  if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '1 1 1'); // Ridimensiona per adattarsi meglio
-  } else {
-    animatedModel.setAttribute('scale', '1.6 1.6 1.6'); // Mantiene la scala originale su schermi grandi
-  }
+    if (model && model.animations && model.animations.length > 0) {
+        isNativeAnimation = true;
+    }
+
+    // Determina la larghezza dello schermo
+    const screenWidth = window.innerWidth;
+
+    // Calcola una scala proporzionale, limitata tra 0.02 e 1
+    let scaleFactor = Math.max(0.02, Math.min(1, screenWidth / 1500));
+
+    // Applica la nuova scala
+    animatedModel.setAttribute('scale', `${scaleFactor} ${scaleFactor} ${scaleFactor}`);
 });
 
       // Pulsante animazione
