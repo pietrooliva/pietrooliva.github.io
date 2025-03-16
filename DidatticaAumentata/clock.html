@@ -44,7 +44,7 @@
       renderer="
         antialias: true; 
         precision: highp; 
-        colorManagement: true;             <!--   renderer.outputEncoding = THREE.sRGBEncoding; -->
+        renderer.outputEncoding = THREE.sRGBEncoding;             <!--   renderer.outputEncoding = THREE.sRGBEncoding; -->
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
@@ -61,8 +61,8 @@
       <a-light type="directional" color="#ffffff" intensity="4" position="5 5 1"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 0.0 -10.3"
-        scale="0.1 0.1 0.1"
+        position="0 0.0 -20.3"
+        scale="0.001 0.001 0.001"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
