@@ -137,16 +137,25 @@ animatedModel.addEventListener('model-loaded', () => {
         }
       });
 
-      function toggleNativeAnimation() {
-        if (!isAnimationActive) {
-          animatedModel.setAttribute('animation-mixer', '');
-          animationButton.textContent = "Ferma Animazione";
-        } else {
-          animatedModel.removeAttribute('animation-mixer');
-          animationButton.textContent = "Avvia Animazione";
-        }
-        isAnimationActive = !isAnimationActive;
-      }
+function toggleNativeAnimation() {
+  const mixer = animatedModel.components["animation-mixer"]?.mixer;
+
+  if (!isAnimationActive) {
+    if (!mixer) {
+      animatedModel.setAttribute("animation-mixer", "timeScale: 1");
+    } else {
+      mixer.timeScale = 1; // Riprende dalla posizione attuale
+    }
+    animationButton.textContent = "Ferma Animazione";
+  } else {
+    if (mixer) {
+      mixer.timeScale = 0; // Ferma senza resettare
+    }
+    animationButton.textContent = "Avvia Animazione";
+  }
+
+  isAnimationActive = !isAnimationActive;
+}
 
       function toggleCustomRotation() {
         if (!isAnimationActive) {
