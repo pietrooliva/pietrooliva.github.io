@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>Didattica Aumentata | Dr. P.OLIVA</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
@@ -89,12 +89,13 @@
         position: fixed; 
         bottom: 10px; 
         right: 10px; 
-        padding: 10px 20px; 
+        padding: 1vw 2vw; /* Dimensioni proporzionali alla larghezza dello schermo */
+        font-size: 2vw; /* Dimensione del testo relativa */
+        min-width: 150px; /* Evita che diventino troppo piccoli */
         background: rgba(0, 0, 0, 0.8); 
         color: white; 
         border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
+        border-radius: 5px;">
       Avvia Animazione
     </button>
 
