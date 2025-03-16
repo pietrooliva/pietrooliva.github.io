@@ -261,10 +261,10 @@ allowButton.addEventListener('click', async () => {
           this.previousMousePosition.y = event.clientY;
         },
 
-        onMouseWheel: function (event) {
-          const object3D = this.el.object3D;
-          object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
-        },
+       onMouseWheel: function (event) {
+         const scaleFactor = 1 - Math.sign(event.deltaY) * this.zoomFactor * 0.5; // Riduce l'effetto del zoom
+         this.el.object3D.scale.multiplyScalar(scaleFactor);
+        }
 
         onTouchStart: function (event) {
           if (event.touches.length === 1) {
