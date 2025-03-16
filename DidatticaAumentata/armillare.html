@@ -44,10 +44,11 @@
       renderer="
         antialias: true; 
         precision: highp; 
-        renderer.outputEncoding = THREE.sRGBEncoding;
+        colorManagement: true;             <!--   renderer.outputEncoding = THREE.sRGBEncoding; -->
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
+
 
       <a-assets>
         <a-asset-item id="model" src="models/armillary_sphere/scene.gltf"></a-asset-item>
