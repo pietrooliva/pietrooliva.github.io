@@ -37,18 +37,8 @@
       </div>
     </div>
 
-    <a-scene 
-      fix-color
-      gesture-detector 
-      embedded 
-      arjs="trackingMethod: best; sourceType: webcam;" 
-      renderer="
-        antialias: true; 
-        precision: highp; 
-                    <!--   renderer.outputEncoding = THREE.sRGBEncoding; -->
-        physicallyCorrectLights: true; 
-        shadowMap.enabled: false; 
-        toneMapping: ACESFilmicToneMapping;">
+<a-scene fix-color gesture-detector embedded arjs="trackingMethod: best; sourceType: webcam;"
+  renderer="antialias: true; precision: highp; physicallyCorrectLights: true; shadowMap.enabled: false; toneMapping: ACESFilmicToneMapping; colorManagement: true;">
 
 
       <a-assets>
