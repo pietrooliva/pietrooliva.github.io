@@ -192,6 +192,24 @@ allowButton.addEventListener('click', async () => {
           splash.style.display = 'none';
         }
       });
+//DA QUI
+      AFRAME.registerComponent('fix-color', {
+  init: function () {
+    this.el.sceneEl.renderer.outputEncoding = THREE.sRGBEncoding;
+    this.el.sceneEl.renderer.physicallyCorrectLights = true;
+    
+    this.el.addEventListener('model-loaded', () => {
+      this.el.object3D.traverse((node) => {
+        if (node.isMesh) {
+          if (node.material.map) {
+            node.material.map.encoding = THREE.sRGBEncoding;
+          }
+          node.material.needsUpdate = true;
+        }
+      });
+    });
+  }
+});//a qui
 
       // Componente personalizzato per rotazione continua
       AFRAME.registerComponent('constant-rotation', {
