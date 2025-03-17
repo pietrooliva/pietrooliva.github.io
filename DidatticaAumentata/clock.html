@@ -38,13 +38,14 @@
     </div>
 
     <a-scene 
+      fix-color
       gesture-detector 
       embedded 
       arjs="trackingMethod: best; sourceType: webcam;" 
       renderer="
         antialias: true; 
         precision: highp; 
-        renderer.outputEncoding = THREE.sRGBEncoding;             <!--   renderer.outputEncoding = THREE.sRGBEncoding; -->
+                    <!--   renderer.outputEncoding = THREE.sRGBEncoding; -->
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
@@ -324,6 +325,12 @@ allowButton.addEventListener('click', async () => {
           return Math.sqrt(dx * dx + dy * dy);
         },
       });
+
+      AFRAME.registerComponent('fix-color', {
+  init: function () {
+    this.el.sceneEl.renderer.outputEncoding = THREE.sRGBEncoding;
+  }
+});
     </script>
 
     <style>
