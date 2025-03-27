@@ -262,45 +262,65 @@ allowButton.addEventListener('click', async () => {
        this.previousMousePosition.y = event.clientY;
     },
 
-        onMouseWheel: function (event) {
-          const object3D = this.el.object3D;
-          object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
-        },
+onMouseWheel: function (event) {
+  const object3D = this.el.object3D;
+  const scaleFactor = 1 - Math.sign(event.deltaY) * this.zoomFactor;
 
-        onTouchStart: function (event) {
-          if (event.touches.length === 1) {
-            this.previousTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-          } else if (event.touches.length === 2) {
-            this.previousTouch = this.getMidpoint(event.touches);
-            this.initialDistance = this.getDistance(event.touches);
-          }
-        },
+  // Nuova scala calcolata
+  const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
-    onTouchMove: function (event) {
-      const object3D = this.el.object3D;
-    if (event.touches.length === 1) {
-        const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-        const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
-        const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+  // Limiti per lo zoom (esempio: tra 0.5 e 2)
+  const minScale = 0.5;
+  const maxScale = 2;
 
-        object3D.rotation.y += deltaX;
-        object3D.rotation.x += deltaY;
+  // Applica i limiti alla scala
+  newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
+  newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
+  newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
 
-        this.previousTouch = currentTouch;
-    } else if (event.touches.length === 2) {
-        const currentMidpoint = this.getMidpoint(event.touches);
-        const currentDistance = this.getDistance(event.touches);
+  // Applica la nuova scala all'oggetto
+  object3D.scale.set(newScale.x, newScale.y, newScale.z);
+},
 
-        const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
-        const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+onTouchMove: function (event) {
+  const object3D = this.el.object3D;
+  if (event.touches.length === 1) {
+    const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
 
-        object3D.position.x = Math.max(-1.5, Math.min(1.5, object3D.position.x + deltaX));
-        object3D.position.y = Math.max(-1, Math.min(1, object3D.position.y - deltaY));
-        object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
+    object3D.rotation.y += deltaX;
+    object3D.rotation.x += deltaY;
 
-        this.previousTouch = currentMidpoint;
-        this.initialDistance = currentDistance;
-    }
+    this.previousTouch = currentTouch;
+  } else if (event.touches.length === 2) {
+    const currentMidpoint = this.getMidpoint(event.touches);
+    const currentDistance = this.getDistance(event.touches);
+
+    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+
+    object3D.position.x = Math.max(-1.5, Math.min(1.5, object3D.position.x + deltaX));
+    object3D.position.y = Math.max(-1, Math.min(1, object3D.position.y - deltaY));
+
+    // Calcola la nuova scala
+    const scaleFactor = currentDistance / this.initialDistance;
+    const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
+
+    // Limiti per lo zoom (esempio: tra 0.5 e 2)
+    const minScale = 0.5;
+    const maxScale = 2;
+
+    newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
+    newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
+    newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
+
+    // Applica la nuova scala
+    object3D.scale.set(newScale.x, newScale.y, newScale.z);
+
+    this.previousTouch = currentMidpoint;
+    this.initialDistance = currentDistance;
+  }
 },
 
         onTouchEnd: function () {
