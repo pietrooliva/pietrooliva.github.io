@@ -242,24 +242,25 @@ allowButton.addEventListener('click', async () => {
         onMouseUp: function () {
           this.isMouseDown = false;
         },
+        
         onMouseMove: function (event) {
-          if (!this.isMouseDown) return;
+         if (!this.isMouseDown) return;
 
-          const deltaX = event.clientX - this.previousMousePosition.x;
-          const deltaY = event.clientY - this.previousMousePosition.y;
-          const object3D = this.el.object3D;
+         const deltaX = event.clientX - this.previousMousePosition.x;
+         const deltaY = event.clientY - this.previousMousePosition.y;
+         const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-            object3D.position.x += deltaX * 0.005;
-            object3D.position.y -= deltaY * 0.005;
+          object3D.position.x = Math.max(-1.5, Math.min(1.5, object3D.position.x + deltaX * 0.005));
+          object3D.position.y = Math.max(-1, Math.min(1, object3D.position.y - deltaY * 0.005));
           } else {
-            object3D.rotation.y += deltaX * 0.005;
-            object3D.rotation.x += deltaY * 0.005;
-          }
+          object3D.rotation.y += deltaX * 0.005;
+          object3D.rotation.x += deltaY * 0.005;
+       }
 
-          this.previousMousePosition.x = event.clientX;
-          this.previousMousePosition.y = event.clientY;
-        },
+       this.previousMousePosition.x = event.clientX;
+       this.previousMousePosition.y = event.clientY;
+    },
 
         onMouseWheel: function (event) {
           const object3D = this.el.object3D;
@@ -275,32 +276,32 @@ allowButton.addEventListener('click', async () => {
           }
         },
 
-        onTouchMove: function (event) {
-          const object3D = this.el.object3D;
-          if (event.touches.length === 1) {
-            const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-            const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
-            const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+    onTouchMove: function (event) {
+      const object3D = this.el.object3D;
+    if (event.touches.length === 1) {
+        const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+        const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+        const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
 
-            object3D.rotation.y += deltaX;
-            object3D.rotation.x += deltaY;
+        object3D.rotation.y += deltaX;
+        object3D.rotation.x += deltaY;
 
-            this.previousTouch = currentTouch;
-          } else if (event.touches.length === 2) {
-            const currentMidpoint = this.getMidpoint(event.touches);
-            const currentDistance = this.getDistance(event.touches);
+        this.previousTouch = currentTouch;
+    } else if (event.touches.length === 2) {
+        const currentMidpoint = this.getMidpoint(event.touches);
+        const currentDistance = this.getDistance(event.touches);
 
-            const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
-            const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+        const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+        const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
-            object3D.position.x += deltaX;
-            object3D.position.y -= deltaY;
-            object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
+        object3D.position.x = Math.max(-1.5, Math.min(1.5, object3D.position.x + deltaX));
+        object3D.position.y = Math.max(-1, Math.min(1, object3D.position.y - deltaY));
+        object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
 
-            this.previousTouch = currentMidpoint;
-            this.initialDistance = currentDistance;
-          }
-        },
+        this.previousTouch = currentMidpoint;
+        this.initialDistance = currentDistance;
+    }
+},
 
         onTouchEnd: function () {
           this.previousTouch = null;
