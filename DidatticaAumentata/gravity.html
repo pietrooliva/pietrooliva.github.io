@@ -271,7 +271,7 @@ onMouseWheel: function (event) {
 
   // Limiti per lo zoom (esempio: tra 0.5 e 2)
   const minScale = 0.5;
-  const maxScale = 2;
+  const maxScale = 10;
 
   // Applica i limiti alla scala
   newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
