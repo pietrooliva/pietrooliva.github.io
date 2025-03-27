@@ -257,6 +257,9 @@ allowButton.addEventListener('click', async () => {
             object3D.rotation.x += deltaY * 0.005;
           }
 
+           // Limita la posizione per non uscire dallo schermo
+          this.constrainModelPosition(object3D);
+          
           this.previousMousePosition.x = event.clientX;
           this.previousMousePosition.y = event.clientY;
         },
@@ -300,7 +303,19 @@ allowButton.addEventListener('click', async () => {
             this.previousTouch = currentMidpoint;
             this.initialDistance = currentDistance;
           }
+          // Limita la posizione per non uscire dallo schermo
+          this.constrainModelPosition(object3D);
         },
+
+        // Funzione per limitare la posizione del modello
+        constrainModelPosition: function (object3D) {
+        const maxDistance = 3; // Limite massimo dallo schermo
+        const minDistance = -3; // Limite minimo
+
+        object3D.position.x = Math.max(minDistance, Math.min(maxDistance, object3D.position.x));
+        object3D.position.y = Math.max(minDistance, Math.min(maxDistance, object3D.position.y));
+        object3D.position.z = Math.max(-5, Math.min(-1, object3D.position.z)); // Z non troppo vicino/lontano
+        }
 
         onTouchEnd: function () {
           this.previousTouch = null;
