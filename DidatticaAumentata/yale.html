@@ -60,8 +60,8 @@
       <a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 -0.08 -1.5"
-        scale="0.01 0.01 0.01"
+        position="0 -0.08 -5.5"
+        scale="0.0001 0.0001 0.0001"
         rotation="0 0 -45"
         class="clickable"
         id="animatedModel"
@@ -270,7 +270,7 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.1;
+  const minScale = 0.001;
   const maxScale = 13;
 
   // Applica i limiti alla scala
@@ -308,7 +308,7 @@ onTouchMove: function (event) {
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limiti per lo zoom (esempio: tra 0.1 e 2)
-    const minScale = 0.1;
+    const minScale = 0.001;
     const maxScale = 13;
 
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
