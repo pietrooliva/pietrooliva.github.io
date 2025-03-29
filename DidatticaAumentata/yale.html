@@ -60,7 +60,7 @@
     <!--    <a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light> -->
       <a-entity 
         gltf-model="#model"
-        position="0 -0.2 -85.5"
+        position="0 -0.2 -100.5"
         scale="0.0001 0.0001 0.0001"
         rotation="0 0 -45"
         class="clickable"
@@ -218,7 +218,7 @@ allowButton.addEventListener('click', async () => {
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 0.001;
+          this.touchSensitivity = 0.01;
 
           const canvas = this.el.sceneEl.canvas;
 
@@ -251,8 +251,8 @@ allowButton.addEventListener('click', async () => {
          const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-          object3D.position.x = Math.max(-2, Math.min(2, object3D.position.x + deltaX * 0.004));
-          object3D.position.y = Math.max(-2, Math.min(2, object3D.position.y - deltaY * 0.004));
+          object3D.position.x = Math.max(-10, Math.min(10, object3D.position.x + deltaX * 0.004));
+          object3D.position.y = Math.max(-10, Math.min(10, object3D.position.y - deltaY * 0.004));
           } else {
           object3D.rotation.y += deltaX * 0.003;
           object3D.rotation.x += deltaY * 0.003;
@@ -300,8 +300,8 @@ onTouchMove: function (event) {
     const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
     const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
-    object3D.position.x = Math.max(-2, Math.min(2, object3D.position.x + deltaX));
-    object3D.position.y = Math.max(-1.9, Math.min(1.9, object3D.position.y - deltaY));
+    object3D.position.x = Math.max(-10, Math.min(10, object3D.position.x + deltaX));
+    object3D.position.y = Math.max(-10, Math.min(10, object3D.position.y - deltaY));
 
     // Calcola la nuova scala
     const scaleFactor = currentDistance / this.initialDistance;
