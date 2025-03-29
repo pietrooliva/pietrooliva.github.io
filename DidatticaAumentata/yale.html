@@ -218,7 +218,7 @@ allowButton.addEventListener('click', async () => {
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 1.8;
+          this.touchSensitivity = 3.0;
 
           const canvas = this.el.sceneEl.canvas;
 
@@ -251,8 +251,8 @@ allowButton.addEventListener('click', async () => {
          const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-          object3D.position.x = Math.max(-100, Math.min(100, object3D.position.x + deltaX * 0.004));
-          object3D.position.y = Math.max(-100, Math.min(100, object3D.position.y - deltaY * 0.004));
+          object3D.position.x = Math.max(-10000, Math.min(10000, object3D.position.x + deltaX * 0.004));
+          object3D.position.y = Math.max(-10000, Math.min(10000, object3D.position.y - deltaY * 0.004));
           } else {
           object3D.rotation.y += deltaX * 0.003;
           object3D.rotation.x += deltaY * 0.003;
@@ -270,7 +270,7 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.01;
+  const minScale = 0.1;
   const maxScale = 3;
 
   // Applica i limiti alla scala
@@ -286,8 +286,8 @@ onTouchMove: function (event) {
   const object3D = this.el.object3D;
   if (event.touches.length === 1) {
     const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity*5;
-    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity*5;
+    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity*15;
+    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity*15;
 
     object3D.rotation.y += deltaX;
     object3D.rotation.x += deltaY;
@@ -297,18 +297,18 @@ onTouchMove: function (event) {
     const currentMidpoint = this.getMidpoint(event.touches);
     const currentDistance = this.getDistance(event.touches);
 
-    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity*5;
-    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity*5;
+    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity*15;
+    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity*15;
 
-    object3D.position.x = Math.max(-100, Math.min(100, object3D.position.x + deltaX));
-    object3D.position.y = Math.max(-100, Math.min(100, object3D.position.y - deltaY));
+    object3D.position.x = Math.max(-10000, Math.min(10000, object3D.position.x + deltaX));
+    object3D.position.y = Math.max(-10000, Math.min(10000, object3D.position.y - deltaY));
 
     // Calcola la nuova scala
     const scaleFactor = currentDistance / this.initialDistance;
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limiti per lo zoom (esempio: tra 0.1 e 2)
-    const minScale = 0.01;
+    const minScale = 0.1;
     const maxScale = 3;
 
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
