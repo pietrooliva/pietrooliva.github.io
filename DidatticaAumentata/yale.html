@@ -126,6 +126,9 @@ animatedModel.addEventListener('model-loaded', () => {
   } else {
     animatedModel.setAttribute('scale', '1.0 1.0 1.0'); // Mantiene la scala originale su schermi grandi
   }
+
+  // Rendi visibile il modello dopo il caricamento
+  animatedModel.setAttribute('visible', 'true');
 });
 
       // Pulsante animazione
