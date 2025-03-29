@@ -55,12 +55,12 @@
       </a-assets>
       
         <!-- Luce ambientale per illuminazione uniforme -->
-     <a-light type="ambient" color="#ffffff" intensity="2"></a-light> 
+   <!--    <a-light type="ambient" color="#ffffff" intensity="2"></a-light>  -->
         <!-- Luce direzionale per illuminare il modello dall'alto -->
-      <a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light>
+    <!--    <a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light> -->
       <a-entity 
         gltf-model="#model"
-        position="0 -0.08 -35.5"
+        position="0 -0.08 -55.5"
         scale="0.0001 0.0001 0.0001"
         rotation="0 0 -45"
         class="clickable"
@@ -251,11 +251,11 @@ allowButton.addEventListener('click', async () => {
          const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-          object3D.position.x = Math.max(-1.8, Math.min(1.8, object3D.position.x + deltaX * 0.004));
-          object3D.position.y = Math.max(-1.5, Math.min(1.5, object3D.position.y - deltaY * 0.004));
+          object3D.position.x = Math.max(-2, Math.min(2, object3D.position.x + deltaX * 0.004));
+          object3D.position.y = Math.max(-2, Math.min(2, object3D.position.y - deltaY * 0.004));
           } else {
-          object3D.rotation.y += deltaX * 0.005;
-          object3D.rotation.x += deltaY * 0.005;
+          object3D.rotation.y += deltaX * 0.003;
+          object3D.rotation.x += deltaY * 0.003;
        }
 
        this.previousMousePosition.x = event.clientX;
@@ -301,7 +301,7 @@ onTouchMove: function (event) {
     const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
     object3D.position.x = Math.max(-2, Math.min(2, object3D.position.x + deltaX));
-    object3D.position.y = Math.max(-1.7, Math.min(1.7, object3D.position.y - deltaY));
+    object3D.position.y = Math.max(-1.9, Math.min(1.9, object3D.position.y - deltaY));
 
     // Calcola la nuova scala
     const scaleFactor = currentDistance / this.initialDistance;
