@@ -60,7 +60,7 @@
     <!--    <a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light> -->
       <a-entity 
         gltf-model="#model"
-        position="0 -0.2 -100.5"
+        position="0 0 -110.5"
         scale="0.0001 0.0001 0.0001"
         rotation="0 0 -45"
         class="clickable"
@@ -218,7 +218,7 @@ allowButton.addEventListener('click', async () => {
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 0.01;
+          this.touchSensitivity = 0.001;
 
           const canvas = this.el.sceneEl.canvas;
 
