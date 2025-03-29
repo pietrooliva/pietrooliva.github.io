@@ -120,6 +120,18 @@ animatedModel.addEventListener('model-loaded', () => {
     isNativeAnimation = true;
   }
 
+  animatedModel.addEventListener('model-loaded', () => {
+  const mesh = animatedModel.getObject3D('mesh');
+  if (mesh) {
+    mesh.traverse((node) => {
+      if (node.isMesh) {
+        node.material.transparent = false;
+        node.material.depthWrite = true;
+      }
+    });
+  }
+});
+
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
     animatedModel.setAttribute('scale', '0.1 0.1 0.1'); // Ridimensiona per adattarsi meglio
