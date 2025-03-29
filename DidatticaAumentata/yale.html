@@ -251,8 +251,8 @@ allowButton.addEventListener('click', async () => {
          const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-          object3D.position.x = Math.max(-10000, Math.min(10000, object3D.position.x + deltaX * 0.004));
-          object3D.position.y = Math.max(-10000, Math.min(10000, object3D.position.y - deltaY * 0.004));
+          object3D.position.x = Math.max(-10000, Math.min(10000, object3D.position.x + deltaX * 0.4));
+          object3D.position.y = Math.max(-10000, Math.min(10000, object3D.position.y - deltaY * 0.4));
           } else {
           object3D.rotation.y += deltaX * 0.003;
           object3D.rotation.x += deltaY * 0.003;
