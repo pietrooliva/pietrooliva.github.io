@@ -61,7 +61,7 @@
       <a-entity 
         gltf-model="#model"
         position="0 0 -7"
-        scale="1.4 1.4 1.4"
+        scale="2.4 2.4 2.4"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
@@ -134,7 +134,7 @@ animatedModel.addEventListener('model-loaded', () => {
 
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '0.6 0.6 0.6'); // Ridimensiona per adattarsi meglio
+    animatedModel.setAttribute('scale', '0.8 0.8 0.8'); // Ridimensiona per adattarsi meglio
   } else {
     animatedModel.setAttribute('scale', '1.0 1.0 1.0'); // Mantiene la scala originale su schermi grandi
   }
@@ -267,7 +267,7 @@ allowButton.addEventListener('click', async () => {
 
           if (this.rightClickActive) {
           object3D.position.x = Math.max(-5.5, Math.min(5.5, object3D.position.x + deltaX * 0.1));
-          object3D.position.y = Math.max(-5.5, Math.min(5.5, object3D.position.y - deltaY * 0.1));
+          object3D.position.y = Math.max(-3.5, Math.min(5.5, object3D.position.y - deltaY * 0.1));
           } else {
           object3D.rotation.y += deltaX * 0.003;
           object3D.rotation.x += deltaY * 0.003;
@@ -316,7 +316,7 @@ onTouchMove: function (event) {
     const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
     object3D.position.x = Math.max(-5.5, Math.min(5.5, object3D.position.x + deltaX));
-    object3D.position.y = Math.max(-5.5, Math.min(5.5, object3D.position.y - deltaY));
+    object3D.position.y = Math.max(-3.5, Math.min(5.5, object3D.position.y - deltaY));
 
     // Calcola la nuova scala
     const scaleFactor = currentDistance / this.initialDistance;
