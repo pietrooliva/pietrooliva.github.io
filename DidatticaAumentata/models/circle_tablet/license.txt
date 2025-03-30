@@ -1,0 +1,11 @@
+Model Information:
+* title:	The Area of a Circle tablet
+* source:	https://sketchfab.com/3d-models/the-area-of-a-circle-tablet-16f3e288b7be485297ddd0945fd10ece
+* author:	IPCH Digitization Lab (https://sketchfab.com/IPCH_Yale)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "The Area of a Circle tablet" (https://sketchfab.com/3d-models/the-area-of-a-circle-tablet-16f3e288b7be485297ddd0945fd10ece) by IPCH Digitization Lab (https://sketchfab.com/IPCH_Yale) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
