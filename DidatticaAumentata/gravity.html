@@ -61,7 +61,7 @@
       <a-light type="directional" color="#ffffff" intensity="9" position="5 10 5"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="-0.8 0.0 -5.5"
+        position="0.8 0.0 -3.5"
         scale="0.001 0.001 0.001"
         rotation="5 0 0"
         class="clickable"
@@ -124,9 +124,9 @@ animatedModel.addEventListener('model-loaded', () => {
 
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '0.002 0.002 0.002'); // Ridimensiona per adattarsi meglio
+    animatedModel.setAttribute('scale', '0.02 0.02 0.02'); // Ridimensiona per adattarsi meglio
   } else {
-    animatedModel.setAttribute('scale', '0.002 0.002 0.002'); // Mantiene la scala originale su schermi grandi
+    animatedModel.setAttribute('scale', '0.04 0.04 0.04'); // Mantiene la scala originale su schermi grandi
   }
 });
 
@@ -272,8 +272,8 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.0005;
-  const maxScale = 3;
+  const minScale = 0.05;
+  const maxScale = 5;
 
   // Applica i limiti alla scala
   newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
@@ -322,8 +322,8 @@ onTouchMove: function (event) {
     const scaleFactor = currentDistance / this.initialDistance;
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
-    // Limita lo zoom tra 0.1 e 13
-    const minScale = 0.0005, maxScale = 3;
+    // Limita lo zoom tra 0.5 e 13
+    const minScale = 0.05, maxScale = 5;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
