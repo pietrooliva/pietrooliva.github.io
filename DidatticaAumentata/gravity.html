@@ -50,11 +50,11 @@
         toneMapping: ACESFilmicToneMapping;">
 
       <a-assets>
-        <a-asset-item id="model" src="models/gravitation/scene.gltf"></a-asset-item>
-        <audio id="background-audio" src="models/gravitation/background.mp3"></audio>
+        <a-asset-item id="model" src="models/gravity/scene.gltf"></a-asset-item>
+        <audio id="background-audio" src="models/gravity/background.mp3"></audio>
       </a-assets>
       
-        <!-- Luce ambientale per illuminazione uniforme -->
+           <!-- Luce ambientale per illuminazione uniforme -->
      <a-light type="ambient" color="#ffffff" intensity="2"></a-light> 
         <!-- Luce direzionale per illuminare il modello dall'alto -->
       <a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light>
@@ -120,12 +120,27 @@ animatedModel.addEventListener('model-loaded', () => {
     isNativeAnimation = true;
   }
 
+  animatedModel.addEventListener('model-loaded', () => {
+  const mesh = animatedModel.getObject3D('mesh');
+  if (mesh) {
+    mesh.traverse((node) => {
+      if (node.isMesh) {
+        node.material.transparent = false;
+        node.material.depthWrite = true;
+      }
+    });
+  }
+});
+
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '1 1 1'); // Ridimensiona per adattarsi meglio
+    animatedModel.setAttribute('scale', '0.04 0.04 0.04'); // Ridimensiona per adattarsi meglio
   } else {
-    animatedModel.setAttribute('scale', '1.6 1.6 1.6'); // Mantiene la scala originale su schermi grandi
+    animatedModel.setAttribute('scale', '0.2 0.2 0.2'); // Mantiene la scala originale su schermi grandi
   }
+
+  // Rendi visibile il modello dopo il caricamento
+  animatedModel.setAttribute('visible', 'true');
 });
 
       // Pulsante animazione
@@ -218,7 +233,7 @@ allowButton.addEventListener('click', async () => {
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 0.005;
+          this.touchSensitivity = 0.2;
 
           const canvas = this.el.sceneEl.canvas;
 
@@ -251,11 +266,11 @@ allowButton.addEventListener('click', async () => {
          const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-          object3D.position.x = Math.max(-3, Math.min(3, object3D.position.x + deltaX * 0.005));
-          object3D.position.y = Math.max(-1.7, Math.min(1.7, object3D.position.y - deltaY * 0.005));
+          object3D.position.x = Math.max(-5.5, Math.min(5.5, object3D.position.x + deltaX * 0.1));
+          object3D.position.y = Math.max(-5.5, Math.min(5.5, object3D.position.y - deltaY * 0.1));
           } else {
-          object3D.rotation.y += deltaX * 0.005;
-          object3D.rotation.x += deltaY * 0.005;
+          object3D.rotation.y += deltaX * 0.003;
+          object3D.rotation.x += deltaY * 0.003;
        }
 
        this.previousMousePosition.x = event.clientX;
@@ -269,9 +284,9 @@ onMouseWheel: function (event) {
   // Nuova scala calcolata
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
-  // Limiti per lo zoom (esempio: tra 0.5 e 2)
-  const minScale = 0.2;
-  const maxScale = 13;
+  // Limiti per lo zoom (esempio: tra 0.1 e 13)
+  const minScale = 0.06;
+  const maxScale = 3;
 
   // Applica i limiti alla scala
   newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
@@ -300,16 +315,16 @@ onTouchMove: function (event) {
     const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
     const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
-    object3D.position.x = Math.max(-3, Math.min(3, object3D.position.x + deltaX));
-    object3D.position.y = Math.max(-2, Math.min(2, object3D.position.y - deltaY));
+    object3D.position.x = Math.max(-5.5, Math.min(5.5, object3D.position.x + deltaX));
+    object3D.position.y = Math.max(-5.5, Math.min(5.5, object3D.position.y - deltaY));
 
     // Calcola la nuova scala
     const scaleFactor = currentDistance / this.initialDistance;
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
-    // Limiti per lo zoom (esempio: tra 0.5 e 2)
-    const minScale = 0.2;
-    const maxScale = 13;
+    // Limiti per lo zoom (esempio: tra 0.1 e 2)
+    const minScale = 0.06;
+    const maxScale = 3;
 
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
