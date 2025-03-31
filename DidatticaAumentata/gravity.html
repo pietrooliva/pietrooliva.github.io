@@ -37,19 +37,20 @@
       </div>
     </div>
 
-    <a-scene 
+      <a-scene 
       gesture-detector 
       embedded 
       arjs="trackingMethod: best; sourceType: webcam;" 
       renderer="
         antialias: true; 
         precision: highp; 
-        renderer.outputEncoding = THREE.sRGBEncoding;
+        gammaOutput: true; 
+        gammaFactor: 2.2;
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
 
-      <a-assets>
+     <a-assets>
         <a-asset-item id="model" src="models/gravity/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/gravity/background.mp3"></audio>
       </a-assets>
@@ -67,6 +68,7 @@
         id="animatedModel"
         interaction-handler>
       </a-entity>
+
 
       <a-entity camera></a-entity>
     </a-scene>
@@ -120,27 +122,12 @@ animatedModel.addEventListener('model-loaded', () => {
     isNativeAnimation = true;
   }
 
-  animatedModel.addEventListener('model-loaded', () => {
-  const mesh = animatedModel.getObject3D('mesh');
-  if (mesh) {
-    mesh.traverse((node) => {
-      if (node.isMesh) {
-        node.material.transparent = false;
-        node.material.depthWrite = true;
-      }
-    });
-  }
-});
-
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
     animatedModel.setAttribute('scale', '0.04 0.04 0.04'); // Ridimensiona per adattarsi meglio
   } else {
     animatedModel.setAttribute('scale', '0.2 0.2 0.2'); // Mantiene la scala originale su schermi grandi
   }
-
-  // Rendi visibile il modello dopo il caricamento
-  animatedModel.setAttribute('visible', 'true');
 });
 
       // Pulsante animazione
@@ -233,7 +220,7 @@ allowButton.addEventListener('click', async () => {
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 0.2;
+          this.touchSensitivity = 0.005;
 
           const canvas = this.el.sceneEl.canvas;
 
@@ -266,11 +253,11 @@ allowButton.addEventListener('click', async () => {
          const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-          object3D.position.x = Math.max(-5.5, Math.min(5.5, object3D.position.x + deltaX * 0.1));
-          object3D.position.y = Math.max(-5.5, Math.min(5.5, object3D.position.y - deltaY * 0.1));
+          object3D.position.x = Math.max(-1.8, Math.min(1.8, object3D.position.x + deltaX * 0.004));
+          object3D.position.y = Math.max(-1.5, Math.min(1.5, object3D.position.y - deltaY * 0.004));
           } else {
-          object3D.rotation.y += deltaX * 0.003;
-          object3D.rotation.x += deltaY * 0.003;
+          object3D.rotation.y += deltaX * 0.005;
+          object3D.rotation.x += deltaY * 0.005;
        }
 
        this.previousMousePosition.x = event.clientX;
@@ -285,8 +272,8 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.06;
-  const maxScale = 3;
+  const minScale = 0.01;
+  const maxScale = 13;
 
   // Applica i limiti alla scala
   newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
@@ -297,9 +284,20 @@ onMouseWheel: function (event) {
   object3D.scale.set(newScale.x, newScale.y, newScale.z);
 },
 
-onTouchMove: function (event) {
-  const object3D = this.el.object3D;
+onTouchStart: function (event) {
   if (event.touches.length === 1) {
+    this.previousTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  } else if (event.touches.length === 2) {
+    this.previousTouch = this.getMidpoint(event.touches);
+    this.initialDistance = this.getDistance(event.touches);
+  }
+},
+
+onTouchMove: function (event) {
+  event.preventDefault();  // Evita che la pagina si muova durante il tocco
+  const object3D = this.el.object3D;
+
+  if (event.touches.length === 1 && this.previousTouch) {
     const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
     const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
     const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
@@ -308,29 +306,28 @@ onTouchMove: function (event) {
     object3D.rotation.x += deltaY;
 
     this.previousTouch = currentTouch;
-  } else if (event.touches.length === 2) {
+  } 
+  else if (event.touches.length === 2 && this.previousTouch && this.initialDistance) {
     const currentMidpoint = this.getMidpoint(event.touches);
     const currentDistance = this.getDistance(event.touches);
 
+    // Calcola traslazione
     const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
     const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
-    object3D.position.x = Math.max(-5.5, Math.min(5.5, object3D.position.x + deltaX));
-    object3D.position.y = Math.max(-5.5, Math.min(5.5, object3D.position.y - deltaY));
+    object3D.position.x = Math.max(-2, Math.min(2, object3D.position.x + deltaX));
+    object3D.position.y = Math.max(-1.7, Math.min(1.7, object3D.position.y - deltaY));
 
-    // Calcola la nuova scala
+    // Calcola zoom con fattore stabile
     const scaleFactor = currentDistance / this.initialDistance;
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
-    // Limiti per lo zoom (esempio: tra 0.1 e 2)
-    const minScale = 0.06;
-    const maxScale = 3;
-
+    // Limita lo zoom tra 0.1 e 13
+    const minScale = 0.01, maxScale = 13;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
 
-    // Applica la nuova scala
     object3D.scale.set(newScale.x, newScale.y, newScale.z);
 
     this.previousTouch = currentMidpoint;
@@ -338,10 +335,10 @@ onTouchMove: function (event) {
   }
 },
 
-        onTouchEnd: function () {
-          this.previousTouch = null;
-          this.initialDistance = null;
-        },
+onTouchEnd: function () {
+  this.previousTouch = null;
+  this.initialDistance = null;
+},
 
 
         getMidpoint: function (touches) {
