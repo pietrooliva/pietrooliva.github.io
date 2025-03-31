@@ -61,8 +61,8 @@
       <a-light type="directional" color="#ffffff" intensity="10" position="5 10 5"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 -0.02 -3.5"
-        scale="0.01 0.01 0.01"
+        position="0 -0.02 -1.5"
+        scale="0.001 0.001 0.001"
         rotation="0 0 220"
         class="clickable"
         id="animatedModel"
@@ -124,9 +124,9 @@ animatedModel.addEventListener('model-loaded', () => {
 
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '0.3 0.3 0.3'); // Ridimensiona per adattarsi meglio
+    animatedModel.setAttribute('scale', '0.1 0.1 0.1'); // Ridimensiona per adattarsi meglio
   } else {
-    animatedModel.setAttribute('scale', '0.4 0.4 0.4'); // Mantiene la scala originale su schermi grandi
+    animatedModel.setAttribute('scale', '0.1 0.1 0.1'); // Mantiene la scala originale su schermi grandi
   }
 });
 
