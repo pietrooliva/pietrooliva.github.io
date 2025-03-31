@@ -37,20 +37,7 @@
       </div>
     </div>
 
-      <a-scene 
-      gesture-detector 
-      embedded 
-      arjs="trackingMethod: best; sourceType: webcam;" 
-      renderer="
-        antialias: true; 
-        precision: highp; 
-        gammaOutput: true; 
-        gammaFactor: 2.2;
-        physicallyCorrectLights: true; 
-        shadowMap.enabled: false; 
-        toneMapping: ACESFilmicToneMapping;">
-
-     <a-assets>
+       <a-assets>
         <a-asset-item id="model" src="models/gravity/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/gravity/background.mp3"></audio>
       </a-assets>
@@ -68,7 +55,6 @@
         id="animatedModel"
         interaction-handler>
       </a-entity>
-
 
       <a-entity camera></a-entity>
     </a-scene>
@@ -272,7 +258,7 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.01;
+  const minScale = 0.05;
   const maxScale = 13;
 
   // Applica i limiti alla scala
@@ -323,7 +309,7 @@ onTouchMove: function (event) {
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limita lo zoom tra 0.1 e 13
-    const minScale = 0.01, maxScale = 13;
+    const minScale = 0.05, maxScale = 13;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
