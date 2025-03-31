@@ -37,24 +37,38 @@
       </div>
     </div>
 
-       <a-assets>
-        <a-asset-item id="model" src="models/gravity/scene.gltf"></a-asset-item>
-        <audio id="background-audio" src="models/gravity/background.mp3"></audio>
+    <a-scene 
+      gesture-detector 
+      embedded 
+      arjs="trackingMethod: best; sourceType: webcam;" 
+      renderer="
+        antialias: true; 
+        precision: highp; 
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        physicallyCorrectLights: true; 
+        shadowMap.enabled: false; 
+        toneMapping: ACESFilmicToneMapping;">
+
+
+      <a-assets>
+        <a-asset-item id="model" src="models/astrolabe/scene.gltf"></a-asset-item>
+        <audio id="background-audio" src="models/astrolabe/background.mp3"></audio>
       </a-assets>
       
-           <!-- Luce ambientale per illuminazione uniforme -->
-     <a-light type="ambient" color="#ffffff" intensity="2"></a-light> 
+        <!-- Luce ambientale per illuminazione uniforme -->
+      <a-light type="ambient" color="#ffffff" intensity="5"></a-light>
         <!-- Luce direzionale per illuminare il modello dall'alto -->
-      <a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light>
+      <a-light type="directional" color="#ffffff" intensity="9" position="5 10 5"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="-0.8 0 -4.0"
+        position="-0.8 0.0 -5.5"
         scale="0.001 0.001 0.001"
         rotation="5 0 0"
         class="clickable"
         id="animatedModel"
         interaction-handler>
       </a-entity>
+
 
       <a-entity camera></a-entity>
     </a-scene>
@@ -110,9 +124,9 @@ animatedModel.addEventListener('model-loaded', () => {
 
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '0.04 0.04 0.04'); // Ridimensiona per adattarsi meglio
+    animatedModel.setAttribute('scale', '0.002 0.002 0.002'); // Ridimensiona per adattarsi meglio
   } else {
-    animatedModel.setAttribute('scale', '0.2 0.2 0.2'); // Mantiene la scala originale su schermi grandi
+    animatedModel.setAttribute('scale', '0.002 0.002 0.002'); // Mantiene la scala originale su schermi grandi
   }
 });
 
@@ -258,8 +272,8 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.05;
-  const maxScale = 13;
+  const minScale = 0.0005;
+  const maxScale = 3;
 
   // Applica i limiti alla scala
   newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
@@ -309,7 +323,7 @@ onTouchMove: function (event) {
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limita lo zoom tra 0.1 e 13
-    const minScale = 0.05, maxScale = 13;
+    const minScale = 0.0005, maxScale = 3;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
