@@ -62,7 +62,7 @@
       <a-entity 
         gltf-model="#model"
         position="0 -0.2 -1"
-        scale="0.5 0.5 0.5"
+        scale="0.0005 0.0005 0.0005"
         rotation="20 0 0"
         class="clickable"
         id="animatedModel"
@@ -295,8 +295,8 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.005;
-  const maxScale = 13;
+  const minScale = 0.00001;
+  const maxScale = 1;
 
   // Applica i limiti alla scala
   newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
@@ -346,7 +346,7 @@ onTouchMove: function (event) {
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limita lo zoom tra 0.1 e 13
-    const minScale = 0.005, maxScale = 13;
+    const minScale = 0.00001, maxScale = 1;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
