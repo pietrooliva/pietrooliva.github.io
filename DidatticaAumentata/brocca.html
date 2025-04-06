@@ -32,8 +32,8 @@
 </head>
 <body>
   <div id="buttons">
-    <button id="prevButton">&larr; Previous</button>
-    <button id="nextButton">Next &rarr;</button>
+    <button onclick="loadModel(0)">&larr; Previous</button>
+    <button onclick="loadModel(1)">Next &rarr;</button>
   </div>
 
   <script type="module">
@@ -76,8 +76,8 @@
       animate();
       
       // Gestisci i pulsanti
-      document.getElementById('prevButton').addEventListener('click', () => loadModel(0));
-      document.getElementById('nextButton').addEventListener('click', () => loadModel(1));
+      document.querySelector('#buttons button:nth-child(1)').addEventListener('click', () => loadModel(0));
+      document.querySelector('#buttons button:nth-child(2)').addEventListener('click', () => loadModel(1));
     }
 
     function onWindowResize() {
