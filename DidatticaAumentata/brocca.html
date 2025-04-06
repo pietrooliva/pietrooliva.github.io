@@ -61,8 +61,8 @@
       <a-entity 
         gltf-model="#model"
         position="0 -0.02 -0.5"
-        scale="0.001 0.001 0.001"
-        rotation="0 0 220"
+        scale="0.0005 0.0005 0.0005"
+        rotation="0 0 0"
         class="clickable"
         id="animatedModel"
         interaction-handler>
@@ -314,9 +314,14 @@ onTouchMove: function (event) {
     const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
     const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
 
-    object3D.position.x = Math.max(-2, Math.min(2, object3D.position.x + deltaX));
-    object3D.position.y = Math.max(-1.7, Math.min(1.7, object3D.position.y - deltaY));
+    // Limiti per la traslazione: evitare che l'oggetto esca dallo schermo
+      const object3DPosition = object3D.position;
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
 
+   object3DPosition.x = Math.max(-screenWidth / 2, Math.min(screenWidth / 2, object3DPosition.x + deltaX));
+      object3DPosition.y = Math.max(-screenHeight / 2, Math.min(screenHeight / 2, object3DPosition.y - deltaY));
+    
     // Calcola zoom con fattore stabile
     const scaleFactor = currentDistance / this.initialDistance;
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
