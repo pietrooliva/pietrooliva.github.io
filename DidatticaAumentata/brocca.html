@@ -2,116 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>AR Multi Model Viewer - Revisione 1</title>
-  <script type="module" crossorigin src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revisione 1 - GLTF Viewer Multiplo</title>
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: #000;
-      font-family: sans-serif;
-    }
-    .container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-    }
-    model-viewer {
-      width: 100%;
-      height: 100%;
-    }
-    .controls {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
+    body { margin: 0; overflow: hidden; background-color: #000; }
+    canvas { display: block; }
+    #buttons {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
       display: flex;
-      justify-content: center;
-      gap: 20px;
-      z-index: 2;
+      gap: 10px;
     }
     button {
-      background-color: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 12px;
       padding: 10px 20px;
-      font-size: 1.2em;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      background-color: #333;
+      color: white;
       cursor: pointer;
     }
     button:hover {
-      background-color: #ccc;
+      background-color: #555;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <model-viewer id="modelViewer"
-      ar
-      ar-modes="scene-viewer webxr quick-look"
-      camera-controls
-      touch-action="pan-y"
-      shadow-intensity="1"
-      autoplay
-      exposure="1"
-      alt="Modello AR"
-    ></model-viewer>
-
-    <div class="controls">
-      <button onclick="prevModel()">⬅️</button>
-      <button onclick="nextModel()">➡️</button>
-    </div>
+  <div id="buttons">
+    <button onclick="loadModel(0)">&larr;</button>
+    <button onclick="loadModel(1)">&rarr;</button>
   </div>
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.161.0/build/three.module.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.161.0/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js';
 
-  <audio id="audioPlayer" preload="auto"></audio>
-
-  <script>
+    let camera, scene, renderer, controls, currentModel = null, audio = null;
     const models = [
-      {
-        src="models/brocca/scene.gltf",
-        audio: 'models/brocca/background.mp3',
-        position: '0m 0m 0m',
-        scale: '1 1 1',
-        rotation: '0deg 0deg 0deg'
-      },
-      {
-        src="models/coin/scene.gltf",
-        audio: 'models/brocca/background.mp3',
-        position: '0m 0m 0m',
-        scale: '1 1 1',
-        rotation: '0deg 45deg 0deg'
-      },
-      // Aggiungi altri modelli qui
+      { url: 'models/brocca/scene.gltf', audio: 'models/brocca/background.mp3' },
+      { url: 'models/coin/scene.gltf', audio: 'models/coin/background.mp3' },
     ];
 
-    let currentIndex = 0;
-    const modelViewer = document.getElementById('modelViewer');
-    const audioPlayer = document.getElementById('audioPlayer');
+    init();
+    loadModel(0);
+
+    function init() {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000000);
+
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 0, 3);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.1;
+      controls.screenSpacePanning = true;
+      controls.minDistance = 0.5;
+      controls.maxDistance = 10;
+
+      window.addEventListener('resize', onWindowResize);
+      animate();
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
     function loadModel(index) {
-      const model = models[index];
-      modelViewer.src = model.url;
-      modelViewer.setAttribute('scale', model.scale);
-      modelViewer.setAttribute('position', model.position);
-      modelViewer.setAttribute('rotation', model.rotation);
+      if (currentModel) {
+        scene.remove(currentModel);
+      }
+      if (audio) {
+        audio.pause();
+        audio = null;
+      }
 
-      audioPlayer.src = model.audio;
-      audioPlayer.play().catch(e => console.warn("Audio not autoplayed:", e));
+      const loader = new GLTFLoader();
+      loader.load(models[index].url, (gltf) => {
+        currentModel = gltf.scene;
+        currentModel.position.set(0, 0, 0);
+        scene.add(currentModel);
+      });
+
+      audio = new Audio(models[index].audio);
+      audio.loop = true;
+      audio.play();
     }
 
-    function nextModel() {
-      currentIndex = (currentIndex + 1) % models.length;
-      loadModel(currentIndex);
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      constrainPan();
+      renderer.render(scene, camera);
     }
 
-    function prevModel() {
-      currentIndex = (currentIndex - 1 + models.length) % models.length;
-      loadModel(currentIndex);
-    }
+    function constrainPan() {
+      const offset = camera.position.clone().sub(controls.target);
+      const distance = offset.length();
+      if (distance < controls.minDistance) {
+        offset.setLength(controls.minDistance);
+        camera.position.copy(controls.target.clone().add(offset));
+      } else if (distance > controls.maxDistance) {
+        offset.setLength(controls.maxDistance);
+        camera.position.copy(controls.target.clone().add(offset));
+      }
 
-    // Inizializza il primo modello
-    window.addEventListener('DOMContentLoaded', () => {
-      loadModel(currentIndex);
-    });
+      // Optional clamp for pan
+      controls.target.x = Math.max(Math.min(controls.target.x, 2), -2);
+      controls.target.y = Math.max(Math.min(controls.target.y, 2), -2);
+    }
   </script>
 </body>
 </html>
