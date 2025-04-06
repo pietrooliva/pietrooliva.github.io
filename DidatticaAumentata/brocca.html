@@ -5,8 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Revisione 1 - GLTF Viewer Multiplo</title>
   <style>
-    body { margin: 0; overflow: hidden; background-color: #000; }
-    canvas { display: block; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+    canvas {
+      display: block;
+    }
     #buttons {
       position: fixed;
       bottom: 20px;
@@ -32,8 +38,8 @@
 </head>
 <body>
   <div id="buttons">
-    <button onclick="loadModel(0)">&larr; Previous</button>
-    <button onclick="loadModel(1)">Next &rarr;</button>
+    <button onclick="loadModel(0)">&larr; Brocca</button>
+    <button onclick="loadModel(1)">&rarr; Coin</button>
   </div>
 
   <script type="module">
@@ -44,7 +50,7 @@
     let camera, scene, renderer, controls, currentModel = null, audio = null;
     const models = [
       { url: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/brocca/scene.gltf', audio: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/brocca/background.mp3' },
-      { url: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/coin/scene.gltf', audio: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/coin/background.mp3' },
+      { url: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/coin/scene.gltf', audio: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/coin/background.mp3' }
     ];
 
     init();
@@ -53,10 +59,6 @@
     function init() {
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
-
-      // Aggiungi luce ambientale per rendere visibile il modello
-      const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
-      scene.add(light);
 
       camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
       camera.position.set(0, 0, 3);
@@ -74,10 +76,6 @@
 
       window.addEventListener('resize', onWindowResize);
       animate();
-      
-      // Gestisci i pulsanti
-      document.querySelector('#buttons button:nth-child(1)').addEventListener('click', () => loadModel(0));
-      document.querySelector('#buttons button:nth-child(2)').addEventListener('click', () => loadModel(1));
     }
 
     function onWindowResize() {
@@ -100,8 +98,6 @@
         currentModel = gltf.scene;
         currentModel.position.set(0, 0, 0);
         scene.add(currentModel);
-      }, undefined, function (error) {
-        console.error('An error happened while loading the model:', error);
       });
 
       audio = new Audio(models[index].audio);
@@ -112,7 +108,24 @@
     function animate() {
       requestAnimationFrame(animate);
       controls.update();
+      constrainPan();
       renderer.render(scene, camera);
+    }
+
+    function constrainPan() {
+      const offset = camera.position.clone().sub(controls.target);
+      const distance = offset.length();
+      if (distance < controls.minDistance) {
+        offset.setLength(controls.minDistance);
+        camera.position.copy(controls.target.clone().add(offset));
+      } else if (distance > controls.maxDistance) {
+        offset.setLength(controls.maxDistance);
+        camera.position.copy(controls.target.clone().add(offset));
+      }
+
+      // Optional clamp for pan
+      controls.target.x = Math.max(Math.min(controls.target.x, 2), -2);
+      controls.target.y = Math.max(Math.min(controls.target.y, 2), -2);
     }
   </script>
 </body>
