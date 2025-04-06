@@ -1,132 +1,353 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Revisione 1 - GLTF Viewer Multiplo</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: #000;
-    }
-    canvas {
-      display: block;
-    }
-    #buttons {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      display: flex;
-      gap: 10px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: none;
-      background-color: #333;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #555;
-    }
-  </style>
-</head>
-<body>
-  <div id="buttons">
-    <button onclick="loadModel(0)">&larr; Brocca</button>
-    <button onclick="loadModel(1)">&rarr; Coin</button>
-  </div>
+  <head>
+    <meta charset="utf-8" />
+    <title>Didattica Aumentata | Dr. P.OLIVA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+  </head>
+  <body>
+    <div id="splash" style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        text-align: center;
+        z-index: 9999;">
+      <div>
+        <h1>È necessario l'accesso ai sensori di movimento di questo dispositivo</h1>
+        <button id="allowButton" style="
+                padding: 10px 20px;
+                font-size: 16px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                border: 2px solid white;
+                border-radius: 5px;">
+          Consentire
+        </button>
+      </div>
+    </div>
 
-  <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.161.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.161.0/examples/jsm/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js';
+    <a-scene 
+      gesture-detector 
+      embedded 
+      arjs="trackingMethod: best; sourceType: webcam;" 
+      renderer="
+        antialias: true; 
+        precision: highp; 
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        physicallyCorrectLights: true; 
+        shadowMap.enabled: false; 
+        toneMapping: ACESFilmicToneMapping;">
 
-    let camera, scene, renderer, controls, currentModel = null, audio = null;
-    const models = [
-      { url: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/brocca/scene.gltf', audio: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/brocca/background.mp3' },
-      { url: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/coin/scene.gltf', audio: 'https://raw.githubusercontent.com/pietrooliva/pietrooliva.github.io/main/DidatticaAumentata/models/coin/background.mp3' }
-    ];
 
-    init();
-    loadModel(0);
+<a-assets>
+        <a-asset-item id="model1" src="models/brocca/scene.gltf"></a-asset-item>
+        <a-asset-item id="model2" src="models/coin/scene.gltf"></a-asset-item>
+        <audio id="audio1" src="models/brocca/background.mp3"></audio>
+        <audio id="audio2" src="models/coin/background.mp3"></audio>
+      </a-assets>
+      
+        <!-- Luce ambientale per illuminazione uniforme -->
+      <a-light type="ambient" color="#ffffff" intensity="5"></a-light>
+        <!-- Luce direzionale per illuminare il modello dall'alto -->
+      <a-light type="directional" color="#ffffff" intensity="9" position="5 10 5"></a-light>
+      <!-- Modello 1 -->
+      <a-entity 
+        id="animatedModel1"
+        gltf-model="#model1"
+        position="0 -0.02 -0.5"
+        scale="0.001 0.001 0.001"
+        rotation="0 0 220"
+        class="clickable">
+      </a-entity>
 
-    function init() {
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x000000);
+      <!-- Modello 2 -->
+      <a-entity 
+        id="animatedModel2"
+        gltf-model="#model2"
+        position="0 -0.02 -0.5"
+        scale="0.001 0.001 0.001"
+        rotation="0 0 220"
+        class="clickable"
+        visible="false">
+      </a-entity>
 
-      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-      camera.position.set(0, 0, 3);
 
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
+      <a-entity camera></a-entity>
+    </a-scene>
 
-      controls = new OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.1;
-      controls.screenSpacePanning = true;
-      controls.minDistance = 0.5;
-      controls.maxDistance = 10;
+ <!-- Pulsanti per audio e animazione -->
+    <button id="audioButton" style="position: fixed; bottom: 10px; left: 10px; padding: 2vw 1vw; font-size: min(2vw, 18px); background: rgba(0, 0, 0, 0.8); color: white; border: none; border-radius: 5px;">
+      Riproduci Audio
+    </button>
 
-      window.addEventListener('resize', onWindowResize);
-      animate();
-    }
+    <button id="animationButton" style="position: fixed; bottom: 10px; right: 10px; padding: 2vw 1vw; font-size: min(2vw, 18px); background: rgba(0, 0, 0, 0.8); color: white; border: none; border-radius: 5px;">
+      Avvia Animazione
+    </button>
 
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
+    <!-- Pulsanti avanti e indietro -->
+    <button id="previousButton" style="position: fixed; bottom: 20px; left: 50px; padding: 2vw 1vw; font-size: min(2vw, 18px); background: rgba(0, 0, 0, 0.8); color: white; border: none; border-radius: 5px;">
+      Indietro
+    </button>
 
-    function loadModel(index) {
-      if (currentModel) {
-        scene.remove(currentModel);
-      }
-      if (audio) {
-        audio.pause();
-        audio = null;
-      }
+    <button id="nextButton" style="position: fixed; bottom: 20px; right: 50px; padding: 2vw 1vw; font-size: min(2vw, 18px); background: rgba(0, 0, 0, 0.8); color: white; border: none; border-radius: 5px;">
+      Avanti
+    </button>
+    
+   <script>
+      const splash = document.getElementById('splash');
+      const allowButton = document.getElementById('allowButton');
+      const audio1 = document.getElementById('audio1');
+      const audio2 = document.getElementById('audio2');
+      const audioButton = document.getElementById('audioButton');
+      const animationButton = document.getElementById('animationButton');
+      const model1 = document.getElementById('animatedModel1');
+      const model2 = document.getElementById('animatedModel2');
+      const previousButton = document.getElementById('previousButton');
+      const nextButton = document.getElementById('nextButton');
 
-      const loader = new GLTFLoader();
-      loader.load(models[index].url, (gltf) => {
-        currentModel = gltf.scene;
-        currentModel.position.set(0, 0, 0);
-        scene.add(currentModel);
+      let currentModel = 1;
+      let isAnimationActive = false;
+
+      model1.addEventListener('model-loaded', () => {
+        const model = model1.getObject3D('mesh');
+        if (model && model.animations && model.animations.length > 0) {
+          isNativeAnimation = true;
+        }
+
+        // Adatta la scala del modello a seconda della dimensione dello schermo
+        if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
+          model1.setAttribute('scale', '0.02 0.02 0.02'); // Ridimensiona per adattarsi meglio
+        } else {
+          model1.setAttribute('scale', '0.02 0.02 0.02'); // Mantiene la scala originale su schermi grandi
+        }
       });
 
-      audio = new Audio(models[index].audio);
-      audio.loop = true;
-      audio.play();
-    }
+      // Pulsante animazione
+      animationButton.addEventListener('click', () => {
+        if (isNativeAnimation) {
+          toggleNativeAnimation();
+        } else {
+          toggleCustomRotation();
+        }
+      });
 
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      constrainPan();
-      renderer.render(scene, camera);
-    }
-
-    function constrainPan() {
-      const offset = camera.position.clone().sub(controls.target);
-      const distance = offset.length();
-      if (distance < controls.minDistance) {
-        offset.setLength(controls.minDistance);
-        camera.position.copy(controls.target.clone().add(offset));
-      } else if (distance > controls.maxDistance) {
-        offset.setLength(controls.maxDistance);
-        camera.position.copy(controls.target.clone().add(offset));
+      function toggleNativeAnimation() {
+        if (!isAnimationActive) {
+          model1.setAttribute('animation-mixer', '');
+          animationButton.textContent = "Ferma Animazione";
+        } else {
+          model1.removeAttribute('animation-mixer');
+          animationButton.textContent = "Avvia Animazione";
+        }
+        isAnimationActive = !isAnimationActive;
       }
 
-      // Optional clamp for pan
-      controls.target.x = Math.max(Math.min(controls.target.x, 2), -2);
-      controls.target.y = Math.max(Math.min(controls.target.y, 2), -2);
-    }
-  </script>
-</body>
+      function toggleCustomRotation() {
+        if (!isAnimationActive) {
+          model1.setAttribute('constant-rotation', 'speed: 30');
+          animationButton.textContent = "Ferma Animazione";
+        } else {
+          model1.removeAttribute('constant-rotation');
+          animationButton.textContent = "Avvia Animazione";
+        }
+        isAnimationActive = !isAnimationActive;
+      }
+
+      // Pulsante audio
+      audioButton.addEventListener('click', () => {
+        if (audio1.paused) {
+          audio1.play();
+          audioButton.textContent = "Interrompi Audio";
+        } else {
+          audio1.pause();
+          audioButton.textContent = "Riproduci Audio";
+        }
+      });
+
+      // Gestione richiesta permessi per i sensori di movimento
+      allowButton.addEventListener('click', async () => {
+        if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+          try {
+            const permission = await DeviceMotionEvent.requestPermission();
+            if (permission === 'granted') {
+              splash.style.display = 'none';
+            } else {
+              alert('Permesso negato. Questa esperienza richiede l’uso dei sensori di movimento.');
+            }
+          } catch (err) {
+            console.error('Errore nella richiesta di permesso per i sensori di movimento:', err);
+            alert('Si è verificato un errore. Controlla le impostazioni del tuo dispositivo.');
+          }
+        } else {
+          console.warn('DeviceMotionEvent non supportato o non richiede permessi.');
+          splash.style.display = 'none';
+        }
+      });
+
+      // Automatically hide the splash screen on unsupported devices
+      window.addEventListener('load', () => {
+        if (!('DeviceMotionEvent' in window)) {
+          console.warn('DeviceMotionEvent is not supported on this device.');
+          splash.style.display = 'none';
+        }
+      });
+
+      // Componente personalizzato per rotazione continua
+      AFRAME.registerComponent('constant-rotation', {
+        schema: { speed: { type: 'number', default: 30 } },
+        tick: function (time, timeDelta) {
+          const rotation = this.el.object3D.rotation;
+          const delta = THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
+          rotation.y += delta;
+        }
+      });
+
+      // Interaction handler per touch e mouse
+      AFRAME.registerComponent('interaction-handler', {
+        init: function () {
+          this.isMouseDown = false;
+          this.previousMousePosition = { x: 0, y: 0 };
+          this.zoomFactor = 0.1;
+          this.rightClickActive = false;
+
+          this.previousTouch = null;
+          this.initialDistance = null;
+          this.touchSensitivity = 0.005;
+
+          const canvas = this.el.sceneEl.canvas;
+
+          canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+          canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+          canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+          canvas.addEventListener('wheel', this.onMouseWheel.bind(this));
+          canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+          this.el.sceneEl.addEventListener('touchstart', this.onTouchStart.bind(this));
+          this.el.sceneEl.addEventListener('touchmove', this.onTouchMove.bind(this));
+          this.el.sceneEl.addEventListener('touchend', this.onTouchEnd.bind(this));
+        },
+
+        onMouseDown: function (event) {
+          this.isMouseDown = true;
+          this.rightClickActive = event.button === 2;
+          this.previousMousePosition.x = event.clientX;
+          this.previousMousePosition.y = event.clientY;
+        },
+        onMouseUp: function () {
+          this.isMouseDown = false;
+        },
+        
+        onMouseMove: function (event) {
+          if (!this.isMouseDown) return;
+
+          const deltaX = event.clientX - this.previousMousePosition.x;
+          const deltaY = event.clientY - this.previousMousePosition.y;
+          const object3D = this.el.object3D;
+
+          if (this.rightClickActive) {
+            object3D.position.x = Math.max(-1.8, Math.min(1.8, object3D.position.x + deltaX * 0.004));
+            object3D.position.y = Math.max(-1.5, Math.min(1.5, object3D.position.y - deltaY * 0.004));
+          } else {
+            object3D.rotation.y += deltaX * 0.005;
+            object3D.rotation.x += deltaY * 0.005;
+          }
+
+          this.previousMousePosition.x = event.clientX;
+          this.previousMousePosition.y = event.clientY;
+        },
+
+        onMouseWheel: function (event) {
+          const object3D = this.el.object3D;
+          const scaleFactor = 1 - Math.sign(event.deltaY) * this.zoomFactor;
+
+          // Nuova scala calcolata
+          const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
+
+          // Limiti per lo zoom (esempio: tra 0.1 e 13)
+          const minScale = 0.005;
+          const maxScale = 13;
+
+          // Applica i limiti alla scala
+          newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
+          newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
+          newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
+
+          object3D.scale.copy(newScale);
+        },
+
+        onTouchStart: function (event) {
+          if (event.touches.length === 1) {
+            this.previousTouch = event.touches[0];
+          } else if (event.touches.length === 2) {
+            const touch1 = event.touches[0];
+            const touch2 = event.touches[1];
+            this.initialDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+          }
+        },
+
+        onTouchMove: function (event) {
+          if (event.touches.length === 1 && this.previousTouch) {
+            const touch = event.touches[0];
+            const deltaX = touch.clientX - this.previousTouch.clientX;
+            const deltaY = touch.clientY - this.previousTouch.clientY;
+
+            const object3D = this.el.object3D;
+            object3D.rotation.y += deltaX * 0.01;
+            object3D.rotation.x += deltaY * 0.01;
+            this.previousTouch = touch;
+          } else if (event.touches.length === 2 && this.initialDistance) {
+            const touch1 = event.touches[0];
+            const touch2 = event.touches[1];
+            const newDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+            const scaleChange = (newDistance - this.initialDistance) * this.touchSensitivity;
+
+            const object3D = this.el.object3D;
+            const newScale = object3D.scale.clone().multiplyScalar(1 + scaleChange);
+            object3D.scale.copy(newScale);
+
+            this.initialDistance = newDistance;
+          }
+        },
+
+        onTouchEnd: function () {
+          this.previousTouch = null;
+          this.initialDistance = null;
+        }
+      });
+
+      // Funzione per il cambio dei modelli avanti/indietro
+      previousButton.addEventListener('click', () => {
+        currentModel = currentModel === 1 ? 2 : 1;
+        if (currentModel === 1) {
+          model1.setAttribute('visible', true);
+          model2.setAttribute('visible', false);
+        } else {
+          model1.setAttribute('visible', false);
+          model2.setAttribute('visible', true);
+        }
+      });
+
+      nextButton.addEventListener('click', () => {
+        currentModel = currentModel === 1 ? 2 : 1;
+        if (currentModel === 1) {
+          model1.setAttribute('visible', true);
+          model2.setAttribute('visible', false);
+        } else {
+          model1.setAttribute('visible', false);
+          model2.setAttribute('visible', true);
+        }
+      });
+   </script>
+  </body>
 </html>
