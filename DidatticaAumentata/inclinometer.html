@@ -55,13 +55,13 @@
       </a-assets>
       
         <!-- Luce ambientale per illuminazione uniforme -->
-      <a-light type="ambient" color="#ffffff" intensity="3"></a-light>
+      <a-light type="ambient" color="#ffffff" intensity="4"></a-light>
         <!-- Luce direzionale per illuminare il modello dall'alto -->
-      <a-light type="directional" color="#ffffff" intensity="4" position="5 10 5"></a-light>
+      <a-light type="directional" color="#ffffff" intensity="7" position="15 10 5"></a-light>
       <a-entity 
         gltf-model="#model"
         position="0 -0.02 -0.5"
-        scale="0.01 0.01 0.01"
+        scale="0.2 0.2 0.2"
         rotation="20 0 0"
         class="clickable"
         id="animatedModel"
@@ -123,9 +123,9 @@ animatedModel.addEventListener('model-loaded', () => {
 
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '0.001 0.001 0.001'); // Ridimensiona per adattarsi meglio
+    animatedModel.setAttribute('scale', '0.1 0.1 0.1'); // Ridimensiona per adattarsi meglio
   } else {
-    animatedModel.setAttribute('scale', '0.002 0.002 0.002'); // Mantiene la scala originale su schermi grandi
+    animatedModel.setAttribute('scale', '0.2 0.2 0.2'); // Mantiene la scala originale su schermi grandi
   }
 });
 
@@ -271,8 +271,8 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.0001;
-  const maxScale = 13;
+  const minScale = 0.01;
+  const maxScale = 3;
 
   // Applica i limiti alla scala
   newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
@@ -327,7 +327,7 @@ onTouchMove: function (event) {
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limita lo zoom tra 0.1 e 13
-    const minScale = 0.0001, maxScale = 13;
+    const minScale = 0.01, maxScale = 3;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
