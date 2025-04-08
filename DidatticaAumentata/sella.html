@@ -271,7 +271,7 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.005;
+  const minScale = 0.0001;
   const maxScale = 13;
 
   // Applica i limiti alla scala
@@ -327,7 +327,7 @@ onTouchMove: function (event) {
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limita lo zoom tra 0.1 e 13
-    const minScale = 0.005, maxScale = 13;
+    const minScale = 0.0001, maxScale = 13;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
