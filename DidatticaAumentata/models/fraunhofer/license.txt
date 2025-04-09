@@ -1,0 +1,11 @@
+Model Information:
+* title:	Fraunhofer's refractor in Tartu Old Observatory
+* source:	https://sketchfab.com/3d-models/fraunhofers-refractor-in-tartu-old-observatory-4b7fa3eab36d4bcaaf233cce491e8449
+* author:	Muinsuskaitseamet (https://sketchfab.com/muinsuskaitseamet)
+
+Model License:
+* license type:	CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+* requirements:	Author must be credited. Modified versions must have the same license. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Fraunhofer's refractor in Tartu Old Observatory" (https://sketchfab.com/3d-models/fraunhofers-refractor-in-tartu-old-observatory-4b7fa3eab36d4bcaaf233cce491e8449) by Muinsuskaitseamet (https://sketchfab.com/muinsuskaitseamet) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
