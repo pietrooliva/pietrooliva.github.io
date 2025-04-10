@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Tesi di Cecilia Flati</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Didattica Aumentata | Dr. P.OLIVA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <script src="libs/aframe-master.min.js"></script>
     <script src="libs/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
@@ -44,13 +44,12 @@
       renderer="
         antialias: true; 
         precision: highp; 
-        gammaOutput: true; 
-        gammaFactor: 3.0;
+        renderer.outputEncoding = THREE.sRGBEncoding;
         physicallyCorrectLights: true; 
         shadowMap.enabled: false; 
         toneMapping: ACESFilmicToneMapping;">
 
-      <a-assets>
+         <a-assets>
         <a-asset-item id="model" src="models/skull/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/skull/background.mp3"></audio>
       </a-assets>
@@ -72,31 +71,37 @@
       <a-entity camera></a-entity>
     </a-scene>
 
-    <button id="audioButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        left: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 18px;">
-      Riproduci Audio
-    </button>
+<button id="audioButton" style="
+    position: fixed; 
+    bottom: 10px; 
+    left: 10px; 
+    padding: 2vw 1vw; /* Aumenta altezza, riduce larghezza */
+    font-size: min(2vw, 18px); /* Leggermente più grande per leggibilità */
+    width: auto;
+    max-width: 35vw; /* Riduce la larghezza massima */
+    min-width: 150px; /* Riduce la larghezza minima */
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px;">
+  Riproduci Audio
+</button>
 
-    <button id="animationButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        right: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 18px;">
-      Avvia Animazione
-    </button>
+<button id="animationButton" style="
+    position: fixed; 
+    bottom: 10px; 
+    right: 10px; 
+    padding: 2vw 1vw; /* Aumenta altezza, riduce larghezza */
+    font-size: min(2vw, 18px); /* Leggermente più grande per leggibilità */
+    width: auto;
+    max-width: 35vw; /* Riduce la larghezza massima */
+    min-width: 150px; /* Riduce la larghezza minima */
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px;">
+  Avvia Animazione
+</button>
 
     <script>
       const splash = document.getElementById('splash');
@@ -109,12 +114,19 @@
       let isAnimationActive = false;
       let isNativeAnimation = false;
 
-      animatedModel.addEventListener('model-loaded', () => {
-        const model = animatedModel.getObject3D('mesh');
-        if (model && model.animations && model.animations.length > 0) {
-          isNativeAnimation = true;
-        }
-      });
+animatedModel.addEventListener('model-loaded', () => {
+  const model = animatedModel.getObject3D('mesh');
+  if (model && model.animations && model.animations.length > 0) {
+    isNativeAnimation = true;
+  }
+
+  // Adatta la scala del modello a seconda della dimensione dello schermo
+  if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
+    animatedModel.setAttribute('scale', '0.001 0.001 0.001'); // Ridimensiona per adattarsi meglio
+  } else {
+    animatedModel.setAttribute('scale', '0.002 0.002 0.002'); // Mantiene la scala originale su schermi grandi
+  }
+});
 
       // Pulsante animazione
       animationButton.addEventListener('click', () => {
@@ -158,23 +170,25 @@
         }
       });
 
-      // Handle sensor permission request
-      allowButton.addEventListener('click', async () => {
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-          try {
-            const permission = await DeviceMotionEvent.requestPermission();
-            if (permission === 'granted') {
-              splash.style.display = 'none';
-            } else {
-              alert('Permission denied. This experience requires motion sensors.');
-            }
-          } catch (err) {
-            console.error('Error while requesting motion sensor permissions:', err);
-          }
-        } else {
-          splash.style.display = 'none';
-        }
-      });
+// Gestione richiesta permessi per i sensori di movimento
+allowButton.addEventListener('click', async () => {
+  if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+    try {
+      const permission = await DeviceMotionEvent.requestPermission();
+      if (permission === 'granted') {
+        splash.style.display = 'none';
+      } else {
+        alert('Permesso negato. Questa esperienza richiede l’uso dei sensori di movimento.');
+      }
+    } catch (err) {
+      console.error('Errore nella richiesta di permesso per i sensori di movimento:', err);
+      alert('Si è verificato un errore. Controlla le impostazioni del tuo dispositivo.');
+    }
+  } else {
+    console.warn('DeviceMotionEvent non supportato o non richiede permessi.');
+    splash.style.display = 'none';
+  }
+});
 
       // Automatically hide the splash screen on unsupported devices
       window.addEventListener('load', () => {
@@ -204,7 +218,7 @@
 
           this.previousTouch = null;
           this.initialDistance = null;
-          this.touchSensitivity = 0.007;
+          this.touchSensitivity = 0.005;
 
           const canvas = this.el.sceneEl.canvas;
 
@@ -228,70 +242,106 @@
         onMouseUp: function () {
           this.isMouseDown = false;
         },
+        
         onMouseMove: function (event) {
-          if (!this.isMouseDown) return;
+         if (!this.isMouseDown) return;
 
-          const deltaX = event.clientX - this.previousMousePosition.x;
-          const deltaY = event.clientY - this.previousMousePosition.y;
-          const object3D = this.el.object3D;
+         const deltaX = event.clientX - this.previousMousePosition.x;
+         const deltaY = event.clientY - this.previousMousePosition.y;
+         const object3D = this.el.object3D;
 
           if (this.rightClickActive) {
-            object3D.position.x += deltaX * 0.005;
-            object3D.position.y -= deltaY * 0.005;
+          object3D.position.x = Math.max(-1.8, Math.min(1.8, object3D.position.x + deltaX * 0.004));
+          object3D.position.y = Math.max(-1.5, Math.min(1.5, object3D.position.y - deltaY * 0.004));
           } else {
-            object3D.rotation.y += deltaX * 0.005;
-            object3D.rotation.x += deltaY * 0.005;
-          }
+          object3D.rotation.y += deltaX * 0.005;
+          object3D.rotation.x += deltaY * 0.005;
+       }
 
-          this.previousMousePosition.x = event.clientX;
-          this.previousMousePosition.y = event.clientY;
-        },
+       this.previousMousePosition.x = event.clientX;
+       this.previousMousePosition.y = event.clientY;
+    },
 
-        onMouseWheel: function (event) {
-          const object3D = this.el.object3D;
-          object3D.scale.multiplyScalar(1 - Math.sign(event.deltaY) * this.zoomFactor);
-        },
+onMouseWheel: function (event) {
+  const object3D = this.el.object3D;
+  const scaleFactor = 1 - Math.sign(event.deltaY) * this.zoomFactor;
 
-        onTouchStart: function (event) {
-          if (event.touches.length === 1) {
-            this.previousTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-          } else if (event.touches.length === 2) {
-            this.previousTouch = this.getMidpoint(event.touches);
-            this.initialDistance = this.getDistance(event.touches);
-          }
-        },
+  // Nuova scala calcolata
+  const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
-        onTouchMove: function (event) {
-          const object3D = this.el.object3D;
-          if (event.touches.length === 1) {
-            const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-            const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
-            const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+  // Limiti per lo zoom (esempio: tra 0.1 e 13)
+  const minScale = 0.0001;
+  const maxScale = 13;
 
-            object3D.rotation.y += deltaX;
-            object3D.rotation.x += deltaY;
+  // Applica i limiti alla scala
+  newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
+  newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
+  newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
 
-            this.previousTouch = currentTouch;
-          } else if (event.touches.length === 2) {
-            const currentMidpoint = this.getMidpoint(event.touches);
-            const currentDistance = this.getDistance(event.touches);
+  // Applica la nuova scala all'oggetto
+  object3D.scale.set(newScale.x, newScale.y, newScale.z);
+},
 
-            const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
-            const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+onTouchStart: function (event) {
+  if (event.touches.length === 1) {
+    this.previousTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  } else if (event.touches.length === 2) {
+    this.previousTouch = this.getMidpoint(event.touches);
+    this.initialDistance = this.getDistance(event.touches);
+  }
+},
 
-            object3D.position.x += deltaX;
-            object3D.position.y -= deltaY;
-            object3D.scale.multiplyScalar(currentDistance / this.initialDistance);
+onTouchMove: function (event) {
+  event.preventDefault();  // Evita che la pagina si muova durante il tocco
+  const object3D = this.el.object3D;
 
-            this.previousTouch = currentMidpoint;
-            this.initialDistance = currentDistance;
-          }
-        },
+  if (event.touches.length === 1 && this.previousTouch) {
+    const currentTouch = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    const deltaX = (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+    const deltaY = (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
 
-        onTouchEnd: function () {
-          this.previousTouch = null;
-          this.initialDistance = null;
-        },
+    object3D.rotation.y += deltaX;
+    object3D.rotation.x += deltaY;
+
+    this.previousTouch = currentTouch;
+  } 
+  else if (event.touches.length === 2 && this.previousTouch && this.initialDistance) {
+    const currentMidpoint = this.getMidpoint(event.touches);
+    const currentDistance = this.getDistance(event.touches);
+
+    // Calcola traslazione
+    const deltaX = (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+    const deltaY = (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+
+    // Limiti per la traslazione: evitare che l'oggetto esca dallo schermo
+      const object3DPosition = object3D.position;
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+   object3DPosition.x = Math.max(-screenWidth / 2, Math.min(screenWidth / 2, object3DPosition.x + deltaX));
+      object3DPosition.y = Math.max(-screenHeight / 2, Math.min(screenHeight / 2, object3DPosition.y - deltaY));
+    
+    // Calcola zoom con fattore stabile
+    const scaleFactor = currentDistance / this.initialDistance;
+    const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
+
+    // Limita lo zoom tra 0.1 e 13
+    const minScale = 0.0001, maxScale = 13;
+    newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
+    newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
+    newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
+
+    object3D.scale.set(newScale.x, newScale.y, newScale.z);
+
+    this.previousTouch = currentMidpoint;
+    this.initialDistance = currentDistance;
+  }
+},
+
+onTouchEnd: function () {
+  this.previousTouch = null;
+  this.initialDistance = null;
+},
 
 
         getMidpoint: function (touches) {
@@ -315,4 +365,4 @@
       }
     </style>
   </body>
-</html>
+</html> 
