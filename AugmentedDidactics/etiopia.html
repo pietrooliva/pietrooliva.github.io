@@ -55,14 +55,14 @@
         </a-assets>
       
         <!-- Luce ambientale per illuminazione uniforme -->
-     <a-light type="ambient" color="#ffffff" intensity="2"></a-light> 
+     <a-light type="ambient" color="#ffffff" intensity="3"></a-light> 
         <!-- Luce direzionale per illuminare il modello dall'alto -->
-      <a-light type="directional" color="#ffffff" intensity="5" position="5 5 3"></a-light>
+      <a-light type="directional" color="#ffffff" intensity="6" position="5 5 3"></a-light>
       <a-entity 
         gltf-model="#model"
-        position="0 0 -5.0"
-        scale="0.001 0.001 0.001"
-        rotation="-90 180 180"
+        position="0 0 -1.0"
+        scale="0.0001 0.0001 0.0001"
+        rotation="0 0 0"
         class="clickable"
         id="animatedModel"
         interaction-handler>
@@ -122,9 +122,9 @@ animatedModel.addEventListener('model-loaded', () => {
 
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '0.1 0.1 0.1'); // Ridimensiona per adattarsi meglio
+    animatedModel.setAttribute('scale', '0.01 0.01 0.01'); // Ridimensiona per adattarsi meglio
   } else {
-    animatedModel.setAttribute('scale', '0.2 0.2 0.2'); // Mantiene la scala originale su schermi grandi
+    animatedModel.setAttribute('scale', '0.02 0.02 0.02'); // Mantiene la scala originale su schermi grandi
   }
 });
 
@@ -270,7 +270,7 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.0001;
+  const minScale = 0.00001;
   const maxScale = 3;
 
   // Applica i limiti alla scala
@@ -321,7 +321,7 @@ onTouchMove: function (event) {
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limita lo zoom tra 0.1 e 13
-    const minScale = 0.0001, maxScale = 3;
+    const minScale = 0.00001, maxScale = 3;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
