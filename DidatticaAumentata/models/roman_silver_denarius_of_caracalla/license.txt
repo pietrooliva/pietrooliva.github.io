@@ -1,0 +1,11 @@
+Model Information:
+* title:	Roman Silver Denarius of Caracalla
+* source:	https://sketchfab.com/3d-models/roman-silver-denarius-of-caracalla-c3051f5965ac4880af44cb7add551b72
+* author:	Frank McMains (https://sketchfab.com/frankmcmains)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Roman Silver Denarius of Caracalla" (https://sketchfab.com/3d-models/roman-silver-denarius-of-caracalla-c3051f5965ac4880af44cb7add551b72) by Frank McMains (https://sketchfab.com/frankmcmains) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
