@@ -1,0 +1,11 @@
+Model Information:
+* title:	Bust of emperor Trajan
+* source:	https://sketchfab.com/3d-models/bust-of-emperor-trajan-ee2883efa05c403799a0723364585f6a
+* author:	mikesira (https://sketchfab.com/mikesira)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Bust of emperor Trajan" (https://sketchfab.com/3d-models/bust-of-emperor-trajan-ee2883efa05c403799a0723364585f6a) by mikesira (https://sketchfab.com/mikesira) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
