@@ -73,30 +73,59 @@
     </a-scene>
 
     <button id="audioButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        left: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
-      Riproduci Audio
-    </button>
+    position: fixed; 
+    bottom: 10px; 
+    left: 10px; 
+    padding: 2vw 1vw; /* Aumenta altezza, riduce larghezza */
+    font-size: min(2vw, 18px); /* Leggermente più grande per leggibilità */
+    width: auto;
+    max-width: 35vw; /* Riduce la larghezza massima */
+    min-width: 150px; /* Riduce la larghezza minima */
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px;">
+  Riproduci Audio
+</button>
 
-    <button id="animationButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        right: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
-      Avvia Animazione
-    </button>
+<button id="animationButton" style="
+    position: fixed; 
+    bottom: 10px; 
+    right: 10px; 
+    padding: 2vw 1vw; /* Aumenta altezza, riduce larghezza */
+    font-size: min(2vw, 18px); /* Leggermente più grande per leggibilità */
+    width: auto;
+    max-width: 35vw; /* Riduce la larghezza massima */
+    min-width: 150px; /* Riduce la larghezza minima */
+    background: rgba(0, 0, 0, 0.8); 
+    color: white; 
+    border: none; 
+    border-radius: 5px;">
+  Avvia Animazione
+</button>
+
+         <div id="imageContainer" style="
+  position: fixed;
+  bottom: 120px;
+  left: 50%; 
+  transform: translateX(-50%);
+  text-align: center;">
+  <img src="models/solidi_platonici/solidi.png" alt="Keplero" style="
+    max-width: 220px;
+    max-height: 220px;
+    opacity: 0.9;">
+</div>
+
+    <div id="legend" style="
+  position: fixed;
+  bottom: 50px;
+  left: 50%; 
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 18px; 
+  color: white;">
+  Elementi e Solidi - dal Mysterium Cosmographicum (1596) 
+</div> 
 
     <script>
       const splash = document.getElementById('splash');
