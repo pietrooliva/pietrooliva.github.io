@@ -3,7 +3,7 @@ import numpy as np
 
 # ------------------------------------------------
 # Imposta la cartella di output
-config.media_dir = "/Users/olivap/Desktop/LED/Manim"
+config.media_dir = "/yourpath"
 # ------------------------------------------------
 
 class InclinedPlaneForceDecomposition(Scene):
