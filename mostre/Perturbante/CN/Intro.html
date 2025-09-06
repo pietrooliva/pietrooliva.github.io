@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>诡异 - 安杰利卡图书馆</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #000; --fg: #fff; --muted: #bbb; --accent: #1e88e5; --card: #111; --border: #333;
+    }
+    html, body { margin:0; padding:0; height:100%; background:var(--bg); color:var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    .stage { position: fixed; inset: 0; display: grid; place-items: center; background: var(--bg); }
+    #slide { max-width: 100vw; max-height: calc(100vh - 84px); object-fit: contain; image-rendering: auto; }
+
+    .controls {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.65) 35%, rgba(0,0,0,.85) 100%);
+      padding: 10px 14px 12px; display: grid; gap: 8px; box-sizing: border-box;
+    }
+    .row { display: flex; align-items: center; gap: 12px; }
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; min-width:110px;
+      padding:10px 14px; border-radius:10px; border:1px solid var(--border);
+      background:var(--card); color:var(--fg); font-weight:600; cursor:pointer; user-select:none;
+    }
+    .btn:active { transform: translateY(1px); }
+    .time { font-variant-numeric: tabular-nums; min-width: 60px; text-align: center; color: var(--muted); }
+    .slider { flex:1; display:flex; align-items:center; gap:10px; }
+    input[type="range"] {
+      -webkit-appearance:none; appearance:none; width:100%; height:6px; background:#444; border-radius:999px; outline:none;
+    }
+    input[type="range"]::-webkit-slider-thumb, input[type="range"]::-moz-range-thumb {
+      width:18px; height:18px; border-radius:50%; background:var(--accent); border:none; cursor:pointer;
+      box-shadow:0 0 0 4px rgba(30,136,229,0.25);
+    }
+    .overlay {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(2px);
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; max-width: 90vw;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;
+    }
+    .hint { opacity: 0.85; font-size: 0.95rem; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <!-- 音频 -->
+  <audio id="audio" src="Intro_CN.mp3" preload="auto" autoplay playsinline></audio>
+
+  <!-- 图像舞台 -->
+  <div class="stage">
+    <img id="slide" alt="与音频同步的幻灯片" />
+  </div>
+
+  <!-- 控制区 -->
+  <div class="controls" id="controls" aria-label="播放控制">
+    <div class="row">
+      <button id="playPause" class="btn" type="button">⏸ 暂停</button>
+    </div>
+    <div class="row slider">
+      <span id="cur" class="time">0:00</span>
+      <input id="seek" type="range" min="0" max="0" step="0.01" value="0" aria-label="位置" />
+      <span id="dur" class="time">0:00</span>
+    </div>
+  </div>
+
+  <!-- 自动播放遮罩 -->
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="自动播放已被阻止">
+    <div class="card">
+      <div style="font-size:1.1rem; font-weight:700; margin-bottom:6px;">自动播放已被阻止</div>
+      <div>点击 <em>开始</em> 播放音频并启动图像序列。</div>
+      <button id="startBtn" class="btn" type="button">▶︎ 开始</button>
+      <div class="hint">提示：请在浏览器设置中允许音频自动播放。</div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const audio   = document.getElementById('audio');
+      const slide   = document.getElementById('slide');
+      const overlay = document.getElementById('overlay');
+      const startBtn= document.getElementById('startBtn');
+
+      const playPause = document.getElementById('playPause');
+      const seek      = document.getElementById('seek');
+      const tCur      = document.getElementById('cur');
+      const tDur      = document.getElementById('dur');
+
+      // ==========================
+      // 在此编辑你的分镜时间点（秒）
+      // ==========================
+      // 数组长度须与图像数量一致；若留空 []，将按音频时长均匀分配。
+      let CUE_POINTS = [0, 10.0, 21.0, 29.0, 38.0, 46.0, 58.0, 67.0, 85.0, 95.0, 105, 115, 120];
+
+      // 图像配置（00.png, 01.png, 02.png, …）
+      const baseName = '';        // 可选前缀，如 'img-' -> 'img-00.png'
+      const extension = '.png';
+      const paddingDigits = 2;    // 2 -> 00, 01, 02, …
+      const maxProbe = 999;
+      const IMAGES_PATH = '../';  // 图像位于上一级目录（../00.png, ../01.png, …）
+
+      let images = [];
+      let cues = [];   // 实际使用的时间点
+      let started = false;
+      let duration = 0;
+      let lastIndex = -1;
+      let rafId = 0;
+      let isUserScrubbing = false;
+
+      function fmtTime(s) {
+        if (!isFinite(s)) return '0:00';
+        s = Math.max(0, Math.floor(s));
+        const m = Math.floor(s / 60);
+        const ss = String(s % 60).padStart(2, '0');
+        return `${m}:${ss}`;
+      }
+
+      function loadImage(name) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error('未找到：' + name));
+          img.src = name;
+        });
+      }
+
+      // 发现编号图像 00.png, 01.png, …
+      async function discoverImages() {
+        const arr = [];
+        for (let i = 0; i <= maxProbe; i++) {
+          const n = String(i).padStart(paddingDigits, '0');
+          const name = IMAGES_PATH + baseName + n + extension;
+          try {
+            const img = await loadImage(name);
+            arr.push(img);
+          } catch {
+            break; // 在遇到第一个缺失时停止
+          }
+        }
+        return arr;
+      }
+
+      function buildEquidistantCues(N, dur) {
+        if (!N || dur <= 0) return [];
+        const out = new Array(N);
+        for (let i = 0; i < N; i++) out[i] = (i * dur) / N;
+        return out;
+      }
+
+      function normalizeCues(userCues, N, dur) {
+        // 若未提供或长度不符，则生成等距时间点
+        if (!Array.isArray(userCues) || userCues.length !== N) {
+          return buildEquidistantCues(N, dur);
+        }
+        // 复制、裁剪并排序
+        const c = userCues.map(x => Math.max(0, Math.min(dur, Number(x) || 0)));
+        c.sort((a,b) => a - b);
+        if (c[0] > 0) c[0] = 0;                     // 第一张从 0 秒开始
+        if (c[c.length-1] > dur) c[c.length-1] = dur - 0.001;
+        return c;
+      }
+
+      function indexFromTime(t) {
+        // 返回 i 使得 cues[i] <= t < cues[i+1]；若超出最后一个，则取最后
+        const N = images.length;
+        if (N === 0) return -1;
+        if (t <= cues[0]) return 0;
+        for (let i = N - 1; i >= 0; i--) {
+          if (t >= cues[i]) return i;
+        }
+        return 0;
+      }
+
+      function showIndex(idx) {
+        if (idx < 0 || idx >= images.length) return;
+        if (idx !== lastIndex) {
+          slide.src = images[idx].src;
+          lastIndex = idx;
+        }
+      }
+
+      function updateUI() {
+        if (!isUserScrubbing) seek.value = String(audio.currentTime);
+        tCur.textContent = fmtTime(audio.currentTime);
+      }
+
+      function tick() {
+        const idx = indexFromTime(audio.currentTime);
+        showIndex(idx);
+        updateUI();
+        if (!audio.ended) {
+          rafId = requestAnimationFrame(tick);
+        } else {
+          showIndex(images.length - 1);
+          playPause.textContent = '▶︎ 继续';
+        }
+      }
+
+      function startIfReady() {
+        if (started) return;
+        if (!images.length || !isFinite(audio.duration) || audio.duration <= 0) return;
+        duration = audio.duration;
+        seek.max = String(duration);
+        tDur.textContent = fmtTime(duration);
+
+        // 归一化时间点
+        cues = normalizeCues(CUE_POINTS, images.length, duration);
+
+        started = true;
+        showIndex(0);
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(tick);
+      }
+
+      function setPlayStateUI() {
+        playPause.textContent = audio.paused ? '▶︎ 继续' : '⏸ 暂停';
+      }
+
+      async function tryAutoplay() {
+        try {
+          await audio.play();
+          overlay.style.display = 'none';
+          setPlayStateUI();
+          startIfReady();
+        } catch {
+          overlay.style.display = 'flex';
+          setPlayStateUI();
+        }
+      }
+
+      // 控制逻辑
+      playPause.addEventListener('click', async () => {
+        if (audio.paused) {
+          try { await audio.play(); } catch {}
+        } else {
+          audio.pause();
+        }
+        setPlayStateUI();
+        if (!audio.paused) {
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(tick);
+        }
+      });
+
+      // 拖动进度
+      seek.addEventListener('input', () => {
+        isUserScrubbing = true;
+        const t = Number(seek.value);
+        if (isFinite(t)) {
+          audio.currentTime = Math.min(duration || 0, Math.max(0, t));
+          showIndex(indexFromTime(audio.currentTime));
+          tCur.textContent = fmtTime(audio.currentTime);
+        }
+      });
+      ['change','pointerup','mouseup','touchend','keyup'].forEach(evt => {
+        seek.addEventListener(evt, () => {
+          isUserScrubbing = false;
+          if (!audio.paused) {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(tick);
+          } else {
+            updateUI();
+          }
+        }, { passive: true });
+      });
+
+      startBtn?.addEventListener('click', async () => {
+        try { await audio.play(); overlay.style.display = 'none'; } catch (e) { console.error(e); }
+        setPlayStateUI(); startIfReady();
+      });
+
+      // 初始化
+      document.addEventListener('DOMContentLoaded', async () => {
+        images = await discoverImages();
+        if (!images.length) {
+          const ph = new Blob(['data:image/svg+xml;utf8,' + encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+              <rect width="100%" height="100%" fill="#111"/>
+              <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+                    fill="#fff" font-family="sans-serif" font-size="28">
+                未找到图像（应为 00.png、01.png、…）
+              </text></svg>`)], { type: 'image/svg+xml' });
+          slide.src = URL.createObjectURL(ph);
+        } else {
+          slide.src = images[0].src;
+        }
+
+        const onMeta = () => {
+          duration = audio.duration || 0;
+          seek.max = String(duration);
+          tDur.textContent = fmtTime(duration);
+          setPlayStateUI();
+          startIfReady();
+        };
+        if (audio.readyState >= 1) onMeta();
+        audio.addEventListener('loadedmetadata', onMeta, { once: true });
+
+        tryAutoplay();
+
+        ['click','touchstart','keydown'].forEach(evt => {
+          window.addEventListener(evt, () => { if (audio.paused) tryAutoplay(); }, { passive: true, once: true });
+        });
+
+        audio.addEventListener('timeupdate', () => {
+          if (!started) return;
+          if (!isUserScrubbing) {
+            seek.value = String(audio.currentTime);
+            tCur.textContent = fmtTime(audio.currentTime);
+          }
+        });
+        audio.addEventListener('play',  () => { setPlayStateUI(); cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick); });
+        audio.addEventListener('pause', () => setPlayStateUI());
+        audio.addEventListener('ended', () => {
+          setPlayStateUI(); showIndex(images.length - 1); seek.value = String(duration); tCur.textContent = fmtTime(duration);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
