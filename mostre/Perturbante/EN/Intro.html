@@ -94,8 +94,7 @@
       // Put the times (in seconds) at which each image should start.
       // Length must match the number of images.
       // If left as [], times will be generated evenly across the audio duration.
-      let CUE_POINTS = []; // e.g., [0, 5.0, 12.3, 18.0, 26.5, 33.0]
-
+      let CUE_POINTS = [0, 10.0, 21.0, 29.0, 38.0, 46.0, 58.0, 67.0, 85.0, 95.0, 105, 115, 120]; // es.: [0, 5.0, 12.3, 18.0, 26.5, 33.0]
       // Image config (01.png, 02.png, ...)
       const baseName = '';       // optional prefix, e.g. 'img-' -> 'img-01.png'
       const extension = '.png';
@@ -132,7 +131,7 @@
 
       async function discoverImages() {
         const arr = [];
-        for (let i = 1; i <= maxProbe; i++) {
+        for (let i = 0; i <= maxProbe; i++) {
           const n = String(i).padStart(paddingDigits, '0');
           const name = IMAGES_PATH + baseName + n + extension;
           try {
