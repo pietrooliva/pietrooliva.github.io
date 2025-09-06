@@ -101,6 +101,9 @@
       const extension = '.png';
       const paddingDigits = 2;
       const maxProbe = 999;
+      // DOPO: aggiungi questa riga
+      const IMAGES_PATH = '../';    // immagini nella cartella superiore (../01.png, ../02.png, ...)
+
 
       let images = [];
       let cues = [];   // effective cue points
@@ -131,7 +134,7 @@
         const arr = [];
         for (let i = 1; i <= maxProbe; i++) {
           const n = String(i).padStart(paddingDigits, '0');
-          const name = baseName + n + extension;
+          const name = IMAGES_PATH + baseName + n + extension;
           try {
             const img = await loadImage(name);
             arr.push(img);
