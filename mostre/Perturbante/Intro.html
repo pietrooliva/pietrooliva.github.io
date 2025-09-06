@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <title>Il Perturbante - Biblioteca Angelica</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body {
+      margin: 0; padding: 0; height: 100%; background: #000; color: #fff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    .stage {
+      position: fixed; inset: 0; display: grid; place-items: center; background: #000;
+    }
+    #slide {
+      max-width: 100vw; max-height: 100vh; object-fit: contain; image-rendering: auto;
+    }
+    .overlay {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(2px);
+    }
+    .card {
+      background: #111; border: 1px solid #333; border-radius: 12px; padding: 18px 20px; max-width: 90vw;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;
+    }
+    .btn {
+      display: inline-block; margin-top: 12px; padding: 10px 16px; border-radius: 10px; border: 0;
+      background: #1e88e5; color: #fff; font-weight: 600; cursor: pointer;
+    }
+    .btn:active { transform: translateY(1px); }
+    .hint { opacity: 0.8; font-size: 0.95rem; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <!-- Audio: rinomina il tuo file in track.mp3 oppure cambia l'attributo src qui sotto -->
+  <audio id="audio" src="Intro_IT.mp3" preload="auto" autoplay playsinline></audio>
+
+  <!-- Area immagine -->
+  <div class="stage">
+    <img id="slide" alt="slideshow sincronizzato all'audio" />
+  </div>
+
+  <!-- Overlay di fallback se l’autoplay viene bloccato -->
+  <div id="overlay" class="overlay">
+    <div class="card">
+      <div style="font-size:1.1rem; font-weight:700; margin-bottom:6px;">Autoplay bloccato</div>
+      <div>Clicca <em>Avvia</em> per riprodurre l'audio e far partire la sequenza di immagini.</div>
+      <button id="startBtn" class="btn">Avvia</button>
+      <div class="hint">Suggerimento: assicurati che <em>audio autoplay</em> sia consentito nel tuo browser.</div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const audio = document.getElementById('audio');
+      const slide = document.getElementById('slide');
+      const overlay = document.getElementById('overlay');
+      const startBtn = document.getElementById('startBtn');
+
+      // Configurazione immagini: nome base + estensione; numerazione a 2 cifre: 01, 02, ...
+      const baseName = '';     // se serve un prefisso, es. 'img-' -> 'img-01.png'; altrimenti vuoto
+      const extension = '.png';
+      const paddingDigits = 2;
+      const maxProbe = 999;    // massimo tentativi per auto-scoperta
+
+      let imgNames = [];       // nomi file rilevati: ["01.png","02.png",...]
+      let images = [];         // oggetti Image pre-caricati
+      let started = false;
+      let duration = 0;
+      let lastIndex = -1;
+
+      // Carica un’immagine e risolve se esiste
+      function loadImage(name) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error('not found: ' + name));
+          img.src = name; // stesso folder
+        });
+      }
+
+      // Scopre le immagini numerate: 01.png, 02.png, ... fino alla prima mancante
+      async function discoverImages() {
+        const found = [];
+        for (let i = 1; i <= maxProbe; i++) {
+          const n = String(i).padStart(paddingDigits, '0');
+          const name = baseName + n + extension;
+          try {
+            const img = await loadImage(name);
+            found.push({ name, img });
+          } catch {
+            // interrompe alla prima mancante (sequenza compatta)
+            break;
+          }
+        }
+        return found;
+      }
+
+      // Avvio sincronizzazione quando audio e immagini sono pronti
+      function startIfReady() {
+        if (started) return;
+        if (!images.length || !isFinite(audio.duration) || audio.duration <= 0) return;
+        duration = audio.duration;
+        started = true;
+
+        // Mostra subito la prima
+        slide.src = images[0].src;
+        lastIndex = 0;
+
+        // Aggiorna l’immagine in base al tempo corrente (equal spacing)
+        function updateFrame() {
+          if (!started) return;
+          const N = images.length;
+          if (N === 0 || duration <= 0) return;
+          const t = audio.currentTime;
+          let idx = Math.min(N - 1, Math.max(0, Math.floor((t / duration) * N)));
+          if (idx !== lastIndex) {
+            slide.src = images[idx].src;
+            lastIndex = idx;
+          }
+          // Se l'audio non è finito, continua a sincronizzare
+          if (!audio.ended) {
+            requestAnimationFrame(updateFrame);
+          } else {
+            // Assicura ultima immagine a fine traccia
+            slide.src = images[N - 1].src;
+          }
+        }
+
+        requestAnimationFrame(updateFrame);
+      }
+
+      // Gestione autoplay bloccato
+      async function tryAutoplay() {
+        try {
+          await audio.play();
+          overlay.style.display = 'none';
+          startIfReady();
+        } catch {
+          overlay.style.display = 'flex';
+        }
+      }
+
+      startBtn?.addEventListener('click', async () => {
+        try {
+          await audio.play();
+          overlay.style.display = 'none';
+          startIfReady();
+        } catch (e) {
+          console.error('Impossibile avviare audio:', e);
+        }
+      });
+
+      // Pipeline di inizializzazione
+      document.addEventListener('DOMContentLoaded', async () => {
+        // 1) Scopri e pre-carica immagini
+        const found = await discoverImages();
+        imgNames = found.map(x => x.name);
+        images = found.map(x => x.img);
+
+        if (!images.length) {
+          // Nessuna immagine trovata: mostra un segnaposto testuale
+          const ph = new Blob(
+            [ 'data:image/svg+xml;utf8,' +
+              encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+                <rect width="100%" height="100%" fill="#111"/>
+                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+                      fill="#fff" font-family="sans-serif" font-size="28">
+                  Nessuna immagine trovata (attese 01.png, 02.png, …)
+                </text>
+              </svg>`) ],
+            { type: 'image/svg+xml' }
+          );
+          slide.src = URL.createObjectURL(ph);
+        } else {
+          slide.src = images[0].src;
+        }
+
+        // 2) Quando i metadati audio sono pronti, tenta l’autoplay e la sincronizzazione
+        if (audio.readyState >= 1) {
+          // metadata già disponibili
+          tryAutoplay();
+          audio.addEventListener('loadedmetadata', startIfReady, { once: true });
+        } else {
+          audio.addEventListener('loadedmetadata', () => {
+            tryAutoplay();
+            startIfReady();
+          }, { once: true });
+        }
+
+        // Se l’utente interagisce con la pagina (clic/tocco), riprova a partire
+        ['click','touchstart','keydown'].forEach(evt => {
+          window.addEventListener(evt, () => {
+            if (!started) tryAutoplay();
+          }, { once: true, passive: true });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
