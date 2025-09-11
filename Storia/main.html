@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Progetto di Storia — Titolo del Progetto</title>
+  <meta name="description" content="Pagina di presentazione di un progetto di storia. Sostituisci con descrizione specifica." />
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Progetto di Storia — Titolo" />
+  <meta property="og:description" content="Sintesi del progetto di storia." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/percorso/immagine-social.jpg" />
+  <meta name="theme-color" content="#0d1117" />
+  <style>
+    :root{
+      --bg: #0d1117; --fg: #e6edf3; --muted:#9da6b1; --card:#161b22; --accent:#5da9e9; --accent-2:#f59e0b;
+      --maxw: 980px; --radius: 16px;
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#ffffff; --fg:#0b1220; --muted:#5b6573; --card:#f6f8fa; --accent:#1e88e5; --accent-2:#b45309; }
+    }
+    html,body{margin:0; padding:0; background:var(--bg); color:var(--fg);
+      font: 16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+    a{color:var(--accent); text-decoration: none;} a:hover{text-decoration: underline;}
+    .wrap{max-width:var(--maxw); margin:0 auto; padding:24px;}
+    header{position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
+      background: color-mix(in oklab, var(--bg) 80%, transparent);
+      border-bottom:1px solid color-mix(in oklab, var(--fg) 10%, transparent);}
+    .nav{display:flex; gap:16px; align-items:center; justify-content:space-between;}
+    .brand{font-weight:700; letter-spacing:.3px;}
+    .btn{display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1rem; border-radius:999px;
+      background:var(--accent); color:white; border:0; cursor:pointer; font-weight:600;}
+    .btn.alt{background:transparent; color:var(--accent); border:1px solid var(--accent);}
+    main{display:grid; gap:32px;}
+    .hero{display:grid; gap:18px; padding:36px 0;}
+    .hero h1{font-size:clamp(1.6rem, 2.5vw + 1rem, 2.6rem); margin:0;}
+    .kicker{color:var(--muted); text-transform:uppercase; letter-spacing:.12em; font-weight:700; font-size:.78rem;}
+    .grid{display:grid; gap:16px;}
+    @media(min-width:800px){ .grid.two{grid-template-columns:1fr 1fr;} }
+    section{background:var(--card); border:1px solid color-mix(in oklab, var(--fg) 10%, transparent);
+      border-radius:var(--radius); padding:20px;}
+    section h2{margin-top:0; font-size:1.25rem}
+    .timeline{border-left:3px solid var(--accent); margin-left:8px; padding-left:16px;}
+    .timeline li{margin:12px 0;}
+    figure{margin:0;}
+    figcaption{font-size:.9rem; color:var(--muted);}
+    .cards{display:grid; gap:12px;}
+    @media(min-width:740px){ .cards{grid-template-columns:repeat(3,1fr);} }
+    .card{background:var(--card); border:1px solid color-mix(in oklab, var(--fg) 10%, transparent);
+      border-radius:var(--radius); padding:16px; display:grid; gap:8px;}
+    footer{color:var(--muted); padding:24px 0;}
+    .skip{position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;}
+    .skip:focus{left:16px; top:16px; width:auto; height:auto; padding:.5rem 1rem; background:var(--accent); color:#fff; border-radius:999px;}
+    /* stampa */
+    @media print{ header, .btn { display:none !important; } body{ background:#fff; color:#000; } section{break-inside:avoid;} }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Titolo del Progetto di Storia",
+    "description": "Breve descrizione del progetto di storia.",
+    "url": "https://esempio.it/progetto-storia",
+    "subjectOf": {"@type":"CreativeWork","name":"Area tematica"}
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#contenuto">Salta al contenuto</a>
+  <header>
+    <div class="wrap nav" role="navigation" aria-label="Navigazione principale">
+      <div class="brand">Progetto di Storia</div>
+      <nav>
+        <a href="#abstract">Abstract</a>
+        <a href="#obiettivi">Obiettivi</a>
+        <a href="#metodo">Metodologia</a>
+        <a href="#fonti">Fonti</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#team">Team</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenuto" class="wrap" role="main">
+    <section class="hero" aria-labelledby="titolo">
+      <span class="kicker">Progetto • Storia</span>
+      <h1 id="titolo">Titolo del Progetto</h1>
+      <p class="lead">Sostituisci questo paragrafo con una sintesi chiara (3–4 frasi) che presenti contesto, epoca, territorio e domanda di ricerca.</p>
+      <div>
+        <a class="btn" href="#abstract">Leggi l'abstract</a>
+        <a class="btn alt" href="#fonti">Vai alle fonti</a>
+      </div>
+    </section>
+
+    <section id="abstract" aria-labelledby="h-abstract">
+      <h2 id="h-abstract">Abstract</h2>
+      <p>Testo dell'abstract: problema storico, stato dell'arte, approccio e risultato atteso.</p>
+    </section>
+
+    <section id="obiettivi" aria-labelledby="h-obiettivi" class="grid two">
+      <div>
+        <h2 id="h-obiettivi">Obiettivi</h2>
+        <ul>
+          <li>O1 — Definisci l'obiettivo principale.</li>
+          <li>O2 — Obiettivi specifici (archivi, periodizzazione, comparazioni).</li>
+          <li>O3 — Output (articolo, mostra, database, edizione critica).</li>
+        </ul>
+      </div>
+      <div>
+        <h2 id="h-risultati">Risultati attesi</h2>
+        <ul>
+          <li>R1 — Nuove fonti o nuove letture.</li>
+          <li>R2 — Strumenti digitali o dataset.</li>
+          <li>R3 — Impatto didattico o pubblico.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="metodo" aria-labelledby="h-metodo" class="grid two">
+      <div>
+        <h2 id="h-metodo">Metodologia</h2>
+        <p>Descrivi l'approccio: critica delle fonti, filologia, GIS storico, DH, prosopografia, ecc.</p>
+        <ol>
+          <li>Raccolta e catalogazione delle fonti primarie.</li>
+          <li>Normalizzazione e annotazione.</li>
+          <li>Analisi (qualitativa/quantitativa).</li>
+          <li>Visualizzazione e pubblicazione.</li>
+        </ol>
+      </div>
+      <figure>
+        <img src="/percorso/mappa-o-diagramma.jpg" alt="Mappa/diagramma del progetto" style="width:100%; border-radius: var(--radius);" />
+        <figcaption>Mappa o diagramma metodologico (sostituisci con l'immagine del progetto).</figcaption>
+      </figure>
+    </section>
+
+    <section id="fonti" aria-labelledby="h-fonti" class="grid two">
+      <div>
+        <h2 id="h-fonti">Fonti primarie</h2>
+        <ul>
+          <li>Archivio X, Fondo Y, b. n., fasc. n., cc. nn.</li>
+          <li>Edizione antica: Autore (anno), <em>Titolo</em>, Luogo: Editore.</li>
+          <li>Epigrafi, manoscritti, mappe, registri…</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Fonti secondarie (bibliografia)</h2>
+        <ul>
+          <li>Cognome, Nome (anno). <em>Titolo</em>. Luogo: Editore.</li>
+          <li>Articolo rivista: Cognome (anno), «Titolo», <em>Rivista</em>, vol., pp.</li>
+          <li>Capitolo in volume collettaneo…</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="timeline" aria-labelledby="h-timeline">
+      <h2 id="h-timeline">Timeline</h2>
+      <ol class="timeline">
+        <li><strong>Data/Periodo 1:</strong> Evento cruciale / fase di lavoro.</li>
+        <li><strong>Data/Periodo 2:</strong> Evento cruciale / fase di lavoro.</li>
+        <li><strong>Data/Periodo 3:</strong> Evento cruciale / fase di lavoro.</li>
+      </ol>
+    </section>
+
+    <section id="galleria" aria-labelledby="h-galleria">
+      <h2 id="h-galleria">Galleria</h2>
+      <div class="cards" role="list">
+        <article class="card" role="listitem">
+          <img src="/percorso/immagine1.jpg" alt="Descrizione immagine 1" style="width:100%; border-radius: 12px;" />
+          <div>
+            <strong>Legenda/crediti</strong>
+            <p class="muted">Breve descrizione dell'immagine e credit.</p>
+          </div>
+        </article>
+        <article class="card" role="listitem">
+          <img src="/percorso/immagine2.jpg" alt="Descrizione immagine 2" style="width:100%; border-radius: 12px;" />
+          <div>
+            <strong>Legenda/crediti</strong>
+            <p class="muted">Breve descrizione dell'immagine e credit.</p>
+          </div>
+        </article>
+        <article class="card" role="listitem">
+          <img src="/percorso/immagine3.jpg" alt="Descrizione immagine 3" style="width:100%; border-radius: 12px;" />
+          <div>
+            <strong>Legenda/crediti</strong>
+            <p class="muted">Breve descrizione dell'immagine e credit.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="team" aria-labelledby="h-team" class="grid two">
+      <div>
+        <h2 id="h-team">Team</h2>
+        <ul>
+          <li><strong>Responsabile scientifico:</strong> Nome Cognome (affiliazione)</li>
+          <li><strong>Ricercatori:</strong> Nomi, ruoli</li>
+          <li><strong>Partner:</strong> Istituzioni/archivi/musei</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Contatti</h2>
+        <address>
+          <div>Email: <a href="mailto:progetto@example.it">progetto@example.it</a></div>
+          <div>Sito: <a href="https://esempio.it">esempio.it</a></div>
+        </address>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">© <span id="year"></span> Progetto di Storia • Licenza contenuti da specificare.</div>
+  </footer>
+
+  <script>
+    // anno dinamico e miglioramenti minori
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
