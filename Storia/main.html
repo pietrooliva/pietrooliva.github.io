@@ -26,7 +26,13 @@
     header{position:sticky; top:0; backdrop-filter:saturate(1.2) blur(8px);
       background: color-mix(in oklab, var(--bg) 80%, transparent);
       border-bottom:1px solid color-mix(in oklab, var(--fg) 10%, transparent);}
-    .nav{display:flex; gap:16px; align-items:center; justify-content:space-between;}
+   .nav{
+  display:flex; gap:16px; align-items:center;
+  /* era: justify-content:space-between; */
+  justify-content:flex-start;             /* allinea tutto a sinistra */
+}
+.nav nav{ order:1; }                       /* menù per primo, a sinistra */
+.nav .brand{ order:2; margin-left:auto; }  /* brand spinto a destra */
     .brand{font-weight:700; letter-spacing:.3px;}
     .btn{display:inline-flex; align-items:center; gap:.5rem; padding:.6rem 1rem; border-radius:999px;
       background:var(--accent); color:white; border:0; cursor:pointer; font-weight:600;}
