@@ -105,7 +105,15 @@ figcaption{font-size:.9rem; color:var(--muted);}
   border:1px solid color-mix(in oklab, var(--fg) 10%, transparent);
   border-radius:var(--radius); padding:16px; display:grid; gap:8px;
 }
-footer{color:var(--muted); padding:24px 0;}
+footer{
+  color:var(--muted);
+  padding:24px 0;
+  text-align:center;   /* centra il testo */
+}
+footer .wrap{
+  max-width:none;      /* nessun limite di larghezza */
+  margin:0;            /* niente margine */
+}e
 
     /* ===== Responsivo ===== */
     @media (max-width: 820px){
