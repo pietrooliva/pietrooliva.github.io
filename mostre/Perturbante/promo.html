@@ -32,30 +32,27 @@
     .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; max-width:90vw;
       box-shadow:0 10px 30px rgba(0,0,0,0.5); text-align:center; }
     .hint { opacity:.85; font-size:.95rem; margin-top:6px; }
-    /* Aspetto dei cue (sottotitoli) */
     video::cue { background: rgba(0,0,0,.55); color:#fff; font-size:1.05rem; }
-    /* Attiva direzione RTL quando serve (e.g., HE) */
     .rtl::cue { direction: rtl; unicode-bidi: plaintext; text-align: start; }
+    .err { color:#f66; font-weight:600; margin-top:8px; }
   </style>
 </head>
 <body>
-  <!-- Video -->
   <div class="stage">
-    <video id="vid" preload="auto" playsinline controlslist="nodownload noplaybackrate" crossorigin="anonymous">
-      <source src="https://drive.google.com/uc?export=download&id=1fFwKAS7E-aSmU5ov4lp6Fur_UQYQ6Ovy" type="video/mp4" />
-      <!-- Tracce sottotitoli. Possono essere vuote: verranno gestite via JS -->
-  <track id="tr-en" kind="subtitles" srclang="en" label="English" src="EN/promo_en.vtt" default>
-  <track id="tr-de" kind="subtitles" srclang="de" label="Deutsch" src="DE/promo_de.vtt">
-  <track id="tr-es" kind="subtitles" srclang="es" label="Español" src="ES/promo_es.vtt">
-  <track id="tr-fr" kind="subtitles" srclang="fr" label="Français" src="FR/promo_fr.vtt">
-  <track id="tr-he" kind="subtitles" srclang="he" label="עברית" src="HE/promo_he.vtt">
-  <track id="tr-ja" kind="subtitles" srclang="ja" label="日本語" src="JA/promo_ja.vtt">
-  <track id="tr-zh" kind="subtitles" srclang="zh" label="中文" src="CN/promo_zh.vtt">
-  <track id="tr-ru" kind="subtitles" srclang="ru" label="Русский" src="RU/promo_ru.vtt">
-</video>
+    <!-- Autoplay muto: verrà smutato su click -->
+    <video id="vid" preload="auto" playsinline muted crossorigin="anonymous" controlslist="nodownload noplaybackrate">
+      <source id="src" src="" type="video/mp4" />
+      <track id="tr-en" kind="subtitles" srclang="en" label="English" src="EN/promo_en.vtt" default>
+      <track id="tr-de" kind="subtitles" srclang="de" label="Deutsch" src="DE/promo_de.vtt">
+      <track id="tr-es" kind="subtitles" srclang="es" label="Español" src="ES/promo_es.vtt">
+      <track id="tr-fr" kind="subtitles" srclang="fr" label="Français" src="FR/promo_fr.vtt">
+      <track id="tr-he" kind="subtitles" srclang="he" label="עברית" src="HE/promo_he.vtt">
+      <track id="tr-ja" kind="subtitles" srclang="ja" label="日本語" src="JA/promo_ja.vtt">
+      <track id="tr-zh" kind="subtitles" srclang="zh" label="中文" src="CN/promo_zh.vtt">
+      <track id="tr-ru" kind="subtitles" srclang="ru" label="Русский" src="RU/promo_ru.vtt">
+    </video>
   </div>
 
-  <!-- Controlli -->
   <div class="controls" aria-label="controlli riproduzione">
     <div class="row">
       <button id="playPause" class="btn" type="button">⏸ Pausa</button>
@@ -79,19 +76,20 @@
     </div>
   </div>
 
-  <!-- Overlay autoplay -->
   <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Autoplay bloccato">
     <div class="card">
-      <div style="font-size:1.1rem; font-weight:700; margin-bottom:6px;">Autoplay bloccato</div>
+      <div style="font-size:1.1rem; font-weight:700; margin-bottom:6px;">Avvio video</div>
       <div>Clicca <em>Avvia</em> per riprodurre il video.</div>
       <button id="startBtn" class="btn" type="button">▶︎ Avvia</button>
-      <div class="hint">Suggerimento: consenti l'autoplay audio nelle preferenze del browser.</div>
+      <div id="err" class="err" style="display:none;"></div>
+      <div class="hint">Nota: i link Google Drive a volte non forniscono un <code>video/mp4</code> diretto.</div>
     </div>
   </div>
 
   <script>
   (function() {
     const vid = document.getElementById('vid');
+    const srcEl = document.getElementById('src');
     const playPause = document.getElementById('playPause');
     const seek = document.getElementById('seek');
     const tCur = document.getElementById('cur');
@@ -99,34 +97,35 @@
     const subs = document.getElementById('subs');
     const overlay = document.getElementById('overlay');
     const startBtn = document.getElementById('startBtn');
+    const errBox = document.getElementById('err');
 
-    // === CONFIG NOMI FILE (se cambi prefix) ===
-    const videoSrc = 'promo.mp4';  // modifica se necessario
+    // 👉 Sostituisci qui con il tuo ID (o metti un file locale)
+    const videoSrc = 'https://drive.google.com/uc?export=download&id=1fFwKAS7E-aSmU5ov4lp6Fur_UQYQ6Ovy';
 
-    let rafId = 0;
-    let duration = 0;
-    let isUserScrubbing = false;
-    let started = false;
+    let rafId = 0, duration = 0, isUserScrubbing = false, started = false;
+
+    function showError(msg) {
+      overlay.style.display = 'flex';
+      errBox.style.display = 'block';
+      errBox.textContent = msg;
+    }
+    function clearError() { errBox.style.display = 'none'; errBox.textContent = ''; }
 
     function fmtTime(s) {
       if (!isFinite(s)) return '0:00';
       s = Math.max(0, Math.floor(s));
-      const m = Math.floor(s / 60);
-      const ss = String(s % 60).padStart(2, '0');
+      const m = Math.floor(s / 60), ss = String(s % 60).padStart(2,'0');
       return `${m}:${ss}`;
     }
-
     function setPlayStateUI() {
       playPause.textContent = vid.paused ? '▶︎ Riprendi' : '⏸ Pausa';
     }
-
     function tick() {
       if (!isUserScrubbing) seek.value = String(vid.currentTime || 0);
       tCur.textContent = fmtTime(vid.currentTime || 0);
       if (!vid.ended) rafId = requestAnimationFrame(tick);
       else setPlayStateUI();
     }
-
     function startIfReady() {
       if (started) return;
       if (!isFinite(vid.duration) || vid.duration <= 0) return;
@@ -139,39 +138,36 @@
     }
 
     async function tryAutoplay() {
+      clearError();
       try {
+        // Autoplay muto (consentito): poi smuteremo su click
+        vid.muted = true;
         await vid.play();
         overlay.style.display = 'none';
-        setPlayStateUI();
-        startIfReady();
+        setPlayStateUI(); startIfReady();
       } catch {
         overlay.style.display = 'flex';
         setPlayStateUI();
       }
     }
 
-    // Gestione sottotitoli
     function applySubtitles(langCode) {
-      // disattiva tutto
       for (const tr of vid.textTracks) tr.mode = 'disabled';
       vid.classList.remove('rtl');
       if (langCode === 'off') return;
-
-      // trova traccia con srclang corrispondente
       let target = null;
       for (const tr of vid.textTracks) {
         if ((tr.language || '').toLowerCase() === langCode) { target = tr; break; }
       }
       if (target) {
         target.mode = 'showing';
-        // imposta RTL per ebraico
         if (langCode === 'he') vid.classList.add('rtl');
       }
     }
 
-    // Controlli UI
+    // UI
     playPause.addEventListener('click', async () => {
-      if (vid.paused) { try { await vid.play(); } catch {} }
+      if (vid.paused) { try { await vid.play(); } catch(e) { showError('Impossibile avviare la riproduzione.'); } }
       else vid.pause();
       setPlayStateUI();
       if (!vid.paused) { cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick); }
@@ -196,28 +192,41 @@
     subs.addEventListener('change', () => applySubtitles(subs.value));
 
     startBtn?.addEventListener('click', async () => {
-      try { await vid.play(); overlay.style.display = 'none'; } catch (e) { console.error(e); }
-      setPlayStateUI(); startIfReady();
+      clearError();
+      try {
+        // su gesto utente: (ri)carica e smuta in sicurezza
+        if (vid.paused && vid.currentTime === 0) { /* no-op */ }
+        vid.muted = false;              // consenti audio dopo il gesto
+        await vid.play();
+        overlay.style.display = 'none';
+        setPlayStateUI(); startIfReady();
+      } catch (e) {
+        showError('Il browser non è riuscito a riprodurre il video. Se usi Google Drive, il file potrebbe non essere servito come video/mp4.');
+        console.error(e);
+      }
     });
 
     // Init
     document.addEventListener('DOMContentLoaded', () => {
-      // Assicura src (se cambiato a runtime)
-      const srcEl = vid.querySelector('source');
-      if (srcEl && srcEl.src === '') srcEl.src = videoSrc;
+      // Imposta sempre la sorgente da JS e forza il load
+      srcEl.src = videoSrc;
+      vid.load();
 
       const onMeta = () => { duration = vid.duration || 0; seek.max = String(duration); tDur.textContent = fmtTime(duration); setPlayStateUI(); startIfReady(); };
       if (vid.readyState >= 1) onMeta();
       vid.addEventListener('loadedmetadata', onMeta, { once: true });
 
-      // Safari/iOS: l’autoplay con audio può fallire → overlay
+      // Eventi di errore/rete -> messaggio chiaro
+      vid.addEventListener('error', () => showError('Errore di caricamento video (sorgente non valida o bloccata).'));
+      vid.addEventListener('stalled', () => showError('Connessione bloccata/stalled durante il caricamento del video.'));
+      vid.addEventListener('abort', () => showError('Caricamento video interrotto.'));
+
+      // Prova autoplay muto; se fallisce mostra overlay
       tryAutoplay();
 
-      // Scegli default: OFF finché l’utente non seleziona
       subs.value = 'off';
       applySubtitles('off');
 
-      // Mantieni UI aggiornata anche sugli eventi media
       vid.addEventListener('timeupdate', () => {
         if (!started) return;
         if (!isUserScrubbing) {
