@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <title>Perturbante – Biblioteca Angelica</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bg:#000; --fg:#fff; --muted:#bbb; --accent:#1e88e5; --card:#111; --border:#333; }
+    html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    .stage { position: fixed; inset: 0; display: grid; place-items: center; background: var(--bg); }
+    video { max-width: 100vw; max-height: calc(100vh - 110px); background:#000; }
+    .controls { position: fixed; left:0; right:0; bottom:0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.65) 35%, rgba(0,0,0,.85) 100%);
+      padding: 10px 14px 12px; display: grid; gap: 8px; box-sizing: border-box; }
+    .row { display:flex; align-items:center; gap:12px; flex-wrap: wrap; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; min-width:110px;
+      padding:10px 14px; border-radius:10px; border:1px solid var(--border);
+      background:var(--card); color:var(--fg); font-weight:600; cursor:pointer; user-select:none; }
+    .btn:active { transform: translateY(1px); }
+    .time { font-variant-numeric: tabular-nums; min-width:60px; text-align:center; color:var(--muted); }
+    .slider { flex:1; display:flex; align-items:center; gap:10px; min-width:220px; }
+    input[type="range"] { -webkit-appearance:none; appearance:none; width:100%; height:6px; background:#444; border-radius:999px; outline:none; }
+    input[type="range"]::-webkit-slider-thumb, input[type="range"]::-moz-range-thumb {
+      width:18px; height:18px; border-radius:50%; background:var(--accent); border:none; cursor:pointer;
+      box-shadow:0 0 0 4px rgba(30,136,229,0.25);
+    }
+    select { background:var(--card); color:var(--fg); border:1px solid var(--border);
+      border-radius:10px; padding:10px 12px; font-weight:600; }
+    .overlay { position: fixed; inset:0; display:none; align-items:center; justify-content:center;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(2px); }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 20px; max-width:90vw;
+      box-shadow:0 10px 30px rgba(0,0,0,0.5); text-align:center; }
+    .hint { opacity:.85; font-size:.95rem; margin-top:6px; }
+    /* Aspetto dei cue (sottotitoli) */
+    video::cue { background: rgba(0,0,0,.55); color:#fff; font-size:1.05rem; }
+    /* Attiva direzione RTL quando serve (e.g., HE) */
+    .rtl::cue { direction: rtl; unicode-bidi: plaintext; text-align: start; }
+  </style>
+</head>
+<body>
+  <!-- Video -->
+  <div class="stage">
+    <video id="vid" preload="auto" playsinline controlslist="nodownload noplaybackrate" crossorigin="anonymous">
+      <source src="https://drive.google.com/uc?export=download&id=1fFwKAS7E-aSmU5ov4lp6Fur_UQYQ6Ovy" type="video/mp4" />
+      <!-- Tracce sottotitoli (stessa cartella). Possono essere vuote: verranno gestite via JS -->
+      <track id="tr-en" kind="subtitles" srclang="en" label="English" src="promo_en.vtt" default>
+      <track id="tr-de" kind="subtitles" srclang="de" label="Deutsch" src="promo_de.vtt">
+      <track id="tr-es" kind="subtitles" srclang="es" label="Español" src="promo_es.vtt">
+      <track id="tr-fr" kind="subtitles" srclang="fr" label="Français" src="promo_fr.vtt">
+      <track id="tr-he" kind="subtitles" srclang="he" label="עברית" src="promo_he.vtt">
+      <track id="tr-ja" kind="subtitles" srclang="ja" label="日本語" src="promo_ja.vtt">
+      <track id="tr-zh" kind="subtitles" srclang="zh" label="中文" src="promo_zh.vtt">
+      <track id="tr-ru" kind="subtitles" srclang="ru" label="Русский" src="promo_ru.vtt">
+    </video>
+  </div>
+
+  <!-- Controlli -->
+  <div class="controls" aria-label="controlli riproduzione">
+    <div class="row">
+      <button id="playPause" class="btn" type="button">⏸ Pausa</button>
+      <label for="subs" style="color:var(--muted); font-weight:600;">Sottotitoli:</label>
+      <select id="subs" aria-label="Seleziona lingua sottotitoli">
+        <option value="off">OFF</option>
+        <option value="en">EN – English</option>
+        <option value="de">DE – Deutsch</option>
+        <option value="es">ES – Español</option>
+        <option value="fr">FR – Français</option>
+        <option value="he">HE – עברית</option>
+        <option value="ja">JA – 日本語</option>
+        <option value="zh">CN – 中文</option>
+        <option value="ru">RU – Русский</option>
+      </select>
+    </div>
+    <div class="row slider">
+      <span id="cur" class="time">0:00</span>
+      <input id="seek" type="range" min="0" max="0" step="0.01" value="0" aria-label="posizione" />
+      <span id="dur" class="time">0:00</span>
+    </div>
+  </div>
+
+  <!-- Overlay autoplay -->
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Autoplay bloccato">
+    <div class="card">
+      <div style="font-size:1.1rem; font-weight:700; margin-bottom:6px;">Autoplay bloccato</div>
+      <div>Clicca <em>Avvia</em> per riprodurre il video.</div>
+      <button id="startBtn" class="btn" type="button">▶︎ Avvia</button>
+      <div class="hint">Suggerimento: consenti l'autoplay audio nelle preferenze del browser.</div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    const vid = document.getElementById('vid');
+    const playPause = document.getElementById('playPause');
+    const seek = document.getElementById('seek');
+    const tCur = document.getElementById('cur');
+    const tDur = document.getElementById('dur');
+    const subs = document.getElementById('subs');
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('startBtn');
+
+    // === CONFIG NOMI FILE (se cambi prefix) ===
+    const videoSrc = 'promo.mp4';  // modifica se necessario
+
+    let rafId = 0;
+    let duration = 0;
+    let isUserScrubbing = false;
+    let started = false;
+
+    function fmtTime(s) {
+      if (!isFinite(s)) return '0:00';
+      s = Math.max(0, Math.floor(s));
+      const m = Math.floor(s / 60);
+      const ss = String(s % 60).padStart(2, '0');
+      return `${m}:${ss}`;
+    }
+
+    function setPlayStateUI() {
+      playPause.textContent = vid.paused ? '▶︎ Riprendi' : '⏸ Pausa';
+    }
+
+    function tick() {
+      if (!isUserScrubbing) seek.value = String(vid.currentTime || 0);
+      tCur.textContent = fmtTime(vid.currentTime || 0);
+      if (!vid.ended) rafId = requestAnimationFrame(tick);
+      else setPlayStateUI();
+    }
+
+    function startIfReady() {
+      if (started) return;
+      if (!isFinite(vid.duration) || vid.duration <= 0) return;
+      duration = vid.duration;
+      seek.max = String(duration);
+      tDur.textContent = fmtTime(duration);
+      started = true;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(tick);
+    }
+
+    async function tryAutoplay() {
+      try {
+        await vid.play();
+        overlay.style.display = 'none';
+        setPlayStateUI();
+        startIfReady();
+      } catch {
+        overlay.style.display = 'flex';
+        setPlayStateUI();
+      }
+    }
+
+    // Gestione sottotitoli
+    function applySubtitles(langCode) {
+      // disattiva tutto
+      for (const tr of vid.textTracks) tr.mode = 'disabled';
+      vid.classList.remove('rtl');
+      if (langCode === 'off') return;
+
+      // trova traccia con srclang corrispondente
+      let target = null;
+      for (const tr of vid.textTracks) {
+        if ((tr.language || '').toLowerCase() === langCode) { target = tr; break; }
+      }
+      if (target) {
+        target.mode = 'showing';
+        // imposta RTL per ebraico
+        if (langCode === 'he') vid.classList.add('rtl');
+      }
+    }
+
+    // Controlli UI
+    playPause.addEventListener('click', async () => {
+      if (vid.paused) { try { await vid.play(); } catch {} }
+      else vid.pause();
+      setPlayStateUI();
+      if (!vid.paused) { cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick); }
+    });
+
+    seek.addEventListener('input', () => {
+      isUserScrubbing = true;
+      const t = Number(seek.value);
+      if (isFinite(t)) {
+        vid.currentTime = Math.min(duration || 0, Math.max(0, t));
+        tCur.textContent = fmtTime(vid.currentTime);
+      }
+    });
+    ['change','pointerup','mouseup','touchend','keyup'].forEach(evt => {
+      seek.addEventListener(evt, () => {
+        isUserScrubbing = false;
+        if (!vid.paused) { cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick); }
+        else { tCur.textContent = fmtTime(vid.currentTime || 0); }
+      }, { passive: true });
+    });
+
+    subs.addEventListener('change', () => applySubtitles(subs.value));
+
+    startBtn?.addEventListener('click', async () => {
+      try { await vid.play(); overlay.style.display = 'none'; } catch (e) { console.error(e); }
+      setPlayStateUI(); startIfReady();
+    });
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      // Assicura src (se cambiato a runtime)
+      const srcEl = vid.querySelector('source');
+      if (srcEl && srcEl.src === '') srcEl.src = videoSrc;
+
+      const onMeta = () => { duration = vid.duration || 0; seek.max = String(duration); tDur.textContent = fmtTime(duration); setPlayStateUI(); startIfReady(); };
+      if (vid.readyState >= 1) onMeta();
+      vid.addEventListener('loadedmetadata', onMeta, { once: true });
+
+      // Safari/iOS: l’autoplay con audio può fallire → overlay
+      tryAutoplay();
+
+      // Scegli default: OFF finché l’utente non seleziona
+      subs.value = 'off';
+      applySubtitles('off');
+
+      // Mantieni UI aggiornata anche sugli eventi media
+      vid.addEventListener('timeupdate', () => {
+        if (!started) return;
+        if (!isUserScrubbing) {
+          seek.value = String(vid.currentTime || 0);
+          tCur.textContent = fmtTime(vid.currentTime || 0);
+        }
+      });
+      vid.addEventListener('play',  () => { setPlayStateUI(); cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick); });
+      vid.addEventListener('pause', () => setPlayStateUI());
+      vid.addEventListener('ended', () => { setPlayStateUI(); seek.value = String(duration); tCur.textContent = fmtTime(duration); });
+    });
+  })();
+  </script>
+</body>
+</html>
