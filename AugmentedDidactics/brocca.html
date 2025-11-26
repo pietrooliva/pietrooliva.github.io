@@ -156,19 +156,66 @@
         });
       });
 
-      // Quando il modello è caricato, verifica se ha animazioni native e scala in base allo schermo
-      animatedModel.addEventListener("model-loaded", () => {
-        const model = animatedModel.getObject3D("mesh");
+// Quando il modello è caricato, verifica se ha animazioni native e adatta
+// posizione/scala per garantirne la visibilità iniziale.
+animatedModel.addEventListener("model-loaded", () => {
+  const model = animatedModel.getObject3D("mesh");
+  if (!model) return;
 
-        // Verifica presenza animazioni nel glTF
-        if (model && model.animations && model.animations.length > 0) {
-          isNativeAnimation = true;
-        }
+  // 1) Verifica presenza animazioni nel glTF
+  if (model.animations && model.animations.length > 0) {
+    isNativeAnimation = true;
+  }
 
-        // Scala dipendente dalla larghezza dello schermo (mantiene i tuoi valori originali)
-        const baseScale = window.innerWidth < 768 ? 0.001 : 0.002;
-        animatedModel.object3D.scale.set(baseScale, baseScale, baseScale);
-      });
+  // 2) Calcolo bounding box del modello
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+
+  // 3) Recentra il modello in modo che il centro geometrico coincida
+  //    con l'origine dell'entity (pivot dell'oggetto 3D)
+  model.position.sub(center);
+
+  // 4) Recupera la camera A-Frame / AR.js
+  const sceneEl = animatedModel.sceneEl;
+  const camera = sceneEl.camera;
+  if (!camera || camera.isOrthographicCamera) {
+    // Fallback: se per qualche motivo non abbiamo una camera prospettica,
+    // uso una scala "di sicurezza" come prima.
+    const fallbackScale = window.innerWidth < 768 ? 0.001 : 0.002;
+    animatedModel.object3D.scale.setScalar(fallbackScale);
+    return;
+  }
+
+  // 5) Geometria di visibilità
+  const distance = Math.abs(animatedModel.object3D.position.z) || 0.5; // m
+  const fovRad = THREE.Math.degToRad(camera.fov);
+  const aspect =
+    camera.aspect || window.innerWidth / window.innerHeight;
+
+  const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
+  const visibleWidth  = visibleHeight * aspect;
+
+  // Margine (0.6 = il modello occupa ~60% del lato più piccolo)
+  const margin = 0.6;
+
+  // Evito divisioni per zero in caso di modelli piatti in una direzione
+  const sx = size.x || size.y || size.z || 1;
+  const sy = size.y || size.x || size.z || 1;
+
+  const maxWidthScale  = (margin * visibleWidth)  / sx;
+  const maxHeightScale = (margin * visibleHeight) / sy;
+
+  // Scala uniforme: prendo il minimo
+  let scale = Math.min(maxWidthScale, maxHeightScale);
+
+  // 6) Impongo gli stessi limiti di zoom che usi nell'interazione
+  const minScale = 0.005;
+  const maxScale = 13;
+  scale = Math.max(minScale, Math.min(maxScale, scale));
+
+  animatedModel.object3D.scale.setScalar(scale);
+});
 
       // Pulsante animazione
       animationButton.addEventListener("click", () => {
