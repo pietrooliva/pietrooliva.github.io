@@ -187,14 +187,20 @@ animatedModel.addEventListener("model-loaded", () => {
     return;
   }
 
-  // 5) Geometria di visibilità
-  const distance = Math.abs(animatedModel.object3D.position.z) || 0.5; // m
-  const fovRad = THREE.Math.degToRad(camera.fov);
-  const aspect =
-    camera.aspect || window.innerWidth / window.innerHeight;
+// 5) Geometria di visibilità
+const objectWorldPos = new THREE.Vector3();
+const cameraWorldPos = new THREE.Vector3();
 
-  const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
-  const visibleWidth  = visibleHeight * aspect;
+animatedModel.object3D.getWorldPosition(objectWorldPos);
+camera.getWorldPosition(cameraWorldPos);
+
+const distance = objectWorldPos.distanceTo(cameraWorldPos) || 0.5;
+
+const fovRad = THREE.Math.degToRad(camera.fov);
+const aspect = camera.aspect || window.innerWidth / window.innerHeight;
+
+const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
+const visibleWidth  = visibleHeight * aspect;
 
   // Margine (0.6 = il modello occupa ~60% del lato più piccolo)
   const margin = 0.6;
