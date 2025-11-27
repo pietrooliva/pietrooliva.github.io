@@ -101,8 +101,8 @@
       </a-assets>
 
       <!-- Luci -->
-<a-light type="ambient" color="#ffffff" intensity="3"></a-light>
-<a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light>
+<a-light type="ambient" color="#ffffff" intensity="1.2"></a-light>
+<a-light type="directional" color="#ffffff" intensity="1.1" position="5 5 1"></a-light>
 
       <!-- Modello 3D -->
       <a-entity
@@ -209,6 +209,10 @@ const visibleWidth  = visibleHeight * aspect;
 
   // Scala uniforme: prendo il minimo
   let scale = Math.min(maxWidthScale, maxHeightScale);
+
+  // Fattore di "zoom iniziale": < 1 = più piccolo, > 1 = più grande
+const initialZoomFactor = 0.8;   // ad esempio 0.7 = 70% della scala "ottimale"
+scale *= initialZoomFactor;
 
   // 6) Impongo gli stessi limiti di zoom che usi nell'interazione
   const minScale = 0.005;
