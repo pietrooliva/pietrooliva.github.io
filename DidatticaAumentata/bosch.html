@@ -101,8 +101,8 @@
       </a-assets>
 
       <!-- Luci -->
-<a-light type="ambient" color="#ffffff" intensity="4"></a-light>
-<a-light type="directional" color="#ffffff" intensity="2" position="3 8 5"></a-light>
+<a-light type="ambient" color="#ffffff" intensity="3"></a-light>
+<a-light type="directional" color="#ffffff" intensity="1" position="5 5 1"></a-light>
 
       <!-- Modello 3D -->
       <a-entity
@@ -198,7 +198,7 @@ const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
 const visibleWidth  = visibleHeight * aspect;
 
   // Margine (0.6 = il modello occupa ~60% del lato più piccolo)
-  const margin = 0.6;
+  const margin = 0.4;
 
   // Evito divisioni per zero in caso di modelli piatti in una direzione
   const sx = size.x || size.y || size.z || 1;
