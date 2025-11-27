@@ -101,8 +101,8 @@
       </a-assets>
 
       <!-- Luci -->
-<a-light type="ambient" color="#ffffff" intensity="1.2"></a-light>
-<a-light type="directional" color="#ffffff" intensity="1.1" position="5 5 1"></a-light>
+<a-light type="ambient" color="#ffffff" intensity="1.5"></a-light>
+<a-light type="directional" color="#ffffff" intensity="1.5" position="5 5 1"></a-light>
 
       <!-- Modello 3D -->
       <a-entity
@@ -148,6 +148,7 @@
 
           renderer.outputEncoding = THREE.sRGBEncoding;
           renderer.toneMapping = THREE.ACESFilmicToneMapping;
+          renderer.toneMappingExposure = 0.8; 
         });
       });
 
