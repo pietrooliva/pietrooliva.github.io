@@ -9,8 +9,11 @@
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
     <script src="libs/gesture-detector.js"></script>
   </head>
+
   <body>
-    <div id="splash" style="
+    <div
+      id="splash"
+      style="
         display: flex;
         align-items: center;
         justify-content: center;
@@ -22,75 +25,106 @@
         background: rgba(0, 0, 0, 0.9);
         color: white;
         text-align: center;
-        z-index: 9999;">
+        z-index: 9999;
+      "
+    >
       <div>
         <h1>È necessario l'accesso ai sensori di movimento di questo dispositivo</h1>
-        <button id="allowButton" style="
-                padding: 10px 20px;
-                font-size: 16px;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                border: 2px solid white;
-                border-radius: 5px;">
+        <button
+          id="allowButton"
+          style="
+            padding: 10px 20px;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 2px solid white;
+            border-radius: 5px;
+          "
+        >
           Consentire
         </button>
       </div>
     </div>
 
-    <a-scene 
-      gesture-detector 
-      embedded 
-      arjs="trackingMethod: best; sourceType: webcam;" 
+    <a-scene
+      gesture-detector
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam;"
       renderer="
-        antialias: true; 
-        precision: highp; 
-        gammaOutput: true; 
+        antialias: true;
+        precision: highp;
+        gammaOutput: true;
         gammaFactor: 1.8;
-        physicallyCorrectLights: true; 
-        shadowMap.enabled: false; 
-        toneMapping: ACESFilmicToneMapping;">
-      
+        physicallyCorrectLights: true;
+        shadowMap.enabled: false;
+        toneMapping: ACESFilmicToneMapping;
+        toneMappingExposure: 1.6;
+      "
+    >
+      <!-- Luci aggiuntive: più chiaro senza “piattezza” -->
+      <a-entity
+        light="type: hemisphere; intensity: 1.2; color: #ffffff; groundColor: #404040"
+        position="0 1 0"
+      ></a-entity>
+
+      <a-entity
+        light="type: directional; intensity: 3.0; color: #ffffff"
+        position="1 2 1"
+        rotation="-45 45 0"
+      ></a-entity>
+
+      <a-entity light="type: ambient; intensity: 0.18; color: #ffffff"></a-entity>
+
       <a-assets>
         <a-asset-item id="model" src="models/bosch/scene.gltf"></a-asset-item>
         <audio id="background-audio" src="models/bosch/background.mp3"></audio>
       </a-assets>
 
       <!-- Modello 3D posizionato in AR senza marcatore -->
-      <a-entity 
+      <a-entity
         gltf-model="#model"
         position="0 0 -2"
         scale="0.5 0.5 0.5"
         rotation="0 0 0"
         class="clickable"
         id="animatedModel"
-        interaction-handler></a-entity>
+        interaction-handler
+      ></a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>
 
-    <button id="audioButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        left: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
+    <button
+      id="audioButton"
+      style="
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+      "
+    >
       Riproduci Audio
     </button>
 
-    <button id="animationButton" style="
-        position: fixed; 
-        bottom: 10px; 
-        right: 10px; 
-        padding: 10px 20px; 
-        background: rgba(0, 0, 0, 0.8); 
-        color: white; 
-        border: none; 
-        border-radius: 5px; 
-        font-size: 16px;">
+    <button
+      id="animationButton"
+      style="
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+      "
+    >
       Avvia Animazione
     </button>
 
