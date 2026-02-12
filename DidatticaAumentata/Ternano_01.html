@@ -2,10 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>The e Tisane | Té-rnano</title>
+    <title>Té e Tisane | N.11</title>
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+      content="width=device-width, initial-scale=0.3, maximum-scale=1.5, user-scalable=no"
     />
 
     <!-- Librerie A-Frame / AR.js / Extras / Gesture -->
@@ -109,7 +109,7 @@
         id="animatedModel"
         class="clickable"
         gltf-model="#model"
-        position="0 -0.02 -0.5"
+        position="0 0 0"
         rotation="0 0 0"
         interaction-handler
       ></a-entity>
@@ -212,7 +212,7 @@ const visibleWidth  = visibleHeight * aspect;
   let scale = Math.min(maxWidthScale, maxHeightScale);
 
   // Fattore di "zoom iniziale": < 1 = più piccolo, > 1 = più grande
-const initialZoomFactor = 0.8;   // ad esempio 0.7 = 70% della scala "ottimale"
+const initialZoomFactor = 0.3;   // ad esempio 0.7 = 70% della scala "ottimale"
 scale *= initialZoomFactor;
 
   // 6) Impongo gli stessi limiti di zoom che usi nell'interazione
