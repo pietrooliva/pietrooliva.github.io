@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>The e Tisane | Té-rnano</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+    />
+
+    <!-- Librerie A-Frame / AR.js / Extras / Gesture -->
+    <script src="libs/aframe-master.min.js"></script>
+    <script src="libs/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="libs/gesture-detector.js"></script>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      /* Splash permessi sensori */
+      #splash {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        color: #ffffff;
+        text-align: center;
+        z-index: 9999;
+      }
+
+      #splash h1 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      #allowButton {
+        padding: 10px 20px;
+        font-size: 16px;
+        background: rgba(0, 0, 0, 0.8);
+        color: #ffffff;
+        border: 2px solid #ffffff;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      /* Pulsanti UI */
+      .ui-button {
+        position: fixed;
+        bottom: 10px;
+        padding: 2vw 1vw;
+        font-size: min(2vw, 18px);
+        width: auto;
+        max-width: 35vw;
+        min-width: 150px;
+        background: rgba(0, 0, 0, 0.8);
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 1000;
+      }
+
+      #audioButton {
+        left: 10px;
+      }
+
+      #animationButton {
+        right: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Splash per permessi sensori -->
+    <div id="splash">
+      <div>
+        <h1>È necessario l'accesso ai sensori di movimento di questo dispositivo</h1>
+        <button id="allowButton">Consentire</button>
+      </div>
+    </div>
+
+    <!-- Scena AR -->
+    <a-scene
+      gesture-detector
+      embedded
+      arjs="trackingMethod: best; sourceType: webcam;"
+      renderer="antialias: true; precision: high; physicallyCorrectLights: true;"
+    >
+      <a-assets>
+        <a-asset-item id="model" src="models/ternano/scene.gltf"></a-asset-item>
+        <audio id="background-audio" src="models/ternano/background.mp3"></audio>
+      </a-assets>
+
+      <!-- Luci -->
+<a-light type="ambient" color="#ffffff" intensity="3.5"></a-light>
+<a-light type="directional" color="#ffffff" intensity="3.5" position="5 3 1"></a-light>
+
+      <!-- Modello 3D -->
+      <a-entity
+        id="animatedModel"
+        class="clickable"
+        gltf-model="#model"
+        position="0 -0.02 -0.5"
+        rotation="0 0 0"
+        interaction-handler
+      ></a-entity>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <!-- Pulsanti audio / animazione -->
+    <button id="audioButton" class="ui-button">
+      Riproduci Audio
+    </button>
+
+    <button id="animationButton" class="ui-button">
+      Avvia Animazione
+    </button>
+
+    <script>
+      const splash = document.getElementById("splash");
+      const allowButton = document.getElementById("allowButton");
+      const audioElement = document.getElementById("background-audio");
+      const audioButton = document.getElementById("audioButton");
+      const animationButton = document.getElementById("animationButton");
+      const animatedModel = document.getElementById("animatedModel");
+
+      let isAnimationActive = false;
+      let isNativeAnimation = false;
+
+      // Configurazione avanzata del renderer (tone mapping, sRGB) via JS
+      document.addEventListener("DOMContentLoaded", () => {
+        const sceneEl = document.querySelector("a-scene");
+        if (!sceneEl) return;
+
+        sceneEl.addEventListener("rendererinitialized", () => {
+          const renderer = sceneEl.renderer;
+          if (!renderer || typeof THREE === "undefined") return;
+
+          renderer.outputEncoding = THREE.sRGBEncoding;
+          renderer.toneMapping = THREE.ACESFilmicToneMapping;
+          renderer.toneMappingExposure = 0.8; 
+        });
+      });
+
+// Quando il modello è caricato, verifica se ha animazioni native e adatta
+// posizione/scala per garantirne la visibilità iniziale.
+animatedModel.addEventListener("model-loaded", () => {
+  const model = animatedModel.getObject3D("mesh");
+  if (!model) return;
+
+  // 1) Verifica presenza animazioni nel glTF
+  if (model.animations && model.animations.length > 0) {
+    isNativeAnimation = true;
+  }
+
+  // 2) Calcolo bounding box del modello
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+
+  // 3) Recentra il modello in modo che il centro geometrico coincida
+  //    con l'origine dell'entity (pivot dell'oggetto 3D)
+  model.position.sub(center);
+
+  // 4) Recupera la camera A-Frame / AR.js
+  const sceneEl = animatedModel.sceneEl;
+  const camera = sceneEl.camera;
+  if (!camera || camera.isOrthographicCamera) {
+    // Fallback: se per qualche motivo non abbiamo una camera prospettica,
+    // uso una scala "di sicurezza" come prima.
+    const fallbackScale = window.innerWidth < 768 ? 0.001 : 0.002;
+    animatedModel.object3D.scale.setScalar(fallbackScale);
+    return;
+  }
+
+// 5) Geometria di visibilità
+const objectWorldPos = new THREE.Vector3();
+const cameraWorldPos = new THREE.Vector3();
+
+animatedModel.object3D.getWorldPosition(objectWorldPos);
+camera.getWorldPosition(cameraWorldPos);
+
+const distance = objectWorldPos.distanceTo(cameraWorldPos) || 0.5;
+
+const fovRad = THREE.Math.degToRad(camera.fov);
+const aspect = camera.aspect || window.innerWidth / window.innerHeight;
+
+const visibleHeight = 2 * distance * Math.tan(fovRad / 2);
+const visibleWidth  = visibleHeight * aspect;
+
+  // Margine (0.6 = il modello occupa ~60% del lato più piccolo)
+  const margin = 0.4;
+
+  // Evito divisioni per zero in caso di modelli piatti in una direzione
+  const sx = size.x || size.y || size.z || 1;
+  const sy = size.y || size.x || size.z || 1;
+
+  const maxWidthScale  = (margin * visibleWidth)  / sx;
+  const maxHeightScale = (margin * visibleHeight) / sy;
+
+  // Scala uniforme: prendo il minimo
+  let scale = Math.min(maxWidthScale, maxHeightScale);
+
+  // Fattore di "zoom iniziale": < 1 = più piccolo, > 1 = più grande
+const initialZoomFactor = 0.8;   // ad esempio 0.7 = 70% della scala "ottimale"
+scale *= initialZoomFactor;
+
+  // 6) Impongo gli stessi limiti di zoom che usi nell'interazione
+  const minScale = 0.005;
+  const maxScale = 13;
+  scale = Math.max(minScale, Math.min(maxScale, scale));
+
+  animatedModel.object3D.scale.setScalar(scale);
+});
+
+      // Pulsante animazione
+      animationButton.addEventListener("click", () => {
+        if (isNativeAnimation) {
+          toggleNativeAnimation();
+        } else {
+          toggleCustomRotation();
+        }
+      });
+
+      function toggleNativeAnimation() {
+        if (!isAnimationActive) {
+          animatedModel.setAttribute("animation-mixer", "");
+          animationButton.textContent = "Ferma Animazione";
+        } else {
+          animatedModel.removeAttribute("animation-mixer");
+          animationButton.textContent = "Avvia Animazione";
+        }
+        isAnimationActive = !isAnimationActive;
+      }
+
+      function toggleCustomRotation() {
+        if (!isAnimationActive) {
+          animatedModel.setAttribute("constant-rotation", "speed: 30");
+          animationButton.textContent = "Ferma Animazione";
+        } else {
+          animatedModel.removeAttribute("constant-rotation");
+          animationButton.textContent = "Avvia Animazione";
+        }
+        isAnimationActive = !isAnimationActive;
+      }
+
+      // Pulsante audio
+      audioButton.addEventListener("click", () => {
+        if (audioElement.paused) {
+          audioElement.play();
+          audioButton.textContent = "Interrompi Audio";
+        } else {
+          audioElement.pause();
+          audioButton.textContent = "Riproduci Audio";
+        }
+      });
+
+      // Gestione richiesta permessi per i sensori di movimento
+      allowButton.addEventListener("click", async () => {
+        if (
+          window.DeviceMotionEvent &&
+          typeof DeviceMotionEvent.requestPermission === "function"
+        ) {
+          try {
+            const permission = await DeviceMotionEvent.requestPermission();
+            if (permission === "granted") {
+              splash.style.display = "none";
+            } else {
+              alert(
+                "Permesso negato. Questa esperienza richiede l’uso dei sensori di movimento."
+              );
+            }
+          } catch (err) {
+            console.error(
+              "Errore nella richiesta di permesso per i sensori di movimento:",
+              err
+            );
+            alert(
+              "Si è verificato un errore. Controlla le impostazioni del tuo dispositivo."
+            );
+          }
+        } else {
+          console.warn(
+            "DeviceMotionEvent non supportato o non richiede permessi."
+          );
+          splash.style.display = "none";
+        }
+      });
+
+      // Nasconde automaticamente lo splash su dispositivi che non supportano DeviceMotionEvent
+      window.addEventListener("load", () => {
+        if (!("DeviceMotionEvent" in window)) {
+          console.warn("DeviceMotionEvent is not supported on this device.");
+          splash.style.display = "none";
+        }
+      });
+
+      // Componente personalizzato per rotazione continua
+      AFRAME.registerComponent("constant-rotation", {
+        schema: { speed: { type: "number", default: 30 } },
+        tick: function (time, timeDelta) {
+          const rotation = this.el.object3D.rotation;
+          const delta =
+            THREE.Math.degToRad(this.data.speed) * (timeDelta / 1000);
+          rotation.y += delta;
+        },
+      });
+
+      // Componente per interazione mouse + touch
+      AFRAME.registerComponent("interaction-handler", {
+        init: function () {
+          this.isMouseDown = false;
+          this.previousMousePosition = { x: 0, y: 0 };
+          this.zoomFactor = 0.1;
+          this.rightClickActive = false;
+
+          this.previousTouch = null;
+          this.initialDistance = null;
+          this.touchSensitivity = 0.005;
+
+          this._onMouseDown = this.onMouseDown.bind(this);
+          this._onMouseUp = this.onMouseUp.bind(this);
+          this._onMouseMove = this.onMouseMove.bind(this);
+          this._onMouseWheel = this.onMouseWheel.bind(this);
+          this._onContextMenu = (e) => e.preventDefault();
+
+          this._onTouchStart = this.onTouchStart.bind(this);
+          this._onTouchMove = this.onTouchMove.bind(this);
+          this._onTouchEnd = this.onTouchEnd.bind(this);
+
+          const sceneEl = this.el.sceneEl;
+          const setupCanvasListeners = () => {
+            const canvas = sceneEl.canvas;
+            if (!canvas) return;
+
+            canvas.addEventListener("mousedown", this._onMouseDown);
+            canvas.addEventListener("mouseup", this._onMouseUp);
+            canvas.addEventListener("mousemove", this._onMouseMove);
+            canvas.addEventListener("wheel", this._onMouseWheel);
+            canvas.addEventListener("contextmenu", this._onContextMenu);
+
+            sceneEl.addEventListener("touchstart", this._onTouchStart);
+            sceneEl.addEventListener("touchmove", this._onTouchMove);
+            sceneEl.addEventListener("touchend", this._onTouchEnd);
+          };
+
+          if (sceneEl.canvas) {
+            setupCanvasListeners();
+          } else {
+            sceneEl.addEventListener("render-target-loaded", setupCanvasListeners, {
+              once: true,
+            });
+          }
+        },
+
+        remove: function () {
+          const sceneEl = this.el.sceneEl;
+          const canvas = sceneEl.canvas;
+          if (canvas) {
+            canvas.removeEventListener("mousedown", this._onMouseDown);
+            canvas.removeEventListener("mouseup", this._onMouseUp);
+            canvas.removeEventListener("mousemove", this._onMouseMove);
+            canvas.removeEventListener("wheel", this._onMouseWheel);
+            canvas.removeEventListener("contextmenu", this._onContextMenu);
+          }
+
+          sceneEl.removeEventListener("touchstart", this._onTouchStart);
+          sceneEl.removeEventListener("touchmove", this._onTouchMove);
+          sceneEl.removeEventListener("touchend", this._onTouchEnd);
+        },
+
+        // Mouse handlers
+        onMouseDown: function (event) {
+          this.isMouseDown = true;
+          this.rightClickActive = event.button === 2;
+          this.previousMousePosition.x = event.clientX;
+          this.previousMousePosition.y = event.clientY;
+        },
+
+        onMouseUp: function () {
+          this.isMouseDown = false;
+        },
+
+        onMouseMove: function (event) {
+          if (!this.isMouseDown) return;
+
+          const deltaX = event.clientX - this.previousMousePosition.x;
+          const deltaY = event.clientY - this.previousMousePosition.y;
+          const object3D = this.el.object3D;
+
+          if (this.rightClickActive) {
+            // Traslazione con click destro, limitata in coordinate mondo
+            object3D.position.x = Math.max(
+              -1.8,
+              Math.min(1.8, object3D.position.x + deltaX * 0.004)
+            );
+            object3D.position.y = Math.max(
+              -1.5,
+              Math.min(1.5, object3D.position.y - deltaY * 0.004)
+            );
+          } else {
+            // Rotazione con click sinistro
+            object3D.rotation.y += deltaX * 0.005;
+            object3D.rotation.x += deltaY * 0.005;
+          }
+
+          this.previousMousePosition.x = event.clientX;
+          this.previousMousePosition.y = event.clientY;
+        },
+
+        onMouseWheel: function (event) {
+          const object3D = this.el.object3D;
+          const scaleFactor = 1 - Math.sign(event.deltaY) * this.zoomFactor;
+
+          const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
+
+          const minScale = 0.005;
+          const maxScale = 13;
+
+          newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
+          newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
+          newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
+
+          object3D.scale.set(newScale.x, newScale.y, newScale.z);
+        },
+
+        // Touch handlers
+        onTouchStart: function (event) {
+          if (event.touches.length === 1) {
+            this.previousTouch = {
+              x: event.touches[0].clientX,
+              y: event.touches[0].clientY,
+            };
+          } else if (event.touches.length === 2) {
+            this.previousTouch = this.getMidpoint(event.touches);
+            this.initialDistance = this.getDistance(event.touches);
+          }
+        },
+
+        onTouchMove: function (event) {
+          event.preventDefault();
+          const object3D = this.el.object3D;
+
+          if (event.touches.length === 1 && this.previousTouch) {
+            // Rotazione con un dito
+            const currentTouch = {
+              x: event.touches[0].clientX,
+              y: event.touches[0].clientY,
+            };
+            const deltaX =
+              (currentTouch.x - this.previousTouch.x) * this.touchSensitivity;
+            const deltaY =
+              (currentTouch.y - this.previousTouch.y) * this.touchSensitivity;
+
+            object3D.rotation.y += deltaX;
+            object3D.rotation.x += deltaY;
+
+            this.previousTouch = currentTouch;
+          } else if (
+            event.touches.length === 2 &&
+            this.previousTouch &&
+            this.initialDistance
+          ) {
+            // Traslazione+zoom con due dita
+            const currentMidpoint = this.getMidpoint(event.touches);
+            const currentDistance = this.getDistance(event.touches);
+
+            const deltaX =
+              (currentMidpoint.x - this.previousTouch.x) * this.touchSensitivity;
+            const deltaY =
+              (currentMidpoint.y - this.previousTouch.y) * this.touchSensitivity;
+
+            const pos = object3D.position;
+            pos.x = Math.max(-1.8, Math.min(1.8, pos.x + deltaX));
+            pos.y = Math.max(-1.5, Math.min(1.5, pos.y - deltaY));
+
+            const scaleFactor = currentDistance / this.initialDistance;
+            const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
+
+            const minScale = 0.005;
+            const maxScale = 13;
+            newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
+            newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
+            newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
+
+            object3D.scale.set(newScale.x, newScale.y, newScale.z);
+
+            this.previousTouch = currentMidpoint;
+            this.initialDistance = currentDistance;
+          }
+        },
+
+        onTouchEnd: function () {
+          this.previousTouch = null;
+          this.initialDistance = null;
+        },
+
+        // Utility
+        getMidpoint: function (touches) {
+          return {
+            x: (touches[0].clientX + touches[1].clientX) / 2,
+            y: (touches[0].clientY + touches[1].clientY) / 2,
+          };
+        },
+
+        getDistance: function (touches) {
+          const dx = touches[0].clientX - touches[1].clientX;
+          const dy = touches[0].clientY - touches[1].clientY;
+          return Math.sqrt(dx * dx + dy * dy);
+        },
+      });
+    </script>
+  </body>
+</html>
