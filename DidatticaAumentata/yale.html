@@ -124,9 +124,9 @@ animatedModel.addEventListener('model-loaded', () => {
 
   // Adatta la scala del modello a seconda della dimensione dello schermo
   if (window.innerWidth < 768) { // Se lo schermo è piccolo (smartphone)
-    animatedModel.setAttribute('scale', '0.07 0.07 0.07'); // Ridimensiona per adattarsi meglio
+    animatedModel.setAttribute('scale', '0.005 0.005 0.005'); // Ridimensiona per adattarsi meglio
   } else {
-    animatedModel.setAttribute('scale', '0.1 0.1 0.1'); // Mantiene la scala originale su schermi grandi
+    animatedModel.setAttribute('scale', '0.008 0.008 0.008'); // Mantiene la scala originale su schermi grandi
   }
 });
 
@@ -272,8 +272,8 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.001;
-  const maxScale = 5;
+  const minScale = 0.0005;
+  const maxScale = 0.5;
 
   // Applica i limiti alla scala
   newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
@@ -323,7 +323,7 @@ onTouchMove: function (event) {
     const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
     // Limita lo zoom tra 0.5 e 13
-    const minScale = 0.05, maxScale = 5;
+    const minScale = 0.005, maxScale = 0.5;
     newScale.x = Math.max(minScale, Math.min(maxScale, newScale.x));
     newScale.y = Math.max(minScale, Math.min(maxScale, newScale.y));
     newScale.z = Math.max(minScale, Math.min(maxScale, newScale.z));
