@@ -62,7 +62,7 @@
       <a-entity 
         gltf-model="#model"
         position="-0.2 0.0 -1.5"
-        scale="0.1 0.1 0.1"
+        scale="0.01 0.01 0.01"
         rotation="5 0 0"
         class="clickable"
         id="animatedModel"
@@ -215,7 +215,7 @@ allowButton.addEventListener('click', async () => {
         init: function () {
           this.isMouseDown = false;
           this.previousMousePosition = { x: 0, y: 0 };
-          this.zoomFactor = 0.1;
+          this.zoomFactor = 0.05;
           this.rightClickActive = false;
 
           this.previousTouch = null;
@@ -272,7 +272,7 @@ onMouseWheel: function (event) {
   const newScale = object3D.scale.clone().multiplyScalar(scaleFactor);
 
   // Limiti per lo zoom (esempio: tra 0.1 e 13)
-  const minScale = 0.05;
+  const minScale = 0.001;
   const maxScale = 5;
 
   // Applica i limiti alla scala
