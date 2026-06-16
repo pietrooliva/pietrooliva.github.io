@@ -15,13 +15,23 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"Object_2"
+			"name":"Object_2",
+			"translation":[
+				0,
+				-3.96118684875546e-06,
+				-5.17177159053972e-06
+			]
 		},
 		{
 			"children":[
 				0
 			],
-			"name":"Water_PVT_with_labels.stl.cleaner.materialmerger.gles"
+			"name":"Water_PVT_with_labels.stl.cleaner.materialmerger.gles",
+			"translation":[
+				0,
+				-3.96118684875546e-06,
+				-5.17177159053972e-06
+			]
 		},
 		{
 			"children":[
@@ -33,6 +43,11 @@
 				0,
 				0,
 				0.7071066498756409
+			],
+			"translation":[
+				-27.868778228759766,
+				-37.29242706298828,
+				42.25556182861328
 			]
 		}
 	],
@@ -71,7 +86,7 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":21820,
+			"count":21901,
 			"max":[
 				65.28522491455078,
 				81.45709991455078,
@@ -87,7 +102,7 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":21820,
+			"count":21901,
 			"type":"VEC3"
 		},
 		{
@@ -100,26 +115,26 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":261840,
+			"byteLength":262812,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":261840,
-			"byteOffset":261840,
+			"byteLength":262812,
+			"byteOffset":262812,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":152790,
-			"byteOffset":523680,
+			"byteOffset":525624,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":676472,
+			"byteLength":678416,
 			"uri":"scene.bin"
 		}
 	]
