@@ -1,152 +1,126 @@
 {
-  "accessors": [
-    {
-      "bufferView": 1,
-      "componentType": 5126,
-      "count": 22963,
-      "max": [
-        65.28522491455078,
-        82.80878448486328,
-        76.20001983642578
-      ],
-      "min": [
-        -10.914770126342773,
-        5.257083892822266,
-        0.0
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 275556,
-      "componentType": 5126,
-      "count": 22963,
-      "max": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "min": [
-        -1.0,
-        -1.0,
-        -1.0
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 0,
-      "componentType": 5125,
-      "count": 82176,
-      "type": "SCALAR"
-    }
-  ],
-  "asset": {
-    "extras": {
-      "author": "saravia.tw (https://sketchfab.com/saravia.tw)",
-      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
-      "source": "https://sketchfab.com/3d-models/water-pvt-with-labels-8ac36eddc2784fef87d007386f33fbd4",
-      "title": "Water PVT With Labels"
-    },
-    "generator": "Sketchfab-12.68.0",
-    "version": "2.0"
-  },
-  "bufferViews": [
-    {
-      "buffer": 0,
-      "byteLength": 328704,
-      "name": "floatBufferViews",
-      "target": 34963
-    },
-    {
-      "buffer": 0,
-      "byteLength": 551112,
-      "byteOffset": 328704,
-      "byteStride": 12,
-      "name": "floatBufferViews",
-      "target": 34962
-    }
-  ],
-  "buffers": [
-    {
-      "byteLength": 879816,
-      "uri": "scene.bin"
-    }
-  ],
-  "materials": [
-    {
-      "doubleSided": true,
-      "name": "Scene_-_Root",
-      "pbrMetallicRoughness": {
-        "baseColorFactor": [
-          0.9213560469775339,
-          0.7514420818779096,
-          0.015789015713726363,
-          1.0
-        ],
-        "metallicFactor": 0.5139100609756098,
-        "roughnessFactor": 0.6
-      }
-    }
-  ],
-  "meshes": [
-    {
-      "name": "Object_0",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 1,
-            "POSITION": 0
-          },
-          "indices": 2,
-          "material": 0,
-          "mode": 4
-        }
-      ]
-    }
-  ],
-  "nodes": [
-    {
-      "children": [
-        1
-      ],
-      "matrix": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        3.828568672208042e-16,
-        -1.0,
-        0.0,
-        0.0,
-        1.0,
-        3.828568672208042e-16,
-        0.0,
-        0.0,
-        -7.105427357601e-15,
-        -7.105427357601003e-15,
-        1.0
-      ],
-      "name": "Sketchfab_model"
-    },
-    {
-      "children": [
-        2
-      ],
-      "name": "Water_PVT_with_labels.stl.cleaner.materialmerger.gles"
-    },
-    {
-      "mesh": 0,
-      "name": "Object_2"
-    }
-  ],
-  "scene": 0,
-  "scenes": [
-    {
-      "name": "Sketchfab_Scene",
-      "nodes": [
-        0
-      ]
-    }
-  ]
+	"asset":{
+		"generator":"Khronos glTF Blender I/O v4.0.44",
+		"version":"2.0"
+	},
+	"scene":0,
+	"scenes":[
+		{
+			"name":"Scene",
+			"nodes":[
+				2
+			]
+		}
+	],
+	"nodes":[
+		{
+			"mesh":0,
+			"name":"Object_2"
+		},
+		{
+			"children":[
+				0
+			],
+			"name":"Water_PVT_with_labels.stl.cleaner.materialmerger.gles"
+		},
+		{
+			"children":[
+				1
+			],
+			"name":"Sketchfab_model",
+			"rotation":[
+				-0.70710688829422,
+				0,
+				0,
+				0.7071066498756409
+			]
+		}
+	],
+	"materials":[
+		{
+			"doubleSided":true,
+			"name":"Scene_-_Root",
+			"pbrMetallicRoughness":{
+				"baseColorFactor":[
+					0.9213560223579407,
+					0.7514420747756958,
+					0.015789015218615532,
+					1
+				],
+				"metallicFactor":0.5139100551605225,
+				"roughnessFactor":0.6000000238418579
+			}
+		}
+	],
+	"meshes":[
+		{
+			"name":"Object_0",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":0,
+						"NORMAL":1
+					},
+					"indices":2,
+					"material":0
+				}
+			]
+		}
+	],
+	"accessors":[
+		{
+			"bufferView":0,
+			"componentType":5126,
+			"count":21820,
+			"max":[
+				65.28522491455078,
+				81.45709991455078,
+				76.20001983642578
+			],
+			"min":[
+				-10.914770126342773,
+				5.257083892822266,
+				0
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":1,
+			"componentType":5126,
+			"count":21820,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":2,
+			"componentType":5123,
+			"count":76395,
+			"type":"SCALAR"
+		}
+	],
+	"bufferViews":[
+		{
+			"buffer":0,
+			"byteLength":261840,
+			"byteOffset":0,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":261840,
+			"byteOffset":261840,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":152790,
+			"byteOffset":523680,
+			"target":34963
+		}
+	],
+	"buffers":[
+		{
+			"byteLength":676472,
+			"uri":"scene.bin"
+		}
+	]
 }
