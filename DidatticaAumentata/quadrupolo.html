@@ -17,640 +17,371 @@
 
   <script src="libs/gesture-detector.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    #splash {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      color: white;
-      text-align: center;
-      z-index: 9999;
-    }
-
-    #allowButton {
-      padding: 10px 20px;
-      font-size: 16px;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      border: 2px solid white;
-      border-radius: 5px;
-    }
-
-    #audioButton,
-    #animationButton {
-      position: fixed;
-      bottom: 10px;
-      padding: 2vw 1vw;
-      font-size: min(2vw, 18px);
-      width: auto;
-      max-width: 35vw;
-      min-width: 150px;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      z-index: 1000;
-    }
-
-    #audioButton {
-      left: 10px;
-    }
-
-    #animationButton {
-      right: 10px;
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- Schermata iniziale per i permessi dei sensori -->
-  <div id="splash">
-    <div>
-      <h1>
-        È necessario l'accesso ai sensori di movimento di questo dispositivo
-      </h1>
-
-      <button id="allowButton">
-        Consentire
-      </button>
-    </div>
-  </div>
-
-  <!-- Scena A-Frame -->
-  <a-scene
-    gesture-detector
-    embedded
-    arjs="trackingMethod: best; sourceType: webcam;"
-    renderer="
-      antialias: true;
-      precision: highp;
-      physicallyCorrectLights: true;
-      shadowMapEnabled: false;
-      colorManagement: true;
-    "
-  >
-
-    <!-- Risorse -->
-    <a-assets>
-
-      <a-asset-item
-        id="model"
-        src="models/quadrupolo/quadrupolo_elettrico_animato.gltf"
-      ></a-asset-item>
-
-      <audio
-        id="background-audio"
-        src="models/quadrupolo/background.mp3"
-        preload="auto"
-      ></audio>
-
-    </a-assets>
-
-    <!--
-      Non viene impostata una scala iniziale fissa.
-      La scala sarà calcolata automaticamente dopo il caricamento.
-    -->
-    <a-entity
-      id="animatedModel"
-      gltf-model="#model"
-      position="0 0 -1.5"
-      rotation="5 0 0"
-      class="clickable"
-      interaction-handler
-    ></a-entity>
-
-    <!-- Camera -->
-    <a-entity camera></a-entity>
-
-  </a-scene>
-
-  <!-- Pulsante audio -->
-  <button id="audioButton">
-    Riproduci Audio
-  </button>
-
-  <!-- Pulsante animazione -->
-  <button id="animationButton">
-    Avvia Animazione
-  </button>
-
   <script>
     /*
-     * Riferimenti agli elementi HTML e A-Frame
+     * COMPONENTE: ADATTAMENTO AUTOMATICO ALLO SCHERMO
      */
-    const splash = document.getElementById("splash");
-    const allowButton = document.getElementById("allowButton");
+    AFRAME.registerComponent("fit-to-screen", {
+      schema: {
+        coverage: {
+          type: "number",
+          default: 0.8
+        },
 
-    const audioElement =
-      document.getElementById("background-audio");
+        safetyMargin: {
+          type: "number",
+          default: 0.92
+        }
+      },
 
-    const audioButton =
-      document.getElementById("audioButton");
+      init: function () {
+        this.modelRadius = null;
+        this.modelObject = null;
+        this.resizeTimer = null;
 
-    const animationButton =
-      document.getElementById("animationButton");
+        this.onModelLoaded =
+          this.onModelLoaded.bind(this);
 
-    const animatedModel =
-      document.getElementById("animatedModel");
+        this.scheduleFit =
+          this.scheduleFit.bind(this);
 
-    /*
-     * Stato dell'animazione
-     */
-    let isAnimationActive = false;
-    let isNativeAnimation = false;
+        this.el.addEventListener(
+          "model-loaded",
+          this.onModelLoaded
+        );
 
-    /*
-     * Diametro complessivo del modello.
-     * Viene calcolato una sola volta dopo model-loaded.
-     */
-    let modelDiameter = null;
+        this.el.sceneEl.addEventListener(
+          "renderstart",
+          this.scheduleFit
+        );
 
-    /*
-     * Percentuale del viewport che deve essere occupata.
-     *
-     * 0.8 = 80%
-     * 0.7 = 70%
-     * 0.9 = 90%
-     */
-    const MODEL_SCREEN_COVERAGE = 0.8;
+        this.el.sceneEl.addEventListener(
+          "camera-set-active",
+          this.scheduleFit
+        );
+
+        window.addEventListener(
+          "resize",
+          this.scheduleFit
+        );
+
+        window.addEventListener(
+          "orientationchange",
+          this.scheduleFit
+        );
+      },
 
 
-    /*
-     * CARICAMENTO DEL MODELLO
-     */
-    animatedModel.addEventListener("model-loaded", () => {
-      const model =
-        animatedModel.getObject3D("mesh");
+      onModelLoaded: function () {
+        const model =
+          this.el.getObject3D("mesh");
 
-      if (!model) {
-        console.warn("Il modello 3D non è disponibile.");
-        return;
-      }
+        if (!model) {
+          console.warn(
+            "fit-to-screen: modello non disponibile."
+          );
 
-      /*
-       * Controlla se il file glTF contiene
-       * almeno un'animazione nativa.
-       */
-      if (
-        model.animations &&
-        model.animations.length > 0
-      ) {
-        isNativeAnimation = true;
+          return;
+        }
+
+        this.modelObject = model;
+
+        /*
+         * Copia temporanea usata esclusivamente
+         * per calcolare le dimensioni complete.
+         */
+        const measuringModel =
+          model.clone(true);
+
+        /*
+         * Nei modelli animati le linee possono
+         * avere inizialmente scala zero.
+         *
+         * Nella copia di misurazione vengono
+         * temporaneamente riportate a scala 1.
+         */
+        measuringModel.traverse(object => {
+          const scaleIsZero =
+            Math.abs(object.scale.x) < 0.000001 &&
+            Math.abs(object.scale.y) < 0.000001 &&
+            Math.abs(object.scale.z) < 0.000001;
+
+          if (scaleIsZero) {
+            object.scale.set(1, 1, 1);
+          }
+        });
+
+        measuringModel.updateMatrixWorld(true);
+
+        /*
+         * Calcolo del bounding box completo.
+         */
+        const boundingBox =
+          new THREE.Box3().setFromObject(
+            measuringModel
+          );
+
+        if (boundingBox.isEmpty()) {
+          console.warn(
+            "fit-to-screen: bounding box vuoto."
+          );
+
+          return;
+        }
+
+        /*
+         * Calcolo della sfera che contiene
+         * completamente il modello.
+         */
+        const boundingSphere =
+          boundingBox.getBoundingSphere(
+            new THREE.Sphere()
+          );
+
+        this.modelRadius =
+          boundingSphere.radius;
+
+        /*
+         * Centra il modello rispetto
+         * all'origine dell'entità.
+         */
+        model.position.sub(
+          boundingSphere.center
+        );
+
+        model.updateMatrixWorld(true);
+
+        /*
+         * Scala temporanea iniziale.
+         */
+        this.el.object3D.scale.set(
+          1,
+          1,
+          1
+        );
+
+        /*
+         * Attende l'inizializzazione definitiva
+         * della camera AR prima del calcolo.
+         */
+        this.scheduleFit();
+      },
+
+
+      scheduleFit: function () {
+        if (!this.modelRadius) return;
+
+        clearTimeout(
+          this.resizeTimer
+        );
+
+        /*
+         * Il doppio requestAnimationFrame
+         * permette ad A-Frame e AR.js di
+         * aggiornare camera e viewport.
+         */
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            this.fitModel();
+          });
+        });
+
+        /*
+         * Secondo controllo dopo mezzo secondo,
+         * utile durante l'avvio della camera AR.
+         */
+        this.resizeTimer =
+          setTimeout(() => {
+            this.fitModel();
+          }, 500);
+      },
+
+
+      fitModel: function () {
+        const scene =
+          this.el.sceneEl;
+
+        if (!scene) return;
+
+        const camera =
+          scene.camera;
+
+        if (
+          !camera ||
+          !camera.isPerspectiveCamera ||
+          !this.modelRadius
+        ) {
+          return;
+        }
+
+        /*
+         * Posizione mondiale della camera.
+         */
+        const cameraPosition =
+          new THREE.Vector3();
+
+        camera.getWorldPosition(
+          cameraPosition
+        );
+
+        /*
+         * Posizione mondiale del modello.
+         */
+        const modelPosition =
+          new THREE.Vector3();
+
+        this.el.object3D.getWorldPosition(
+          modelPosition
+        );
+
+        /*
+         * Distanza fra camera e modello.
+         */
+        const distance =
+          cameraPosition.distanceTo(
+            modelPosition
+          );
+
+        if (distance <= 0) return;
+
+        /*
+         * Campo visivo verticale effettivo.
+         */
+        const effectiveFov =
+          typeof camera.getEffectiveFOV === "function"
+            ? camera.getEffectiveFOV()
+            : camera.fov;
+
+        const verticalHalfFov =
+          effectiveFov *
+          Math.PI /
+          360;
+
+        /*
+         * Campo visivo orizzontale.
+         */
+        const horizontalHalfFov =
+          Math.atan(
+            Math.tan(verticalHalfFov) *
+            camera.aspect
+          );
+
+        /*
+         * Converte la percentuale desiderata
+         * in un angolo effettivo.
+         */
+        const verticalTargetAngle =
+          Math.atan(
+            this.data.coverage *
+            Math.tan(verticalHalfFov)
+          );
+
+        const horizontalTargetAngle =
+          Math.atan(
+            this.data.coverage *
+            Math.tan(horizontalHalfFov)
+          );
+
+        /*
+         * Usa l'asse più restrittivo.
+         */
+        const targetAngle =
+          Math.min(
+            verticalTargetAngle,
+            horizontalTargetAngle
+          );
+
+        /*
+         * Calcolo della scala tramite
+         * geometria prospettica.
+         */
+        let automaticScale =
+          (
+            distance *
+            Math.sin(targetAngle)
+          ) /
+          this.modelRadius;
+
+        /*
+         * Margine aggiuntivo per prevenire
+         * ritagli durante la rotazione.
+         */
+        automaticScale *=
+          this.data.safetyMargin;
+
+        if (
+          !Number.isFinite(automaticScale) ||
+          automaticScale <= 0
+        ) {
+          return;
+        }
+
+        /*
+         * Applica una scala uniforme.
+         */
+        this.el.object3D.scale.setScalar(
+          automaticScale
+        );
+
+        this.el.object3D.updateMatrixWorld(
+          true
+        );
 
         console.log(
-          "Animazioni glTF trovate:",
-          model.animations.map(
-            animation => animation.name
-          )
+          "fit-to-screen completato:",
+          {
+            coverage:
+              this.data.coverage,
+
+            safetyMargin:
+              this.data.safetyMargin,
+
+            modelRadius:
+              this.modelRadius,
+
+            distance,
+
+            automaticScale
+          }
+        );
+      },
+
+
+      remove: function () {
+        this.el.removeEventListener(
+          "model-loaded",
+          this.onModelLoaded
+        );
+
+        this.el.sceneEl.removeEventListener(
+          "renderstart",
+          this.scheduleFit
+        );
+
+        this.el.sceneEl.removeEventListener(
+          "camera-set-active",
+          this.scheduleFit
+        );
+
+        window.removeEventListener(
+          "resize",
+          this.scheduleFit
+        );
+
+        window.removeEventListener(
+          "orientationchange",
+          this.scheduleFit
+        );
+
+        clearTimeout(
+          this.resizeTimer
         );
       }
-
-      /*
-       * Crea una copia temporanea del modello.
-       *
-       * Nei modelli animati, le linee del campo
-       * possono avere inizialmente scala zero.
-       * Se misurassimo direttamente il modello,
-       * il bounding box includerebbe soltanto
-       * le sfere delle cariche.
-       */
-      const measuringModel =
-        model.clone(true);
-
-      /*
-       * Ripristina a scala 1 gli elementi
-       * completamente nascosti.
-       *
-       * La modifica viene applicata soltanto
-       * alla copia usata per la misurazione.
-       */
-      measuringModel.traverse(object => {
-        const scaleIsZero =
-          Math.abs(object.scale.x) < 0.000001 &&
-          Math.abs(object.scale.y) < 0.000001 &&
-          Math.abs(object.scale.z) < 0.000001;
-
-        if (scaleIsZero) {
-          object.scale.set(1, 1, 1);
-        }
-      });
-
-      /*
-       * Aggiorna le trasformazioni della copia.
-       */
-      measuringModel.updateMatrixWorld(true);
-
-      /*
-       * Calcola il bounding box completo.
-       */
-      const boundingBox =
-        new THREE.Box3().setFromObject(
-          measuringModel
-        );
-
-      if (boundingBox.isEmpty()) {
-        console.warn(
-          "Impossibile calcolare il bounding box."
-        );
-
-        return;
-      }
-
-      /*
-       * Calcola centro e dimensioni.
-       */
-      const center =
-        boundingBox.getCenter(
-          new THREE.Vector3()
-        );
-
-      const size =
-        boundingBox.getSize(
-          new THREE.Vector3()
-        );
-
-      /*
-       * Sposta il contenuto del glTF affinché
-       * il suo centro geometrico coincida con
-       * l'origine dell'entità A-Frame.
-       *
-       * Rotazione e zoom avverranno quindi
-       * intorno al centro del modello.
-       */
-      model.position.sub(center);
-
-      model.updateMatrixWorld(true);
-
-      /*
-       * Usa la diagonale del bounding box come
-       * diametro massimo del modello.
-       *
-       * In questo modo il modello rimane visibile
-       * anche quando viene ruotato.
-       */
-      modelDiameter = size.length();
-
-      console.log(
-        "Dimensioni originali del modello:",
-        {
-          width: size.x,
-          height: size.y,
-          depth: size.z,
-          diameter: modelDiameter
-        }
-      );
-
-      /*
-       * Attende che A-Frame abbia aggiornato
-       * camera e dimensioni del canvas.
-       */
-      requestAnimationFrame(() => {
-        fitModelToViewport(
-          MODEL_SCREEN_COVERAGE
-        );
-      });
     });
 
 
     /*
-     * ADATTAMENTO AUTOMATICO DEL MODELLO
-     *
-     * Calcola la scala necessaria per occupare
-     * la percentuale desiderata del lato più
-     * corto dello schermo.
-     */
-    function fitModelToViewport(
-      coverage = 0.8
-    ) {
-      const scene =
-        animatedModel.sceneEl;
-
-      if (!scene) {
-        console.warn(
-          "La scena A-Frame non è disponibile."
-        );
-
-        return;
-      }
-
-      const camera =
-        scene.camera;
-
-      if (
-        !camera ||
-        !camera.isPerspectiveCamera ||
-        !modelDiameter
-      ) {
-        console.warn(
-          "Camera o dimensioni del modello non disponibili."
-        );
-
-        return;
-      }
-
-      /*
-       * Posizione mondiale della camera.
-       */
-      const cameraPosition =
-        new THREE.Vector3();
-
-      camera.getWorldPosition(
-        cameraPosition
-      );
-
-      /*
-       * Posizione mondiale del modello.
-       */
-      const modelPosition =
-        new THREE.Vector3();
-
-      animatedModel.object3D.getWorldPosition(
-        modelPosition
-      );
-
-      /*
-       * Distanza tra camera e centro del modello.
-       */
-      const distance =
-        cameraPosition.distanceTo(
-          modelPosition
-        );
-
-      /*
-       * Campo visivo verticale effettivo.
-       */
-      const effectiveFov =
-        typeof camera.getEffectiveFOV === "function"
-          ? camera.getEffectiveFOV()
-          : camera.fov;
-
-      const verticalFov =
-        THREE.MathUtils.degToRad(
-          effectiveFov
-        );
-
-      /*
-       * Altezza visibile alla distanza
-       * in cui si trova il modello.
-       */
-      const visibleHeight =
-        2 *
-        Math.tan(verticalFov / 2) *
-        distance;
-
-      /*
-       * Larghezza visibile calcolata
-       * dall'aspect ratio della camera.
-       */
-      const visibleWidth =
-        visibleHeight *
-        camera.aspect;
-
-      /*
-       * Usa il lato più corto del viewport
-       * per evitare ritagli.
-       */
-      const shortestVisibleSide =
-        Math.min(
-          visibleWidth,
-          visibleHeight
-        );
-
-      /*
-       * Dimensione effettivamente disponibile.
-       */
-      const availableSize =
-        shortestVisibleSide *
-        coverage;
-
-      /*
-       * Scala necessaria.
-       */
-      const automaticScale =
-        availableSize /
-        modelDiameter;
-
-      /*
-       * Applica una scala uniforme.
-       */
-      animatedModel.object3D.scale.setScalar(
-        automaticScale
-      );
-
-      /*
-       * Aggiorna immediatamente le matrici.
-       */
-      animatedModel.object3D.updateMatrixWorld(
-        true
-      );
-
-      console.log(
-        "Adattamento automatico completato:",
-        {
-          coverage:
-            Math.round(coverage * 100) + "%",
-
-          distance,
-          visibleWidth,
-          visibleHeight,
-          modelDiameter,
-          automaticScale
-        }
-      );
-    }
-
-
-    /*
-     * RICALCOLO DOPO ROTAZIONE DELLO SCHERMO
-     */
-    let resizeTimer = null;
-
-    window.addEventListener(
-      "resize",
-      () => {
-        clearTimeout(resizeTimer);
-
-        resizeTimer = setTimeout(
-          () => {
-            fitModelToViewport(
-              MODEL_SCREEN_COVERAGE
-            );
-          },
-          150
-        );
-      }
-    );
-
-
-    /*
-     * PULSANTE ANIMAZIONE
-     */
-    animationButton.addEventListener(
-      "click",
-      () => {
-        if (isNativeAnimation) {
-          toggleNativeAnimation();
-        } else {
-          toggleCustomRotation();
-        }
-      }
-    );
-
-
-    /*
-     * Avvia o arresta l'animazione glTF.
-     */
-    function toggleNativeAnimation() {
-      if (!isAnimationActive) {
-        animatedModel.setAttribute(
-          "animation-mixer",
-          {
-            clip: "*",
-            loop: "repeat",
-            repetitions: Infinity,
-            timeScale: 1
-          }
-        );
-
-        animationButton.textContent =
-          "Ferma Animazione";
-      } else {
-        animatedModel.removeAttribute(
-          "animation-mixer"
-        );
-
-        animationButton.textContent =
-          "Avvia Animazione";
-      }
-
-      isAnimationActive =
-        !isAnimationActive;
-    }
-
-
-    /*
-     * Se il modello non contiene animazioni,
-     * viene applicata una rotazione continua.
-     */
-    function toggleCustomRotation() {
-      if (!isAnimationActive) {
-        animatedModel.setAttribute(
-          "constant-rotation",
-          "speed: 30"
-        );
-
-        animationButton.textContent =
-          "Ferma Animazione";
-      } else {
-        animatedModel.removeAttribute(
-          "constant-rotation"
-        );
-
-        animationButton.textContent =
-          "Avvia Animazione";
-      }
-
-      isAnimationActive =
-        !isAnimationActive;
-    }
-
-
-    /*
-     * PULSANTE AUDIO
-     */
-    audioButton.addEventListener(
-      "click",
-      () => {
-        if (audioElement.paused) {
-          audioElement.play();
-
-          audioButton.textContent =
-            "Interrompi Audio";
-        } else {
-          audioElement.pause();
-
-          audioButton.textContent =
-            "Riproduci Audio";
-        }
-      }
-    );
-
-
-    /*
-     * RICHIESTA DEI PERMESSI PER I SENSORI
-     */
-    allowButton.addEventListener(
-      "click",
-      async () => {
-        if (
-          window.DeviceMotionEvent &&
-          typeof DeviceMotionEvent.requestPermission ===
-            "function"
-        ) {
-          try {
-            const permission =
-              await DeviceMotionEvent.requestPermission();
-
-            if (permission === "granted") {
-              splash.style.display =
-                "none";
-            } else {
-              alert(
-                "Permesso negato. Questa esperienza richiede l'uso dei sensori di movimento."
-              );
-            }
-          } catch (error) {
-            console.error(
-              "Errore nella richiesta di permesso:",
-              error
-            );
-
-            alert(
-              "Si è verificato un errore. Controlla le impostazioni del dispositivo."
-            );
-          }
-        } else {
-          console.warn(
-            "DeviceMotionEvent non supportato o non richiede permessi."
-          );
-
-          splash.style.display =
-            "none";
-        }
-      }
-    );
-
-
-    /*
-     * Nasconde automaticamente lo splash
-     * sui dispositivi privi di sensori.
-     */
-    window.addEventListener(
-      "load",
-      () => {
-        if (
-          !("DeviceMotionEvent" in window)
-        ) {
-          splash.style.display =
-            "none";
-        }
-      }
-    );
-
-
-    /*
-     * ROTAZIONE AUTOMATICA
+     * COMPONENTE: ROTAZIONE AUTOMATICA
      */
     AFRAME.registerComponent(
       "constant-rotation",
@@ -669,20 +400,25 @@
           const rotation =
             this.el.object3D.rotation;
 
-          const delta =
-            THREE.MathUtils.degToRad(
-              this.data.speed
-            ) *
-            (timeDelta / 1000);
+          /*
+           * Conversione compatibile anche con
+           * versioni meno recenti di Three.js.
+           */
+          const radiansPerSecond =
+            this.data.speed *
+            Math.PI /
+            180;
 
-          rotation.y += delta;
+          rotation.y +=
+            radiansPerSecond *
+            (timeDelta / 1000);
         }
       }
     );
 
 
     /*
-     * INTERAZIONE TOUCH E MOUSE
+     * COMPONENTE: INTERAZIONE TOUCH E MOUSE
      */
     AFRAME.registerComponent(
       "interaction-handler",
@@ -789,6 +525,9 @@
           const object3D =
             this.el.object3D;
 
+          /*
+           * Traslazione con tasto destro.
+           */
           if (this.rightClickActive) {
             object3D.position.x =
               Math.max(
@@ -809,7 +548,12 @@
                     deltaY * 0.004
                 )
               );
-          } else {
+          }
+
+          /*
+           * Rotazione con tasto sinistro.
+           */
+          else {
             object3D.rotation.y +=
               deltaX * 0.005;
 
@@ -843,10 +587,6 @@
                 scaleFactor
               );
 
-          /*
-           * Limiti assoluti dello zoom.
-           * Possono essere modificati se necessario.
-           */
           const minScale = 0.0005;
           const maxScale = 0.5;
 
@@ -889,7 +629,9 @@
               x: event.touches[0].clientX,
               y: event.touches[0].clientY
             };
-          } else if (
+          }
+
+          else if (
             event.touches.length === 2
           ) {
             this.previousTouch =
@@ -1010,7 +752,10 @@
                   scaleFactor
                 );
 
-            const minScale = 0.0005;
+            /*
+             * Limiti originali del pinch zoom.
+             */
+            const minScale = 0.005;
             const maxScale = 0.5;
 
             newScale.x =
@@ -1093,5 +838,369 @@
       }
     );
   </script>
+
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #splash {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      text-align: center;
+      z-index: 9999;
+    }
+
+    #allowButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border: 2px solid white;
+      border-radius: 5px;
+    }
+
+    #audioButton,
+    #animationButton {
+      position: fixed;
+      bottom: 10px;
+      padding: 2vw 1vw;
+      font-size: min(2vw, 18px);
+      width: auto;
+      max-width: 35vw;
+      min-width: 150px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+
+    #audioButton {
+      left: 10px;
+    }
+
+    #animationButton {
+      right: 10px;
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <!-- Schermata iniziale -->
+  <div id="splash">
+    <div>
+      <h1>
+        È necessario l'accesso ai sensori di movimento di questo dispositivo
+      </h1>
+
+      <button id="allowButton">
+        Consentire
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Scena A-Frame -->
+  <a-scene
+    gesture-detector
+    embedded
+    arjs="
+      trackingMethod: best;
+      sourceType: webcam;
+    "
+    renderer="
+      antialias: true;
+      precision: highp;
+      physicallyCorrectLights: true;
+      colorManagement: true;
+    "
+  >
+
+    <!-- Risorse -->
+    <a-assets>
+
+      <a-asset-item
+        id="model"
+        src="models/quadrupolo/quadrupolo_elettrico_animato.gltf"
+      ></a-asset-item>
+
+      <audio
+        id="background-audio"
+        src="models/quadrupolo/background.mp3"
+        preload="auto"
+      ></audio>
+
+    </a-assets>
+
+
+    <!-- Modello 3D -->
+    <a-entity
+      id="animatedModel"
+      gltf-model="#model"
+      position="0 0 -1.5"
+      rotation="5 0 0"
+      class="clickable"
+      interaction-handler
+      fit-to-screen="
+        coverage: 0.8;
+        safetyMargin: 0.92;
+      "
+    ></a-entity>
+
+
+    <!-- Camera -->
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+
+  <!-- Pulsante audio -->
+  <button id="audioButton">
+    Riproduci Audio
+  </button>
+
+
+  <!-- Pulsante animazione -->
+  <button id="animationButton">
+    Avvia Animazione
+  </button>
+
+
+  <script>
+    /*
+     * Riferimenti agli elementi.
+     */
+    const splash =
+      document.getElementById("splash");
+
+    const allowButton =
+      document.getElementById("allowButton");
+
+    const audioElement =
+      document.getElementById(
+        "background-audio"
+      );
+
+    const audioButton =
+      document.getElementById(
+        "audioButton"
+      );
+
+    const animationButton =
+      document.getElementById(
+        "animationButton"
+      );
+
+    const animatedModel =
+      document.getElementById(
+        "animatedModel"
+      );
+
+
+    /*
+     * Stato dell'animazione.
+     */
+    let isAnimationActive = false;
+    let isNativeAnimation = false;
+
+
+    /*
+     * Verifica la presenza di animazioni glTF.
+     */
+    animatedModel.addEventListener(
+      "model-loaded",
+      () => {
+        const model =
+          animatedModel.getObject3D(
+            "mesh"
+          );
+
+        if (
+          model &&
+          model.animations &&
+          model.animations.length > 0
+        ) {
+          isNativeAnimation = true;
+
+          console.log(
+            "Animazioni glTF disponibili:",
+            model.animations.map(
+              animation => animation.name
+            )
+          );
+        }
+      }
+    );
+
+
+    /*
+     * Pulsante animazione.
+     */
+    animationButton.addEventListener(
+      "click",
+      () => {
+        if (isNativeAnimation) {
+          toggleNativeAnimation();
+        } else {
+          toggleCustomRotation();
+        }
+      }
+    );
+
+
+    /*
+     * Avvia o arresta l'animazione glTF.
+     */
+    function toggleNativeAnimation() {
+      if (!isAnimationActive) {
+        animatedModel.setAttribute(
+          "animation-mixer",
+          ""
+        );
+
+        animationButton.textContent =
+          "Ferma Animazione";
+      } else {
+        animatedModel.removeAttribute(
+          "animation-mixer"
+        );
+
+        animationButton.textContent =
+          "Avvia Animazione";
+      }
+
+      isAnimationActive =
+        !isAnimationActive;
+    }
+
+
+    /*
+     * Rotazione automatica di fallback.
+     */
+    function toggleCustomRotation() {
+      if (!isAnimationActive) {
+        animatedModel.setAttribute(
+          "constant-rotation",
+          "speed: 30"
+        );
+
+        animationButton.textContent =
+          "Ferma Animazione";
+      } else {
+        animatedModel.removeAttribute(
+          "constant-rotation"
+        );
+
+        animationButton.textContent =
+          "Avvia Animazione";
+      }
+
+      isAnimationActive =
+        !isAnimationActive;
+    }
+
+
+    /*
+     * Pulsante audio.
+     */
+    audioButton.addEventListener(
+      "click",
+      () => {
+        if (audioElement.paused) {
+          audioElement
+            .play()
+            .catch(error => {
+              console.error(
+                "Riproduzione audio non riuscita:",
+                error
+              );
+            });
+
+          audioButton.textContent =
+            "Interrompi Audio";
+        } else {
+          audioElement.pause();
+
+          audioButton.textContent =
+            "Riproduci Audio";
+        }
+      }
+    );
+
+
+    /*
+     * Richiesta permessi per i sensori.
+     */
+    allowButton.addEventListener(
+      "click",
+      async () => {
+        if (
+          window.DeviceMotionEvent &&
+          typeof DeviceMotionEvent.requestPermission ===
+            "function"
+        ) {
+          try {
+            const permission =
+              await DeviceMotionEvent.requestPermission();
+
+            if (permission === "granted") {
+              splash.style.display =
+                "none";
+            } else {
+              alert(
+                "Permesso negato. Questa esperienza richiede l'uso dei sensori di movimento."
+              );
+            }
+          } catch (error) {
+            console.error(
+              "Errore nella richiesta dei permessi:",
+              error
+            );
+
+            alert(
+              "Si è verificato un errore. Controlla le impostazioni del dispositivo."
+            );
+          }
+        } else {
+          console.warn(
+            "DeviceMotionEvent non supportato o non richiede permessi."
+          );
+
+          splash.style.display =
+            "none";
+        }
+      }
+    );
+
+
+    /*
+     * Nasconde lo splash sui dispositivi
+     * privi di supporto ai sensori.
+     */
+    window.addEventListener(
+      "load",
+      () => {
+        if (
+          !("DeviceMotionEvent" in window)
+        ) {
+          splash.style.display =
+            "none";
+        }
+      }
+    );
+  </script>
+
 </body>
 </html>
