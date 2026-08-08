@@ -17,9 +17,14 @@
 
   <script src="libs/gesture-detector.js"></script>
 
+
   <script>
     /*
-     * COMPONENTE: ADATTAMENTO AUTOMATICO ALLO SCHERMO
+     * COMPONENTE: ADATTAMENTO INIZIALE ALLO SCHERMO
+     *
+     * Il modello viene adattato automaticamente una sola volta.
+     * Dopo il primo adattamento, mouse e gesture hanno il
+     * controllo completo della scala.
      */
     AFRAME.registerComponent("fit-to-screen", {
       schema: {
@@ -34,41 +39,52 @@
         }
       },
 
+
       init: function () {
         this.modelRadius = null;
         this.modelObject = null;
-        this.resizeTimer = null;
+
+        /*
+         * Diventa true dopo il primo
+         * adattamento riuscito.
+         */
+        this.hasFitted = false;
+
+        this.fitTimer = null;
 
         this.onModelLoaded =
           this.onModelLoaded.bind(this);
 
-        this.scheduleFit =
-          this.scheduleFit.bind(this);
+        this.scheduleInitialFit =
+          this.scheduleInitialFit.bind(this);
 
         this.el.addEventListener(
           "model-loaded",
           this.onModelLoaded
         );
 
+        /*
+         * Questi eventi servono soltanto a
+         * trovare il primo momento in cui
+         * la camera AR è disponibile.
+         */
         this.el.sceneEl.addEventListener(
           "renderstart",
-          this.scheduleFit
+          this.scheduleInitialFit
         );
 
         this.el.sceneEl.addEventListener(
           "camera-set-active",
-          this.scheduleFit
+          this.scheduleInitialFit
         );
 
-        window.addEventListener(
-          "resize",
-          this.scheduleFit
-        );
-
-        window.addEventListener(
-          "orientationchange",
-          this.scheduleFit
-        );
+        /*
+         * Non vengono aggiunti listener resize
+         * o orientationchange.
+         *
+         * In questo modo la scala impostata
+         * dall'utente non viene più sovrascritta.
+         */
       },
 
 
@@ -87,18 +103,19 @@
         this.modelObject = model;
 
         /*
-         * Copia temporanea usata esclusivamente
-         * per calcolare le dimensioni complete.
+         * Crea una copia temporanea del modello
+         * per calcolarne le dimensioni complete.
          */
         const measuringModel =
           model.clone(true);
 
         /*
-         * Nei modelli animati le linee possono
-         * avere inizialmente scala zero.
+         * Nei modelli animati, le linee del campo
+         * possono avere inizialmente scala zero.
          *
-         * Nella copia di misurazione vengono
-         * temporaneamente riportate a scala 1.
+         * Nella copia usata per la misurazione,
+         * questi elementi vengono riportati
+         * temporaneamente a scala 1.
          */
         measuringModel.traverse(object => {
           const scaleIsZero =
@@ -114,7 +131,7 @@
         measuringModel.updateMatrixWorld(true);
 
         /*
-         * Calcolo del bounding box completo.
+         * Calcola il bounding box completo.
          */
         const boundingBox =
           new THREE.Box3().setFromObject(
@@ -130,7 +147,7 @@
         }
 
         /*
-         * Calcolo della sfera che contiene
+         * Calcola la sfera che contiene
          * completamente il modello.
          */
         const boundingSphere =
@@ -143,7 +160,7 @@
 
         /*
          * Centra il modello rispetto
-         * all'origine dell'entità.
+         * all'origine dell'entità A-Frame.
          */
         model.position.sub(
           boundingSphere.center
@@ -152,7 +169,7 @@
         model.updateMatrixWorld(true);
 
         /*
-         * Scala temporanea iniziale.
+         * Imposta temporaneamente scala 1.
          */
         this.el.object3D.scale.set(
           1,
@@ -161,43 +178,61 @@
         );
 
         /*
-         * Attende l'inizializzazione definitiva
-         * della camera AR prima del calcolo.
+         * Avvia l'unico adattamento automatico.
          */
-        this.scheduleFit();
+        this.scheduleInitialFit();
       },
 
 
-      scheduleFit: function () {
-        if (!this.modelRadius) return;
+      scheduleInitialFit: function () {
+        /*
+         * Se il fit è già stato eseguito,
+         * non modifica più la scala.
+         */
+        if (
+          this.hasFitted ||
+          !this.modelRadius
+        ) {
+          return;
+        }
 
         clearTimeout(
-          this.resizeTimer
+          this.fitTimer
         );
 
         /*
-         * Il doppio requestAnimationFrame
-         * permette ad A-Frame e AR.js di
-         * aggiornare camera e viewport.
+         * Attende che camera e canvas siano
+         * stati aggiornati da A-Frame.
          */
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            this.fitModel();
+            this.fitModelOnce();
           });
         });
 
         /*
-         * Secondo controllo dopo mezzo secondo,
-         * utile durante l'avvio della camera AR.
+         * Tentativo di riserva per AR.js.
+         *
+         * Se il primo adattamento è riuscito,
+         * questo tentativo non farà nulla.
          */
-        this.resizeTimer =
+        this.fitTimer =
           setTimeout(() => {
-            this.fitModel();
+            this.fitModelOnce();
           }, 500);
       },
 
 
-      fitModel: function () {
+      fitModelOnce: function () {
+        /*
+         * Protezione fondamentale:
+         * dopo il primo fit non viene più
+         * applicata alcuna scala automatica.
+         */
+        if (this.hasFitted) {
+          return;
+        }
+
         const scene =
           this.el.sceneEl;
 
@@ -242,7 +277,9 @@
             modelPosition
           );
 
-        if (distance <= 0) return;
+        if (distance <= 0) {
+          return;
+        }
 
         /*
          * Campo visivo verticale effettivo.
@@ -268,7 +305,7 @@
 
         /*
          * Converte la percentuale desiderata
-         * in un angolo effettivo.
+         * dello schermo in un angolo.
          */
         const verticalTargetAngle =
           Math.atan(
@@ -292,8 +329,8 @@
           );
 
         /*
-         * Calcolo della scala tramite
-         * geometria prospettica.
+         * Calcola la scala iniziale
+         * tenendo conto della prospettiva.
          */
         let automaticScale =
           (
@@ -303,8 +340,7 @@
           this.modelRadius;
 
         /*
-         * Margine aggiuntivo per prevenire
-         * ritagli durante la rotazione.
+         * Applica un margine di sicurezza.
          */
         automaticScale *=
           this.data.safetyMargin;
@@ -317,7 +353,7 @@
         }
 
         /*
-         * Applica una scala uniforme.
+         * Applica la scala iniziale.
          */
         this.el.object3D.scale.setScalar(
           automaticScale
@@ -327,8 +363,31 @@
           true
         );
 
+        /*
+         * Da questo momento il componente
+         * non modificherà più la scala.
+         */
+        this.hasFitted = true;
+
+        clearTimeout(
+          this.fitTimer
+        );
+
+        /*
+         * Rimuove i listener non più necessari.
+         */
+        this.el.sceneEl.removeEventListener(
+          "renderstart",
+          this.scheduleInitialFit
+        );
+
+        this.el.sceneEl.removeEventListener(
+          "camera-set-active",
+          this.scheduleInitialFit
+        );
+
         console.log(
-          "fit-to-screen completato:",
+          "Scala iniziale applicata:",
           {
             coverage:
               this.data.coverage,
@@ -355,26 +414,16 @@
 
         this.el.sceneEl.removeEventListener(
           "renderstart",
-          this.scheduleFit
+          this.scheduleInitialFit
         );
 
         this.el.sceneEl.removeEventListener(
           "camera-set-active",
-          this.scheduleFit
-        );
-
-        window.removeEventListener(
-          "resize",
-          this.scheduleFit
-        );
-
-        window.removeEventListener(
-          "orientationchange",
-          this.scheduleFit
+          this.scheduleInitialFit
         );
 
         clearTimeout(
-          this.resizeTimer
+          this.fitTimer
         );
       }
     });
@@ -400,10 +449,6 @@
           const rotation =
             this.el.object3D.rotation;
 
-          /*
-           * Conversione compatibile anche con
-           * versioni meno recenti di Three.js.
-           */
           const radiansPerSecond =
             this.data.speed *
             Math.PI /
@@ -418,7 +463,7 @@
 
 
     /*
-     * COMPONENTE: INTERAZIONE TOUCH E MOUSE
+     * COMPONENTE: INTERAZIONE CON MOUSE E TOUCH
      */
     AFRAME.registerComponent(
       "interaction-handler",
@@ -587,6 +632,9 @@
                 scaleFactor
               );
 
+          /*
+           * Limiti dello zoom con mouse.
+           */
           const minScale = 0.0005;
           const maxScale = 0.5;
 
@@ -721,6 +769,9 @@
               ) *
               this.touchSensitivity;
 
+            /*
+             * Traslazione.
+             */
             object3D.position.x =
               Math.max(
                 -2,
@@ -741,6 +792,9 @@
                 )
               );
 
+            /*
+             * Zoom.
+             */
             const scaleFactor =
               currentDistance /
               this.initialDistance;
