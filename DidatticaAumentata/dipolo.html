@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+
+  <title>Didattica Aumentata | Dr. P. OLIVA</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no"
+  />
+
+  <script src="libs/aframe-master.min.js"></script>
+  <script src="libs/aframe-ar.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+
+  <script src="libs/gesture-detector.js"></script>
+
+
+  <script>
+    /*
+     * COMPONENTE: ADATTAMENTO INIZIALE ALLO SCHERMO
+     *
+     * Il modello viene adattato automaticamente una sola volta.
+     * Dopo il primo adattamento, mouse e gesture hanno il
+     * controllo completo della scala.
+     */
+    AFRAME.registerComponent("fit-to-screen", {
+      schema: {
+        coverage: {
+          type: "number",
+          default: 0.8
+        },
+
+        safetyMargin: {
+          type: "number",
+          default: 0.92
+        }
+      },
+
+
+      init: function () {
+        this.modelRadius = null;
+        this.modelObject = null;
+
+        /*
+         * Diventa true dopo il primo
+         * adattamento riuscito.
+         */
+        this.hasFitted = false;
+
+        this.fitTimer = null;
+
+        this.onModelLoaded =
+          this.onModelLoaded.bind(this);
+
+        this.scheduleInitialFit =
+          this.scheduleInitialFit.bind(this);
+
+        this.el.addEventListener(
+          "model-loaded",
+          this.onModelLoaded
+        );
+
+        /*
+         * Questi eventi servono soltanto a
+         * trovare il primo momento in cui
+         * la camera AR è disponibile.
+         */
+        this.el.sceneEl.addEventListener(
+          "renderstart",
+          this.scheduleInitialFit
+        );
+
+        this.el.sceneEl.addEventListener(
+          "camera-set-active",
+          this.scheduleInitialFit
+        );
+
+        /*
+         * Non vengono aggiunti listener resize
+         * o orientationchange.
+         *
+         * In questo modo la scala impostata
+         * dall'utente non viene più sovrascritta.
+         */
+      },
+
+
+      onModelLoaded: function () {
+        const model =
+          this.el.getObject3D("mesh");
+
+        if (!model) {
+          console.warn(
+            "fit-to-screen: modello non disponibile."
+          );
+
+          return;
+        }
+
+        this.modelObject = model;
+
+        /*
+         * Crea una copia temporanea del modello
+         * per calcolarne le dimensioni complete.
+         */
+        const measuringModel =
+          model.clone(true);
+
+        /*
+         * Nei modelli animati, le linee del campo
+         * possono avere inizialmente scala zero.
+         *
+         * Nella copia usata per la misurazione,
+         * questi elementi vengono riportati
+         * temporaneamente a scala 1.
+         */
+        measuringModel.traverse(object => {
+          const scaleIsZero =
+            Math.abs(object.scale.x) < 0.000001 &&
+            Math.abs(object.scale.y) < 0.000001 &&
+            Math.abs(object.scale.z) < 0.000001;
+
+          if (scaleIsZero) {
+            object.scale.set(1, 1, 1);
+          }
+        });
+
+        measuringModel.updateMatrixWorld(true);
+
+        /*
+         * Calcola il bounding box completo.
+         */
+        const boundingBox =
+          new THREE.Box3().setFromObject(
+            measuringModel
+          );
+
+        if (boundingBox.isEmpty()) {
+          console.warn(
+            "fit-to-screen: bounding box vuoto."
+          );
+
+          return;
+        }
+
+        /*
+         * Calcola la sfera che contiene
+         * completamente il modello.
+         */
+        const boundingSphere =
+          boundingBox.getBoundingSphere(
+            new THREE.Sphere()
+          );
+
+        this.modelRadius =
+          boundingSphere.radius;
+
+        /*
+         * Centra il modello rispetto
+         * all'origine dell'entità A-Frame.
+         */
+        model.position.sub(
+          boundingSphere.center
+        );
+
+        model.updateMatrixWorld(true);
+
+        /*
+         * Imposta temporaneamente scala 1.
+         */
+        this.el.object3D.scale.set(
+          1,
+          1,
+          1
+        );
+
+        /*
+         * Avvia l'unico adattamento automatico.
+         */
+        this.scheduleInitialFit();
+      },
+
+
+      scheduleInitialFit: function () {
+        /*
+         * Se il fit è già stato eseguito,
+         * non modifica più la scala.
+         */
+        if (
+          this.hasFitted ||
+          !this.modelRadius
+        ) {
+          return;
+        }
+
+        clearTimeout(
+          this.fitTimer
+        );
+
+        /*
+         * Attende che camera e canvas siano
+         * stati aggiornati da A-Frame.
+         */
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            this.fitModelOnce();
+          });
+        });
+
+        /*
+         * Tentativo di riserva per AR.js.
+         *
+         * Se il primo adattamento è riuscito,
+         * questo tentativo non farà nulla.
+         */
+        this.fitTimer =
+          setTimeout(() => {
+            this.fitModelOnce();
+          }, 500);
+      },
+
+
+      fitModelOnce: function () {
+        /*
+         * Protezione fondamentale:
+         * dopo il primo fit non viene più
+         * applicata alcuna scala automatica.
+         */
+        if (this.hasFitted) {
+          return;
+        }
+
+        const scene =
+          this.el.sceneEl;
+
+        if (!scene) return;
+
+        const camera =
+          scene.camera;
+
+        if (
+          !camera ||
+          !camera.isPerspectiveCamera ||
+          !this.modelRadius
+        ) {
+          return;
+        }
+
+        /*
+         * Posizione mondiale della camera.
+         */
+        const cameraPosition =
+          new THREE.Vector3();
+
+        camera.getWorldPosition(
+          cameraPosition
+        );
+
+        /*
+         * Posizione mondiale del modello.
+         */
+        const modelPosition =
+          new THREE.Vector3();
+
+        this.el.object3D.getWorldPosition(
+          modelPosition
+        );
+
+        /*
+         * Distanza fra camera e modello.
+         */
+        const distance =
+          cameraPosition.distanceTo(
+            modelPosition
+          );
+
+        if (distance <= 0) {
+          return;
+        }
+
+        /*
+         * Campo visivo verticale effettivo.
+         */
+        const effectiveFov =
+          typeof camera.getEffectiveFOV === "function"
+            ? camera.getEffectiveFOV()
+            : camera.fov;
+
+        const verticalHalfFov =
+          effectiveFov *
+          Math.PI /
+          360;
+
+        /*
+         * Campo visivo orizzontale.
+         */
+        const horizontalHalfFov =
+          Math.atan(
+            Math.tan(verticalHalfFov) *
+            camera.aspect
+          );
+
+        /*
+         * Converte la percentuale desiderata
+         * dello schermo in un angolo.
+         */
+        const verticalTargetAngle =
+          Math.atan(
+            this.data.coverage *
+            Math.tan(verticalHalfFov)
+          );
+
+        const horizontalTargetAngle =
+          Math.atan(
+            this.data.coverage *
+            Math.tan(horizontalHalfFov)
+          );
+
+        /*
+         * Usa l'asse più restrittivo.
+         */
+        const targetAngle =
+          Math.min(
+            verticalTargetAngle,
+            horizontalTargetAngle
+          );
+
+        /*
+         * Calcola la scala iniziale
+         * tenendo conto della prospettiva.
+         */
+        let automaticScale =
+          (
+            distance *
+            Math.sin(targetAngle)
+          ) /
+          this.modelRadius;
+
+        /*
+         * Applica un margine di sicurezza.
+         */
+        automaticScale *=
+          this.data.safetyMargin;
+
+        if (
+          !Number.isFinite(automaticScale) ||
+          automaticScale <= 0
+        ) {
+          return;
+        }
+
+        /*
+         * Applica la scala iniziale.
+         */
+        this.el.object3D.scale.setScalar(
+          automaticScale
+        );
+
+        this.el.object3D.updateMatrixWorld(
+          true
+        );
+
+        /*
+         * Da questo momento il componente
+         * non modificherà più la scala.
+         */
+        this.hasFitted = true;
+
+        clearTimeout(
+          this.fitTimer
+        );
+
+        /*
+         * Rimuove i listener non più necessari.
+         */
+        this.el.sceneEl.removeEventListener(
+          "renderstart",
+          this.scheduleInitialFit
+        );
+
+        this.el.sceneEl.removeEventListener(
+          "camera-set-active",
+          this.scheduleInitialFit
+        );
+
+        console.log(
+          "Scala iniziale applicata:",
+          {
+            coverage:
+              this.data.coverage,
+
+            safetyMargin:
+              this.data.safetyMargin,
+
+            modelRadius:
+              this.modelRadius,
+
+            distance,
+
+            automaticScale
+          }
+        );
+      },
+
+
+      remove: function () {
+        this.el.removeEventListener(
+          "model-loaded",
+          this.onModelLoaded
+        );
+
+        this.el.sceneEl.removeEventListener(
+          "renderstart",
+          this.scheduleInitialFit
+        );
+
+        this.el.sceneEl.removeEventListener(
+          "camera-set-active",
+          this.scheduleInitialFit
+        );
+
+        clearTimeout(
+          this.fitTimer
+        );
+      }
+    });
+
+
+    /*
+     * COMPONENTE: ROTAZIONE AUTOMATICA
+     */
+    AFRAME.registerComponent(
+      "constant-rotation",
+      {
+        schema: {
+          speed: {
+            type: "number",
+            default: 30
+          }
+        },
+
+        tick: function (
+          time,
+          timeDelta
+        ) {
+          const rotation =
+            this.el.object3D.rotation;
+
+          const radiansPerSecond =
+            this.data.speed *
+            Math.PI /
+            180;
+
+          rotation.y +=
+            radiansPerSecond *
+            (timeDelta / 1000);
+        }
+      }
+    );
+
+
+    /*
+     * COMPONENTE: INTERAZIONE CON MOUSE E TOUCH
+     */
+    AFRAME.registerComponent(
+      "interaction-handler",
+      {
+        init: function () {
+          this.isMouseDown = false;
+
+          this.previousMousePosition = {
+            x: 0,
+            y: 0
+          };
+
+          this.zoomFactor = 0.05;
+          this.rightClickActive = false;
+
+          this.previousTouch = null;
+          this.initialDistance = null;
+          this.touchSensitivity = 0.005;
+
+          const canvas =
+            this.el.sceneEl.canvas;
+
+          canvas.addEventListener(
+            "mousedown",
+            this.onMouseDown.bind(this)
+          );
+
+          canvas.addEventListener(
+            "mouseup",
+            this.onMouseUp.bind(this)
+          );
+
+          canvas.addEventListener(
+            "mousemove",
+            this.onMouseMove.bind(this)
+          );
+
+          canvas.addEventListener(
+            "wheel",
+            this.onMouseWheel.bind(this),
+            {
+              passive: false
+            }
+          );
+
+          canvas.addEventListener(
+            "contextmenu",
+            event => event.preventDefault()
+          );
+
+          this.el.sceneEl.addEventListener(
+            "touchstart",
+            this.onTouchStart.bind(this),
+            {
+              passive: false
+            }
+          );
+
+          this.el.sceneEl.addEventListener(
+            "touchmove",
+            this.onTouchMove.bind(this),
+            {
+              passive: false
+            }
+          );
+
+          this.el.sceneEl.addEventListener(
+            "touchend",
+            this.onTouchEnd.bind(this)
+          );
+        },
+
+
+        onMouseDown: function (event) {
+          this.isMouseDown = true;
+
+          this.rightClickActive =
+            event.button === 2;
+
+          this.previousMousePosition.x =
+            event.clientX;
+
+          this.previousMousePosition.y =
+            event.clientY;
+        },
+
+
+        onMouseUp: function () {
+          this.isMouseDown = false;
+        },
+
+
+        onMouseMove: function (event) {
+          if (!this.isMouseDown) return;
+
+          const deltaX =
+            event.clientX -
+            this.previousMousePosition.x;
+
+          const deltaY =
+            event.clientY -
+            this.previousMousePosition.y;
+
+          const object3D =
+            this.el.object3D;
+
+          /*
+           * Traslazione con tasto destro.
+           */
+          if (this.rightClickActive) {
+            object3D.position.x =
+              Math.max(
+                -1.8,
+                Math.min(
+                  1.8,
+                  object3D.position.x +
+                    deltaX * 0.004
+                )
+              );
+
+            object3D.position.y =
+              Math.max(
+                -1.5,
+                Math.min(
+                  1.5,
+                  object3D.position.y -
+                    deltaY * 0.004
+                )
+              );
+          }
+
+          /*
+           * Rotazione con tasto sinistro.
+           */
+          else {
+            object3D.rotation.y +=
+              deltaX * 0.005;
+
+            object3D.rotation.x +=
+              deltaY * 0.005;
+          }
+
+          this.previousMousePosition.x =
+            event.clientX;
+
+          this.previousMousePosition.y =
+            event.clientY;
+        },
+
+
+        onMouseWheel: function (event) {
+          event.preventDefault();
+
+          const object3D =
+            this.el.object3D;
+
+          const scaleFactor =
+            1 -
+            Math.sign(event.deltaY) *
+            this.zoomFactor;
+
+          const newScale =
+            object3D.scale
+              .clone()
+              .multiplyScalar(
+                scaleFactor
+              );
+
+          /*
+           * Limiti dello zoom con mouse.
+           */
+          const minScale = 0.0005;
+          const maxScale = 0.5;
+
+          newScale.x =
+            Math.max(
+              minScale,
+              Math.min(
+                maxScale,
+                newScale.x
+              )
+            );
+
+          newScale.y =
+            Math.max(
+              minScale,
+              Math.min(
+                maxScale,
+                newScale.y
+              )
+            );
+
+          newScale.z =
+            Math.max(
+              minScale,
+              Math.min(
+                maxScale,
+                newScale.z
+              )
+            );
+
+          object3D.scale.copy(
+            newScale
+          );
+        },
+
+
+        onTouchStart: function (event) {
+          if (event.touches.length === 1) {
+            this.previousTouch = {
+              x: event.touches[0].clientX,
+              y: event.touches[0].clientY
+            };
+          }
+
+          else if (
+            event.touches.length === 2
+          ) {
+            this.previousTouch =
+              this.getMidpoint(
+                event.touches
+              );
+
+            this.initialDistance =
+              this.getDistance(
+                event.touches
+              );
+          }
+        },
+
+
+        onTouchMove: function (event) {
+          event.preventDefault();
+
+          const object3D =
+            this.el.object3D;
+
+          /*
+           * Rotazione con un dito.
+           */
+          if (
+            event.touches.length === 1 &&
+            this.previousTouch
+          ) {
+            const currentTouch = {
+              x: event.touches[0].clientX,
+              y: event.touches[0].clientY
+            };
+
+            const deltaX =
+              (
+                currentTouch.x -
+                this.previousTouch.x
+              ) *
+              this.touchSensitivity;
+
+            const deltaY =
+              (
+                currentTouch.y -
+                this.previousTouch.y
+              ) *
+              this.touchSensitivity;
+
+            object3D.rotation.y +=
+              deltaX;
+
+            object3D.rotation.x +=
+              deltaY;
+
+            this.previousTouch =
+              currentTouch;
+          }
+
+          /*
+           * Traslazione e zoom con due dita.
+           */
+          else if (
+            event.touches.length === 2 &&
+            this.previousTouch &&
+            this.initialDistance
+          ) {
+            const currentMidpoint =
+              this.getMidpoint(
+                event.touches
+              );
+
+            const currentDistance =
+              this.getDistance(
+                event.touches
+              );
+
+            const deltaX =
+              (
+                currentMidpoint.x -
+                this.previousTouch.x
+              ) *
+              this.touchSensitivity;
+
+            const deltaY =
+              (
+                currentMidpoint.y -
+                this.previousTouch.y
+              ) *
+              this.touchSensitivity;
+
+            /*
+             * Traslazione.
+             */
+            object3D.position.x =
+              Math.max(
+                -2,
+                Math.min(
+                  2,
+                  object3D.position.x +
+                    deltaX
+                )
+              );
+
+            object3D.position.y =
+              Math.max(
+                -1.7,
+                Math.min(
+                  1.7,
+                  object3D.position.y -
+                    deltaY
+                )
+              );
+
+            /*
+             * Zoom.
+             */
+            const scaleFactor =
+              currentDistance /
+              this.initialDistance;
+
+            const newScale =
+              object3D.scale
+                .clone()
+                .multiplyScalar(
+                  scaleFactor
+                );
+
+            /*
+             * Limiti originali del pinch zoom.
+             */
+            const minScale = 0.005;
+            const maxScale = 0.5;
+
+            newScale.x =
+              Math.max(
+                minScale,
+                Math.min(
+                  maxScale,
+                  newScale.x
+                )
+              );
+
+            newScale.y =
+              Math.max(
+                minScale,
+                Math.min(
+                  maxScale,
+                  newScale.y
+                )
+              );
+
+            newScale.z =
+              Math.max(
+                minScale,
+                Math.min(
+                  maxScale,
+                  newScale.z
+                )
+              );
+
+            object3D.scale.copy(
+              newScale
+            );
+
+            this.previousTouch =
+              currentMidpoint;
+
+            this.initialDistance =
+              currentDistance;
+          }
+        },
+
+
+        onTouchEnd: function () {
+          this.previousTouch = null;
+          this.initialDistance = null;
+        },
+
+
+        getMidpoint: function (touches) {
+          return {
+            x:
+              (
+                touches[0].clientX +
+                touches[1].clientX
+              ) / 2,
+
+            y:
+              (
+                touches[0].clientY +
+                touches[1].clientY
+              ) / 2
+          };
+        },
+
+
+        getDistance: function (touches) {
+          const dx =
+            touches[0].clientX -
+            touches[1].clientX;
+
+          const dy =
+            touches[0].clientY -
+            touches[1].clientY;
+
+          return Math.sqrt(
+            dx * dx +
+            dy * dy
+          );
+        }
+      }
+    );
+  </script>
+
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #splash {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      text-align: center;
+      z-index: 9999;
+    }
+
+    #allowButton {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border: 2px solid white;
+      border-radius: 5px;
+    }
+
+    #audioButton,
+    #animationButton {
+      position: fixed;
+      bottom: 10px;
+      padding: 2vw 1vw;
+      font-size: min(2vw, 18px);
+      width: auto;
+      max-width: 35vw;
+      min-width: 150px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      z-index: 1000;
+    }
+
+    #audioButton {
+      left: 10px;
+    }
+
+    #animationButton {
+      right: 10px;
+    }
+  </style>
+</head>
+
+
+<body>
+
+  <!-- Schermata iniziale -->
+  <div id="splash">
+    <div>
+      <h1>
+        È necessario l'accesso ai sensori di movimento di questo dispositivo
+      </h1>
+
+      <button id="allowButton">
+        Consentire
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Scena A-Frame -->
+  <a-scene
+    gesture-detector
+    embedded
+    arjs="
+      trackingMethod: best;
+      sourceType: webcam;
+    "
+    renderer="
+      antialias: true;
+      precision: highp;
+      physicallyCorrectLights: true;
+      colorManagement: true;
+    "
+  >
+
+    <!-- Risorse -->
+    <a-assets>
+
+      <a-asset-item
+        id="model"
+        src="models/dipolo/dipolo_elettrico_animato.gltf"
+      ></a-asset-item>
+
+      <audio
+        id="background-audio"
+        src="models/dipolo/background.mp3"
+        preload="auto"
+      ></audio>
+
+    </a-assets>
+
+
+    <!-- Modello 3D -->
+    <a-entity
+      id="animatedModel"
+      gltf-model="#model"
+      position="0 0 -1.5"
+      rotation="5 0 0"
+      class="clickable"
+      interaction-handler
+      fit-to-screen="
+        coverage: 0.8;
+        safetyMargin: 0.92;
+      "
+    ></a-entity>
+
+
+    <!-- Camera -->
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+
+  <!-- Pulsante audio -->
+  <button id="audioButton">
+    Riproduci Audio
+  </button>
+
+
+  <!-- Pulsante animazione -->
+  <button id="animationButton">
+    Avvia Animazione
+  </button>
+
+
+  <script>
+    /*
+     * Riferimenti agli elementi.
+     */
+    const splash =
+      document.getElementById("splash");
+
+    const allowButton =
+      document.getElementById("allowButton");
+
+    const audioElement =
+      document.getElementById(
+        "background-audio"
+      );
+
+    const audioButton =
+      document.getElementById(
+        "audioButton"
+      );
+
+    const animationButton =
+      document.getElementById(
+        "animationButton"
+      );
+
+    const animatedModel =
+      document.getElementById(
+        "animatedModel"
+      );
+
+
+    /*
+     * Stato dell'animazione.
+     */
+    let isAnimationActive = false;
+    let isNativeAnimation = false;
+
+
+    /*
+     * Verifica la presenza di animazioni glTF.
+     */
+    animatedModel.addEventListener(
+      "model-loaded",
+      () => {
+        const model =
+          animatedModel.getObject3D(
+            "mesh"
+          );
+
+        if (
+          model &&
+          model.animations &&
+          model.animations.length > 0
+        ) {
+          isNativeAnimation = true;
+
+          console.log(
+            "Animazioni glTF disponibili:",
+            model.animations.map(
+              animation => animation.name
+            )
+          );
+        }
+      }
+    );
+
+
+    /*
+     * Pulsante animazione.
+     */
+    animationButton.addEventListener(
+      "click",
+      () => {
+        if (isNativeAnimation) {
+          toggleNativeAnimation();
+        } else {
+          toggleCustomRotation();
+        }
+      }
+    );
+
+
+    /*
+     * Avvia o arresta l'animazione glTF.
+     */
+    function toggleNativeAnimation() {
+      if (!isAnimationActive) {
+        animatedModel.setAttribute(
+          "animation-mixer",
+          ""
+        );
+
+        animationButton.textContent =
+          "Ferma Animazione";
+      } else {
+        animatedModel.removeAttribute(
+          "animation-mixer"
+        );
+
+        animationButton.textContent =
+          "Avvia Animazione";
+      }
+
+      isAnimationActive =
+        !isAnimationActive;
+    }
+
+
+    /*
+     * Rotazione automatica di fallback.
+     */
+    function toggleCustomRotation() {
+      if (!isAnimationActive) {
+        animatedModel.setAttribute(
+          "constant-rotation",
+          "speed: 30"
+        );
+
+        animationButton.textContent =
+          "Ferma Animazione";
+      } else {
+        animatedModel.removeAttribute(
+          "constant-rotation"
+        );
+
+        animationButton.textContent =
+          "Avvia Animazione";
+      }
+
+      isAnimationActive =
+        !isAnimationActive;
+    }
+
+
+    /*
+     * Pulsante audio.
+     */
+    audioButton.addEventListener(
+      "click",
+      () => {
+        if (audioElement.paused) {
+          audioElement
+            .play()
+            .catch(error => {
+              console.error(
+                "Riproduzione audio non riuscita:",
+                error
+              );
+            });
+
+          audioButton.textContent =
+            "Interrompi Audio";
+        } else {
+          audioElement.pause();
+
+          audioButton.textContent =
+            "Riproduci Audio";
+        }
+      }
+    );
+
+
+    /*
+     * Richiesta permessi per i sensori.
+     */
+    allowButton.addEventListener(
+      "click",
+      async () => {
+        if (
+          window.DeviceMotionEvent &&
+          typeof DeviceMotionEvent.requestPermission ===
+            "function"
+        ) {
+          try {
+            const permission =
+              await DeviceMotionEvent.requestPermission();
+
+            if (permission === "granted") {
+              splash.style.display =
+                "none";
+            } else {
+              alert(
+                "Permesso negato. Questa esperienza richiede l'uso dei sensori di movimento."
+              );
+            }
+          } catch (error) {
+            console.error(
+              "Errore nella richiesta dei permessi:",
+              error
+            );
+
+            alert(
+              "Si è verificato un errore. Controlla le impostazioni del dispositivo."
+            );
+          }
+        } else {
+          console.warn(
+            "DeviceMotionEvent non supportato o non richiede permessi."
+          );
+
+          splash.style.display =
+            "none";
+        }
+      }
+    );
+
+
+    /*
+     * Nasconde lo splash sui dispositivi
+     * privi di supporto ai sensori.
+     */
+    window.addEventListener(
+      "load",
+      () => {
+        if (
+          !("DeviceMotionEvent" in window)
+        ) {
+          splash.style.display =
+            "none";
+        }
+      }
+    );
+  </script>
+
+</body>
+</html>
