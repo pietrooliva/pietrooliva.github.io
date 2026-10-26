@@ -1,0 +1,11 @@
+Model Information:
+* title:	AP Magnetism C E&M
+* source:	https://sketchfab.com/3d-models/ap-magnetism-c-em-d0bee981f22540a79c371a22aa06f87e
+* author:	Sophia Sun (https://sketchfab.com/yuhongsun605)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "AP Magnetism C E&M" (https://sketchfab.com/3d-models/ap-magnetism-c-em-d0bee981f22540a79c371a22aa06f87e) by Sophia Sun (https://sketchfab.com/yuhongsun605) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
